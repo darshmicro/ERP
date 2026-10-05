@@ -8,7 +8,7 @@ Feature-complete release candidate covering Phases 1–10 of the build plan. **N
 * **Purchase → Warehouse → QC → Manufacturing → Dispatch** with all 15 critical controls, append-only inventory ledger, FEFO, holds, labels, OOS/OOT, statistics, CoA, conditional release, reconciliation, antisera genealogy, dispatch gates, traceability graph, global search/QR.
 * **Quality system:** deviation, CAPA, change control wired to masters, FMEA, SOP control, complaints, recall.
 * **Reports:** 37 permissioned reports (JSON/XLSX/CSV/PDF) with controlled-copy log, business PDFs, four dashboards, retention/legal hold/archive, backup evidence.
-* **Validation package:** URS (58), generated RTM (all mapped tests verified), configuration specification, access-control matrix, data dictionary, ER diagrams, IQ/OQ/PQ protocols, FMEA, ALCOA+ assessment, security/pen-test protocols, restore and load tooling, demo data.
+* **Validation package:** URS (59), generated RTM (all mapped tests verified), configuration specification, access-control matrix, data dictionary, ER diagrams, IQ/OQ/PQ protocols, FMEA, ALCOA+ assessment, security/pen-test protocols, restore and load tooling, demo data.
 
 ## Database
 Migrations `0001`–`0009` (110 tables, 17 append-only). Verified up/down/up on SQL Server 2022.

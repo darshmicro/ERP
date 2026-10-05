@@ -17,6 +17,9 @@ Each phase = vertical slice (DB + Alembic → services/rules → API → UI → 
 | **9** | Reports & dashboards | Report engine, all §50 reports (PDF/XLSX/CSV), dashboards (Mgmt/QC/QA/WH), retention/archival, backup status page, printed-copy control | Report permission/field-leak tests; perf test | L |
 | **10** | Validation & hardening | Full CSV pack, RTM, OQ/PQ scripts, security test suite, pen-test checklist, perf/load, backup/restore qualification, demo seed data, manuals | 15 critical tests green; VSR draft | M |
 
+## Delivery status (updated at release candidate 1.0.0-rc1)
+All phases 0–10 (incl. 6b) are delivered on branch `claude/exciting-edison-raz1wb`; per-phase reports are in `docs/phase-reports/phase-N.md`. Remaining work is the **site's** validation (IQ/OQ/PQ execution, SOPs, training) and the roadmap items in `docs/known-defects.md`.
+
 ## Cross-phase tracks
 * **Security & compliance review** at every phase gate (checklist from §100).
 * **Seed/demo data** (Vendors A/B/C, NaCl, Glycine, Caprylic Acid, packaging…) is loaded only by `database/seeds/` scripts, never hard-coded in logic.

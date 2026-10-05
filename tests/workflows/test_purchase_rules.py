@@ -233,7 +233,6 @@ def test_po_approval_chain_signature_sod_and_gate_recheck(w):
     raw("UPDATE vendor_qualification SET requalification_due_date=:d", d=str(date.today() + timedelta(days=300)))
     ok = w["pm1"].post(f"{PO}/{pid}/decision", headers=w["hpm1"], json={"decision": "APPROVE", "password": PW, "comment": "ok"})
     assert ok.status_code == 200 and ok.json()["status"] == "APPROVED", ok.text
-    sig = w["pm1"].get("/api/v1/esignatures", params={"entity": "purchase_order", "record_id": pid}) if False else None
     h = ok.json()["workflow"]["history"]
     assert [x["decision"] for x in h] == ["SUBMIT", "APPROVE"] and h[1]["signed"] is True
     # approved PO is locked

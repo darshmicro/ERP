@@ -18,7 +18,7 @@ Migration `0006`: `bom_header`, `bom_line`, `mbr_step`, `manufacturing_batch`, `
 `tests/workflows/test_manufacturing.py` — **17 passed**: BOM lifecycle/immutability/validation; batch needs approved BOM; scaling; **critical test 12** (duplicate batch number); **critical tests 4/5/7** (issue gates, plus hold); lot↔batch linkage and ledger; FEFO deviation; returns + SoD; process controls; IPC hold; equipment gate; **critical test 14** (reconciliation accurate, discrepancy highlighted and blocked until QA deviation approval); output → QC hand-off; **BR-CRL-003/004**; antisera genealogy.
 
 ## Known limitations
-1. SFG→FG consumption works through the normal issue of an APPROVED SFG lot (same mechanism); there is no dedicated multi-stage routing or work-order scheduling.
+1. SFG→FG consumption works through the normal issue of an APPROVED SFG lot (same mechanism, verified by `tests/workflows/test_multilevel_genealogy.py`); there is no dedicated multi-stage routing or work-order scheduling.
 2. MBR steps are free-text instructions with an optional recorded value; no electronic step templates with typed parameters/limits (IPC covers limits).
 3. Theoretical-yield uses the BOM batch size scaling; no co-product/by-product modelling.
 4. Plasma pools assume the plasma material's base unit is litres (not enforced); no donor health/vaccination schedule or titre tracking.

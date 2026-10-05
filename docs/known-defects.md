@@ -18,3 +18,4 @@ No open **critical** or **major** defect is known. The items below are accepted 
 | KD-12 | Test | The concurrency regression for simultaneous same-account logins runs only on a server database (skipped on SQLite) | Coverage on SQLite | Executed in the SQL Server run |
 | KD-13 | Performance | Load measured with 50 virtual users on a single test host (shared with the database); production sizing must be confirmed in PQ | Capacity assumptions | PQ-P1 |
 | KD-14 | UI | English only; no accessibility audit | — | Roadmap |
+| KD-15 | Import | The Excel import module covers vendor, material, specification, STP, equipment and customer; BOMs, locations' compatibility rules and historical stock/lot balances are not importable (opening stock must be entered through GRN/adjustments under a controlled procedure) | Data migration effort | Roadmap; site migration SOP |

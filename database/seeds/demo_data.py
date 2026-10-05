@@ -9,7 +9,7 @@ Creates, through the real API and services (so every rule, audit row and e-signa
   * an approved BOM, a manufacturing batch IN PROCESS, an open deviation and a CAPA.
 
 Usage:   MERP_DATABASE_URL=... python database/seeds/demo_data.py        (after `alembic upgrade head` and scripts/bootstrap_admin.py)
-The script refuses to run when MERP_ENV=production or when demo data already exists."""
+The script refuses to run when MERP_ENVIRONMENT=production or when demo data already exists."""
 import os
 import sys
 from datetime import date, timedelta
@@ -31,7 +31,8 @@ USERS = {  # username: (role, full name)
 
 
 def main() -> int:
-    if os.environ.get("MERP_ENV", "").lower() == "production":
+    from app.core.config import get_settings
+    if get_settings().is_production or os.environ.get("MERP_ENVIRONMENT", "").lower() == "production":
         print("Refusing to load demo data into a production environment.", file=sys.stderr)
         return 2
     from fastapi.testclient import TestClient

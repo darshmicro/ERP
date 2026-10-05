@@ -27,7 +27,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 sys.path.insert(0, str(ROOT / "scripts"))
 os.environ.setdefault("MERP_AUDIT_HMAC_KEY", "validation-doc-generation-key-0123456789")
 os.environ.setdefault("MERP_SECRET_KEY", "validation-doc-generation-secret-0123456789")
-os.environ.setdefault("MERP_ENV", "development")
+os.environ.setdefault("MERP_ENVIRONMENT", "development")
 
 IMPACT = {"C": "Critical", "M": "Major", "N": "Minor"}
 
@@ -53,7 +53,8 @@ def read_junit(path: Path) -> dict[str, str]:
     return res
 
 
-def gen_urs_rtm(collected: set[str], results: dict[str, str]) -> tuple[int, int, int]:
+def gen_urs_rtm(collected: set[str], results: dict[str, str], results2: dict[str, str] | None = None) -> tuple[int, int, int]:
+    results2 = results2 or {}
     from validation_requirements import REQS
     missing, rows, urs = [], [], []
     mapped = set()
@@ -81,22 +82,23 @@ def gen_urs_rtm(collected: set[str], results: dict[str, str]) -> tuple[int, int,
     ran = bool(results)
     lines = ["# Requirements Traceability Matrix (RTM)", "",
              f"Generated {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')} from `scripts/validation_requirements.py` and the automated test inventory. "
-             + ("Result column = outcome in `docs/validation/evidence/junit.xml`." if ran else "No execution evidence was supplied (run with `--junit`)."), "",
+             + ("Result columns = outcome in `docs/validation/evidence/junit.xml` (SQLite development database) and `junit-sqlserver-*.xml` (SQL Server 2022)." if ran else "No execution evidence was supplied (run with `--junit`)."), "",
              "URS → business rule → automated test (OQ evidence) → result. Every referenced test was verified to exist by collection; the generator aborts otherwise.", ""]
     total_tests = 0
     totals = collections.Counter()
     for area, items in by_area.items():
-        lines += [f"## {area}", "", "| URS | Impact | Rules | Test (path::function) | Result |", "|---|---|---|---|---|"]
+        lines += [f"## {area}", "", "| URS | Impact | Rules | Test (path::function) | SQLite | SQL Server |", "|---|---|---|---|---|---|"]
         for rid, text, imp, rules, tests in items:
             for i, t in enumerate(tests):
                 r = results.get(t, "not run" if not ran else "n/a")
+                r2 = results2.get(t, "not run" if results2 else "—")
                 totals[r] += 1
                 total_tests += 1
-                lines.append(f"| {rid if i == 0 else ''} | {IMPACT[imp] if i == 0 else ''} | {rules if i == 0 else ''} | `{t}` | {r} |")
+                lines.append(f"| {rid if i == 0 else ''} | {IMPACT[imp] if i == 0 else ''} | {rules if i == 0 else ''} | `{t}` | {r} | {r2} |")
         lines.append("")
     orphans = sorted(t for t in collected if t not in mapped)
     lines += ["## Summary", "", f"* Requirements: **{len(REQS)}**; all have at least one automated test: **{all(r[5] for r in REQS)}**", f"* Mapped test references: **{total_tests}** (distinct tests: **{len(mapped)}**)",
-              "* Results of mapped tests: " + ", ".join(f"{k}: {v}" for k, v in sorted(totals.items())), f"* Collected automated tests in total: **{len(collected)}**; not referenced by a requirement (supporting/unit tests): **{len(orphans)}**", ""]
+              "* Results of mapped tests (SQLite): " + ", ".join(f"{k}: {v}" for k, v in sorted(totals.items())) + (f"; SQL Server: {dict(collections.Counter(results2.get(t, 'not run') for _r in REQS for t in _r[5]))}" if results2 else ""), f"* Collected automated tests in total: **{len(collected)}**; not referenced by a requirement (supporting/unit tests): **{len(orphans)}**", ""]
     lines += ["### The 15 mandatory critical tests (prompt §77)", "", "| # | Rule | Test |", "|---|---|---|"]
     crit = [("1", "Expired vendor qualification blocks PO", "tests/workflows/test_purchase_rules.py::test_crit_01_expired_vendor_cannot_create_po"), ("2", "Unapproved vendor blocks PO", "tests/workflows/test_purchase_rules.py::test_crit_02_unapproved_vendor_cannot_purchase"),
             ("3", "Vendor not approved for material blocks PO", "tests/workflows/test_purchase_rules.py::test_crit_03_wrong_vendor_material_combination"), ("4", "Quarantine material cannot be issued", "tests/workflows/test_warehouse.py::test_crit_04_quarantine_material_cannot_be_issued"),
@@ -108,7 +110,7 @@ def gen_urs_rtm(collected: set[str], results: dict[str, str]) -> tuple[int, int,
             ("15", "Reconciliation discrepancy highlighted", "tests/validation/test_critical_15.py::test_crit_15_reconciliation_discrepancy_is_highlighted_and_blocks_progress")]
     for n, rule, t in crit:
         assert t in collected, t
-        lines.append(f"| {n} | {rule} | `{t}` — {results.get(t, 'not run')} |")
+        lines.append(f"| {n} | {rule} | `{t}` — SQLite: {results.get(t, 'not run')}; SQL Server: {results2.get(t, 'not run' if results2 else '—')} |")
     lines += ["", "### Supporting tests not mapped to a specific requirement", "", "<details><summary>show list</summary>", ""] + [f"* `{t}`" for t in orphans] + ["", "</details>", ""]
     (ROOT / "docs/validation/rtm.md").write_text("\n".join(lines), encoding="utf-8")
     return len(REQS), len(mapped), len(orphans)
@@ -275,18 +277,35 @@ def gen_sbom() -> None:
     (ROOT / "docs/validation/sbom.md").write_text("\n".join(L), encoding="utf-8")
 
 
+def gen_openapi() -> None:
+    """Committed copy of the API contract (docs/api/openapi.json) so reviewers can diff API changes between releases."""
+    import json
+    from app.main import create_app
+    spec = create_app(configure_db=False).openapi()
+    (ROOT / "docs/api").mkdir(parents=True, exist_ok=True)
+    (ROOT / "docs/api/openapi.json").write_text(json.dumps(spec, indent=1, sort_keys=True), encoding="utf-8")
+    (ROOT / "docs/api/README.md").write_text(f"# API contract\n\n`openapi.json` — OpenAPI 3 export of all **{sum(len(v) for v in spec['paths'].values())} operations** on **{len(spec['paths'])} paths**, regenerated by `scripts/gen_validation_docs.py`. Interactive docs are served at `/api/docs` on non-production systems.\n", encoding="utf-8")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--junit", default=str(ROOT / "docs/validation/evidence/junit.xml"))
+    ap.add_argument("--junit-mssql", nargs="*", default=sorted(str(x) for x in (ROOT / "docs/validation/evidence").glob("junit-sqlserver-*.xml")))
     ap.add_argument("--skip-collect", action="store_true")
     a = ap.parse_args()
     collected = collect_tests()
     results = read_junit(Path(a.junit))
-    n, mapped, orphans = gen_urs_rtm(collected, results)
+    for extra in sorted((ROOT / "docs/validation/evidence").glob("junit-sqlite-*.xml")):      # later targeted re-runs override
+        results.update(read_junit(extra))
+    results2: dict[str, str] = {}
+    for f in a.junit_mssql:
+        results2.update(read_junit(Path(f)))
+    n, mapped, orphans = gen_urs_rtm(collected, results, results2)
     s = seeded_session()
     gen_configuration(s)
     gen_data_dictionary()
     gen_sbom()
+    gen_openapi()
     print(f"URS {n} requirements; {mapped} mapped tests; {orphans} supporting tests; {len(collected)} collected; results for {len(results)} tests")
 
 

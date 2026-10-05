@@ -12,7 +12,7 @@ GAMP 5 category 4/5 hybrid (configurable, custom-developed). GxP impact: **high*
 ## 3. Lifecycle and responsibilities
 | Activity | Supplier (this project) | Site |
 |---|---|---|
-| URS | Draft derived from the master requirements (`urs.md`, 58 requirements with GMP impact) | Review, adapt, approve |
+| URS | Draft derived from the master requirements (`urs.md`, 59 requirements with GMP impact) | Review, adapt, approve |
 | Risk assessment | FMEA draft (`risk-assessment.md`) | Adopt / extend with site processes |
 | Design/FS/CS | `docs/architecture/`, `functional-specification.md`, `design-specification.md`, `configuration-specification.md` (generated) | Review, record site configuration |
 | Code review / unit & integration tests | Automated suite (~250 tests) run per release; static analysis; dependency inventory (SBOM) | Review evidence; optional code audit |

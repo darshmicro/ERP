@@ -83,7 +83,7 @@ function layout(nodes: any[]) {
   const rank: Record<string, number> = { VENDOR: 0, ANIMAL: 0, PO: 1, BLEED: 1, GRN: 2, POOL: 2, LOT: 3, BATCH: 4, DISPATCH: 5, CUSTOMER: 6 };
   const byRank: Record<number, any[]> = {}; nodes.forEach((n) => { (byRank[rank[n.type] ?? 3] ||= []).push(n); });
   const pos: Record<string, { x: number; y: number }> = {};
-  Object.entries(byRank).forEach(([r, list]) => list.forEach((n, i) => { pos[n.id] = { x: 20 + Number(r) * 150, y: 20 + i * 62 }; }));
+  Object.entries(byRank).forEach(([r, list]) => list.forEach((n, i) => { pos[n.id] = { x: 20 + Number(r) * 200, y: 30 + i * 70 }; }));
   return pos;
 }
 
@@ -94,7 +94,7 @@ export function Trace() {
   const go = async () => { try { setT(await api(`/trace/${type}/${encodeURIComponent(ref)}?direction=${dir}`)); setErr(""); } catch (e) { setT(null); setErr(errText(e)); } };
   useEffect(() => { if (ref) go(); }, []);
   const pos = useMemo(() => (t ? layout(t.nodes) : {}), [t]);
-  const height = t ? Math.max(...(Object.values(pos) as any[]).map((p) => p.y), 60) + 70 : 100;
+  const height = t ? Math.max(...(Object.values(pos) as any[]).map((p) => p.y), 60) + 80 : 100;
   return (<>
     <PageHeader title="Traceability" crumbs={["Quality", "Traceability"]} />
     <div className="d-flex gap-2 mb-3 flex-wrap">
@@ -107,9 +107,9 @@ export function Trace() {
     {t?.truncated && <div className="alert alert-warning">Result truncated at 500 nodes.</div>}
     {t && view === "graph" && <div className="card"><div className="card-body" style={{ overflowX: "auto" }}>
       <div className="small text-muted mb-1">{COLS.filter((c) => t.nodes.some((n: any) => n.type === c)).join(" → ")}</div>
-      <svg width={20 + 7 * 150} height={height}>
+      <svg width={40 + 7 * 200} height={height}>
         {t.edges.map((e: any, i: number) => { const a = pos[e.from], b = pos[e.to]; if (!a || !b) return null; return (<g key={i}><line x1={a.x + 120} y1={a.y + 20} x2={b.x} y2={b.y + 20} stroke="#adb5bd" markerEnd="url(#arr)" />
-          <text x={(a.x + 120 + b.x) / 2} y={(a.y + b.y) / 2 + 16} fontSize="9" fill="#6c757d" textAnchor="middle">{e.label}{e.quantity != null ? ` ${e.quantity}` : ""}</text></g>); })}
+          <text x={(a.x + 120 + b.x) / 2} y={(a.y + b.y) / 2 + 12} fontSize="8" fill="#6c757d" textAnchor="middle">{e.label}{e.quantity != null ? ` ${e.quantity}` : ""}</text></g>); })}
         <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#adb5bd" /></marker></defs>
         {t.nodes.map((n: any) => (<g key={n.id} transform={`translate(${pos[n.id].x},${pos[n.id].y})`}><rect width="120" height="40" rx="6" fill="#fff" stroke={COLOR[n.type] || "#999"} strokeWidth={n.id === t.root ? 3 : 1.5} />
           <text x="6" y="14" fontSize="10" fontWeight="bold" fill={COLOR[n.type]}>{n.type}</text><text x="6" y="28" fontSize="11">{String(n.label).slice(0, 18)}</text><title>{`${n.label} — ${n.sub ?? ""} (${n.status ?? ""})`}</title></g>))}

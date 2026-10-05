@@ -1,3 +1,5 @@
+> **Superseded** by the generated `rtm.md` (all phases, verified against the test inventory). Kept as the Phase 1–3 historical seed.
+
 # Requirements Traceability (Phase 1 seed)
 
 | Req (prompt §) | Control | Test(s) |

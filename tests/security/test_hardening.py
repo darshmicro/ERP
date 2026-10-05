@@ -138,3 +138,12 @@ def test_exports_neutralise_spreadsheet_formula_injection(app):
     ws = load_workbook(io.BytesIO(xl.content)).active
     cells = [str(c.value) for row in ws.iter_rows() for c in row if c.value]
     assert any(c == "'" + evil for c in cells) and not any(c.startswith("=HYPERLINK") for c in cells)
+
+
+def test_pdf_output_treats_user_text_as_text_not_markup(app):
+    """reportlab paragraphs parse mini-HTML; names such as 'A & B <b>Ltd' or '<unclosed' must not break or alter printouts."""
+    w = build_buying_world(app)
+    r = w["pm1"].post(f"{API}/vendors", headers=w["hpm1"], json={"name": "A & B <b>Ltd</i> <unclosed", "reason": "x"})
+    assert r.status_code == 201
+    pdf = w["pm1"].get(f"{API}/reports/vendor-list/export?format=pdf")
+    assert pdf.status_code == 200 and pdf.content.startswith(b"%PDF")

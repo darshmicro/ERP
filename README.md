@@ -17,14 +17,14 @@ Web-based ERP for GMP-regulated biological/antisera manufacturing: Vendor → Pu
 | 7 | FG dispatch with release gates, traceability graph (forward/backward), global search, QR resolve | ✅ `docs/phase-reports/phase-7.md` |
 | 8 | Quality system: deviation, CAPA, change control (linked to versioned masters), FMEA, SOP control, complaints, recall | ✅ `docs/phase-reports/phase-8.md` |
 | 9 | Reports (37), dashboards, controlled printouts, retention/archive, backup evidence | ✅ `docs/phase-reports/phase-9.md` |
-| 10 | Validation & hardening | in progress |
+| 10 | Validation & hardening: 15 critical tests, generated access matrix, security tests, URS/RTM/IQ/OQ/PQ package, restore/load tooling, demo data, manuals | ✅ `docs/phase-reports/phase-10.md` — release candidate **1.0.0-rc1** |
 
 ## Layout
 ```
 backend/app/{api,core,models,schemas,services,repositories,workflows,security,audit,reports,integrations,utils}
 frontend/src/{components,pages,layouts,services,hooks,utils,styles}
-database/{migrations,seeds,mssql}   tests/{unit,integration,security,workflows}
-docs/{architecture,URS,validation,SOP,manuals,phase-reports}   scripts/   docker/
+database/{migrations,seeds,mssql}   tests/{unit,integration,security,workflows,validation,performance}
+docs/{architecture,validation,manuals,phase-reports,samples,api}   scripts/   docker/
 ```
 
 ## Quick start (development, SQLite)
@@ -38,9 +38,29 @@ scripts/run_dev.sh                      # http://localhost:8000  (API docs: /api
 ```
 Production: SQL Server 2022 + reverse proxy + TLS — see `docs/manuals/installation.md`.
 
+## Demo / training data
+```bash
+python database/seeds/demo_data.py      # users per role, Vendors A/B/C, materials, a released lot, a batch in process … (never on production)
+```
+
 ## Tests
 ```bash
 pip install -r backend/requirements-dev.txt
-python -m pytest            # unit, integration, security, workflow tests
-cd frontend && npm run build   # type-check + bundle
+python -m pytest                                    # ~250 tests: unit, integration, security (incl. generated role×route matrix), workflows, 15 critical tests
+MERP_TEST_DATABASE_URL='mssql+pyodbc://…/MERP_TEST?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes' python -m pytest   # same suite on SQL Server
+cd frontend && npm run build                        # type-check + bundle
+python scripts/gen_validation_docs.py --junit docs/validation/evidence/junit.xml   # regenerate URS/RTM/CS/data dictionary/SBOM/OpenAPI
+python scripts/load_test.py --base http://localhost:8000 --users 50 --seconds 120 # load test (needs demo data)
+python scripts/restore_test.py                                                       # backup/restore qualification helper
 ```
+
+## Documentation map
+| Area | Where |
+|---|---|
+| Architecture, design decisions, workflows, rules, RBAC, compliance mapping, data dictionary, ER | `docs/architecture/` |
+| Validation package (VP, URS, FS, DS, CS, FMEA, ALCOA+, IQ/OQ/PQ, RTM, protocols, VSR draft, evidence) | `docs/validation/` |
+| Phase reports (what, files, DB, API, UI, tests, limitations) | `docs/phase-reports/` |
+| Manuals (installation, configuration, administrator, user, master data, purchase, troubleshooting) | `docs/manuals/` |
+| Sample outputs (labels, CoA, PO, GRN, batch record, reports) | `docs/samples/` |
+| API contract (OpenAPI) | `docs/api/` |
+| Release notes, known defects | `docs/release-notes.md`, `docs/known-defects.md` |

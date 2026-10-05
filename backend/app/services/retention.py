@@ -20,7 +20,7 @@ from app.models.qc import COA, QCResult
 from app.models.quality import CAPA, Deviation
 from app.models.reporting import ArchiveBatch, RetentionPolicy
 from app.models.warehouse import InventoryTransaction, MaterialBatch
-from app.services import documents, numbering
+from app.services import documents, exports, numbering
 
 # record type -> (label, model, date column, default years, regulatory basis)
 SOURCES = {
@@ -52,7 +52,7 @@ def policies(session: Session) -> list[dict]:
         _label, Model, col, _y, _b = src
         cutoff = _cutoff(p)
         total = session.execute(select(func.count()).select_from(Model)).scalar()
-        eligible = session.execute(select(func.count()).select_from(Model).where(col < cutoff)).scalar()
+        eligible = session.execute(select(func.count()).select_from(Model).where(col < cutoff, Model.id > _last_id(session, p.record_type))).scalar()
         arch = session.execute(select(func.coalesce(func.sum(ArchiveBatch.row_count), 0)).where(ArchiveBatch.record_type == p.record_type)).scalar()
         out.append({"id": p.id, "record_type": p.record_type, "label": src[0], "retention_years": p.retention_years, "legal_hold": p.legal_hold, "legal_hold_reason": p.legal_hold_reason, "basis": p.basis,
                     "cutoff": cutoff.date().isoformat(), "total_records": total, "eligible_for_archive": 0 if p.legal_hold else eligible, "archived_rows": int(arch), "last_archived_cutoff": p.last_archived_cutoff})
@@ -73,7 +73,15 @@ def update_policy(session: Session, p: RetentionPolicy, data: dict) -> None:
         setattr(p, k, v)
 
 
+MAX_ROWS_PER_PACKAGE = 100_000
+
+
+def _last_id(session: Session, record_type: str) -> int:
+    return int(session.execute(select(func.coalesce(func.max(ArchiveBatch.to_id), 0)).where(ArchiveBatch.record_type == record_type)).scalar() or 0)
+
+
 def archive(session: Session, user, record_type: str) -> ArchiveBatch:
+    """Package the next contiguous block (<= 100 000 rows) of records older than the cut-off that were not archived before. Re-run until nothing is left."""
     p = session.execute(select(RetentionPolicy).where(RetentionPolicy.record_type == record_type)).scalars().first()
     src = SOURCES.get(record_type)
     if p is None or src is None:
@@ -82,14 +90,13 @@ def archive(session: Session, user, record_type: str) -> ArchiveBatch:
         raise BusinessRuleError(f"{src[0]} are under LEGAL HOLD and cannot be archived (BR-RET-002)", rule_id="BR-RET-002")
     _label, Model, col, _y, _b = src
     cutoff = _cutoff(p)
-    rows = session.execute(select(Model).where(col < cutoff).order_by(Model.id)).scalars().all()
+    rows = session.execute(select(Model).where(col < cutoff, Model.id > _last_id(session, record_type)).order_by(Model.id).limit(MAX_ROWS_PER_PACKAGE)).scalars().all()
     if not rows:
-        raise BusinessRuleError("No records are older than the retention cut-off", rule_id="BR-RET-001")
+        raise BusinessRuleError("No (further) records are older than the retention cut-off", rule_id="BR-RET-001")
     cols = [c.key for c in sa_inspect(Model).mapper.column_attrs if c.key not in set(getattr(Model, "__audit_sensitive__", ())) and c.key != "password_hash"]
-    wb = Workbook()
-    ws = wb.active
-    ws.title = record_type[:31]
-    ws.append([f"ARCHIVE PACKAGE — {src[0]} older than {cutoff.date().isoformat()} (originals remain in the database)"])
+    wb = Workbook(write_only=True)
+    ws = wb.create_sheet(record_type[:31])
+    ws.append([f"ARCHIVE PACKAGE — {src[0]} older than {cutoff.date().isoformat()}, ids {rows[0].id}–{rows[-1].id} (originals remain in the database)"])
     ws.append(cols)
     for r in rows:
         ws.append([_v(getattr(r, c)) for c in cols])
@@ -98,7 +105,8 @@ def archive(session: Session, user, record_type: str) -> ArchiveBatch:
     data = buf.getvalue()
     no = numbering.next_number(session, numbering.default_plant_id(session), "ARCHIVE")
     doc = documents.store(session, f"{no}-{record_type}.xlsx", data, allowed_ext={".xlsx"}, doc_no=no, version="1")
-    ab = ArchiveBatch(archive_no=no, record_type=record_type, cutoff_date=cutoff.date(), row_count=len(rows), document_id=doc.id, sha256=hashlib.sha256(data).hexdigest(), created_by_id=user.id)
+    ab = ArchiveBatch(archive_no=no, record_type=record_type, cutoff_date=cutoff.date(), row_count=len(rows), from_id=rows[0].id, to_id=rows[-1].id, document_id=doc.id,
+                      sha256=hashlib.sha256(data).hexdigest(), created_by_id=user.id)
     session.add(ab)
     p.last_archived_cutoff = cutoff.date()
     session.flush()
@@ -110,4 +118,4 @@ def _v(x):
         return (x.astimezone(timezone.utc) if x.tzinfo else x).replace(tzinfo=None)
     if hasattr(x, "__float__") and not isinstance(x, (int, float, bool)):
         return float(x)
-    return x
+    return exports.safe_text(x)

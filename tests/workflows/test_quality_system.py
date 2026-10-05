@@ -247,7 +247,7 @@ def test_sop_versioning_acknowledgement_and_review_due(q):
     assert w["qc"].get(f"{API}/sops/{sop['id']}").json()["acknowledged_by_me"] is True
     # approved content is immutable; revise via new version, supersede on approval
     v2 = w["qo"].post(f"{API}/sops/{sop['id']}/new-version", headers=w["hqo"], json={"reason": "annual review"})
-    assert v2.status_code == 201 and v2.json()["version_no"] == 2 and v2.json()["document_id"] == sop["document_id"] or v2.status_code == 201
+    assert v2.status_code == 201 and v2.json()["version_no"] == 2 and v2.json()["document_id"] == up.json()["document_id"]
     w["qo"].post(f"{API}/sops/{v2.json()['id']}/submit", headers=w["hqo"])
     assert w["qa"].post(f"{API}/sops/{v2.json()['id']}/approve", headers=w["hqa"], json={"password": PW, "reason": "v2 approved"}).status_code == 200
     assert w["qo"].get(f"{API}/sops/{sop['id']}").json()["status"] == "SUPERSEDED"

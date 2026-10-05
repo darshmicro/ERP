@@ -11,6 +11,20 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import mm
 from reportlab.platypus import Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
+def _fmt(v: Any) -> str:
+    """Display values: trim trailing zeros of decimals (100.000000 -> 100), blank for None, ISO without microseconds."""
+    from datetime import datetime as _dt
+    from decimal import Decimal
+    from xml.sax.saxutils import escape
+    if v is None:
+        return ""
+    if isinstance(v, Decimal):
+        return f"{float(v):g}"
+    if isinstance(v, _dt):
+        return v.strftime("%d-%b-%Y %H:%M:%S")
+    return escape(str(v))          # reportlab Paragraph parses mini-HTML: user text must not be interpreted as markup
+
+
 STY = getSampleStyleSheet()
 SMALL = STY["BodyText"].clone("small", fontSize=7, leading=8.5)
 CELL = STY["BodyText"].clone("cell", fontSize=7.5, leading=9)
@@ -34,12 +48,12 @@ def _footer(user: str, copy_no: str, company: str):
 def _header(title: str, company: str, logo: bytes | None, kv: Sequence[tuple[str, Any]] = ()):
     story: list = []
     head = [[Image(io.BytesIO(logo), width=22 * mm, height=12 * mm, kind="proportional") if logo else "",
-             Paragraph(f"<b>{company}</b><br/><font size=11>{title}</font>", STY["Title"].clone("t", fontSize=13, leading=15, alignment=0))]]
+             Paragraph(f"<b>{_fmt(company)}</b><br/><font size=11>{_fmt(title)}</font>", STY["Title"].clone("t", fontSize=13, leading=15, alignment=0))]]
     t = Table(head, colWidths=[26 * mm, None])
     t.setStyle(TableStyle([("VALIGN", (0, 0), (-1, -1), "MIDDLE"), ("LINEBELOW", (0, 0), (-1, 0), 0.8, colors.HexColor(HDR))]))
     story += [t, Spacer(1, 3 * mm)]
     if kv:
-        rows = [[Paragraph(f"<b>{k}</b>", CELL), Paragraph(str("" if v is None else v), CELL)] for k, v in kv]
+        rows = [[Paragraph(f"<b>{k}</b>", CELL), Paragraph(_fmt(v), CELL)] for k, v in kv]
         kt = Table(rows, colWidths=[40 * mm, None])
         kt.setStyle(TableStyle([("GRID", (0, 0), (-1, -1), 0.25, colors.lightgrey), ("BACKGROUND", (0, 0), (0, -1), colors.whitesmoke), ("VALIGN", (0, 0), (-1, -1), "TOP")]))
         story += [kt, Spacer(1, 3 * mm)]
@@ -47,7 +61,7 @@ def _header(title: str, company: str, logo: bytes | None, kv: Sequence[tuple[str
 
 
 def _table(columns: Sequence[str], rows: Sequence[Sequence[Any]], widths=None, repeat=True):
-    data = [[Paragraph(f"<b>{c}</b>", CELL) for c in columns]] + [[Paragraph(str("" if v is None else v), CELL) for v in r] for r in rows]
+    data = [[Paragraph(f"<b>{c}</b>", CELL) for c in columns]] + [[Paragraph(_fmt(v), CELL) for v in r] for r in rows]
     t = Table(data, colWidths=widths, repeatRows=1 if repeat else 0)
     t.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#DCE6F2")), ("GRID", (0, 0), (-1, -1), 0.25, colors.grey), ("VALIGN", (0, 0), (-1, -1), "TOP"),
                            ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F7F9FC")])]))

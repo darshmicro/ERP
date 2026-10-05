@@ -158,7 +158,6 @@ def test_crit_11_creator_cannot_approve_own_transaction(bw):
     assert w["pm2"].post(f"/api/v1/purchase-orders/{po['id']}/decision", headers=w["hpm2"], json={"decision": "APPROVE", "password": PW}).status_code == 200
     # master data: the author of a specification cannot approve it (QA head authors, QA head 2 approves)
     qa2, h2 = as_user(w["qa"].app, "qa_head2", ["QA_HEAD"])
-    sp = w["qa"].post("/api/v1/specifications", headers=w["hqa"], json={"material_id": w["material"], "reason": "rev"}).json() if False else None
     v2 = w["qc"].post(f"/api/v1/specifications/{w['spec']}/new-version", headers=w["hqc"], json={"reason": "revision"}).json()
     w["qc"].post(f"/api/v1/specifications/{v2['id']}/submit", headers=w["hqc"])
     qc_head, hq = as_user(w["qa"].app, "qc_head_x", ["QC_HEAD"])

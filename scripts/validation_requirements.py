@@ -121,6 +121,8 @@ REQS = [
      [W + "test_dispatch.py::test_released_fg_full_dispatch_flow", W + "test_dispatch.py::test_sod_creator_cannot_approve", W + "test_dispatch.py::test_hold_after_validation_blocks_approval_and_dispatch_and_cancel_releases_stock", W + "test_dispatch.py::test_dispatch_is_audited_and_permissioned"]),
     ("URS-TRC-01", "Traceability", "Complete forward and backward genealogy (vendor ↔ PO ↔ GRN ↔ lot ↔ batch ↔ FG ↔ dispatch ↔ customer; animal ↔ pool), global search and QR resolution.", "C", "BR-TRC-001",
      [W + "test_dispatch.py::test_traceability_backward_and_forward_are_complete", W + "test_dispatch.py::test_trace_excludes_undispatched_and_antisera_genealogy", W + "test_dispatch.py::test_global_search_respects_permissions_and_qr_resolve"]),
+    ("URS-TRC-02", "Traceability", "Two-level production: only a released SFG lot can feed an FG batch (BR-ISS-001) and the genealogy spans FG batch → SFG batch → raw-material lot → GRN → PO → vendor.", "C", "BR-ISS-001, BR-TRC-001",
+     [W + "test_multilevel_genealogy.py::test_fg_batch_consumes_a_released_sfg_lot_and_trace_spans_both_levels"]),
     # ------------------------------------------------------------------ quality system
     ("URS-QS-01", "Quality system", "Deviation workflow; open deviations block release/dispatch; independent QA closure; automatic deviations from IPC, temperature and reconciliation.", "C", "BR-DEV-001..003",
      [W + "test_quality_system.py::test_open_deviation_blocks_release_until_closed_with_independent_qa_signature", W + "test_quality_system.py::test_deviation_raiser_cannot_close_and_non_blocking_flag", W + "test_quality_system.py::test_temperature_excursion_raises_deviation_and_hold",

@@ -80,6 +80,8 @@ def upgrade() -> None:
     sa.Column('record_type', sa.String(length=40), nullable=False),
     sa.Column('cutoff_date', sa.Date(), nullable=False),
     sa.Column('row_count', sa.Integer(), nullable=False),
+    sa.Column('from_id', sa.BigInteger().with_variant(sa.Integer(), 'sqlite'), nullable=False),
+    sa.Column('to_id', sa.BigInteger().with_variant(sa.Integer(), 'sqlite'), nullable=False),
     sa.Column('document_id', sa.BigInteger().with_variant(sa.Integer(), 'sqlite'), nullable=False),
     sa.Column('sha256', sa.String(length=64), nullable=False),
     sa.Column('created_by_id', sa.BigInteger().with_variant(sa.Integer(), 'sqlite'), nullable=True),

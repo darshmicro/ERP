@@ -3,7 +3,7 @@
 > Derived from the master requirements (prompt §1–§100) and the architecture pack (`docs/architecture/`). GMP impact: **Critical** = direct effect on product quality, patient safety or data integrity; **Major**; **Minor**.
 > Generated from `scripts/validation_requirements.py` — edit that file, not this one.
 
-Total requirements: **58** (40 critical, 17 major, 1 minor).
+Total requirements: **59** (41 critical, 17 major, 1 minor).
 
 ## Security
 
@@ -111,6 +111,7 @@ Total requirements: **58** (40 critical, 17 major, 1 minor).
 | ID | Requirement | GMP impact | Business rules |
 |---|---|---|---|
 | URS-TRC-01 | Complete forward and backward genealogy (vendor ↔ PO ↔ GRN ↔ lot ↔ batch ↔ FG ↔ dispatch ↔ customer; animal ↔ pool), global search and QR resolution. | Critical | BR-TRC-001 |
+| URS-TRC-02 | Two-level production: only a released SFG lot can feed an FG batch (BR-ISS-001) and the genealogy spans FG batch → SFG batch → raw-material lot → GRN → PO → vendor. | Critical | BR-ISS-001, BR-TRC-001 |
 
 ## Quality system
 

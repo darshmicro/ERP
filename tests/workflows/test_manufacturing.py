@@ -175,8 +175,8 @@ def test_fefo_deviation_needs_reason(w):
     r = issue(w, b, w["stock"], 1)       # w["stock"] expires in 365 days; 'early' must go first
     assert r.status_code == 409 and r.json()["rule_id"] == "BR-ISS-005"
     assert issue(w, b, w["stock"], 1, fefo_override_reason="Early lot reserved for retest").status_code == 201
-    assert w["wh1"].get(f"{API}/mfg/batches/{b['id']}/fefo-suggestion?batch_material_id={b['materials'][0]['id']}&quantity=1", headers=w["hwh1"]).status_code in (200, 403, 409)
-    assert early
+    sg = w["wh1"].get(f"{API}/mfg/batches/{b['id']}/fefo-suggestion?batch_material_id={b['materials'][0]['id']}&quantity=1", headers=w["hwh1"])
+    assert sg.status_code == 200 and sg.json()[0]["lot_id"] == early                  # the pick list names the earliest-expiry lot first
 
 
 # ------------------------------------------------------------------ returns

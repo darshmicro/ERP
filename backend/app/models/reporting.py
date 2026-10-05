@@ -48,6 +48,8 @@ class ArchiveBatch(AppendOnlyMixin, Base):
     record_type: Mapped[str] = mapped_column(String(40), nullable=False, index=True)
     cutoff_date: Mapped[date] = mapped_column(Date, nullable=False)
     row_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    from_id: Mapped[int] = mapped_column(PK, nullable=False)          # first / last primary key packed (packages are contiguous and never overlap)
+    to_id: Mapped[int] = mapped_column(PK, nullable=False)
     document_id: Mapped[int] = mapped_column(PK, ForeignKey("document.id"), nullable=False)
     sha256: Mapped[str] = mapped_column(String(64), nullable=False)
     created_by_id: Mapped[int | None] = mapped_column(PK)

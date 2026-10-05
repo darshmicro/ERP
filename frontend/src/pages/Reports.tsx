@@ -66,7 +66,7 @@ export function Dashboards() {
   const tone: Record<string, string> = { danger: "border-danger", warn: "border-warning", "": "" };
   return (<>
     <PageHeader title="Dashboards" crumbs={["Reports", "Dashboards"]} /><Alert>{err}</Alert>
-    <ul className="nav nav-tabs mb-3">{names.map((n) => <li className="nav-item" key={n}><button className={"nav-link text-capitalize" + (tab === n ? " active" : "")} onClick={() => setTab(n)}>{n}</button></li>)}</ul>
+    <ul className="nav nav-tabs mb-3">{names.map((n) => <li className="nav-item" key={n}><button className={"nav-link" + (tab === n ? " active" : "")} onClick={() => setTab(n)}>{({ management: "Management", qc: "QC", qa: "QA", warehouse: "Warehouse" } as Record<string, string>)[n] ?? n}</button></li>)}</ul>
     {d && <><div className="row g-3 mb-3">{d.cards.map((c: any) => (<div className="col-6 col-md-4 col-xl-3" key={c.label}><div className={`card card-metric h-100 border-2 ${tone[c.tone] ?? ""}`}><div className="card-body"><div className="text-muted small">{c.label}</div><div className="value">{c.value}</div></div></div></div>))}</div>
       <div className="row g-3">{Object.entries<any[]>(d.series).map(([k, v]) => <div className="col-md-4" key={k}><Bars title={k} data={v} /></div>)}</div></>}
   </>);

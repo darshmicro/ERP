@@ -158,8 +158,12 @@ def test_retention_policies_archive_and_legal_hold(w):
     assert a["archive_no"].startswith("ARC-") and a["row_count"] == 1 and len(a["sha256"]) == 64
     dl = w["qa"].get(f"{API}/retention/archives/{a['id']}/download")
     assert dl.status_code == 200 and hashlib.sha256(dl.content).hexdigest() == a["sha256"] and dl.content[:2] == b"PK"
-    # non-destructive: the original record is untouched
+    # non-destructive: the original record is untouched; packages never overlap, so a second run finds nothing new
     assert w["qa"].get(f"{API}/deviations/{d['id']}").status_code == 200
+    assert a["from_id"] == a["to_id"] == d["id"]
+    again = w["qa"].post(f"{API}/retention/archive/deviation", headers=w["hqa"])
+    assert again.status_code == 409 and again.json()["rule_id"] == "BR-RET-001"
+    assert {p["record_type"]: p for p in w["qa"].get(f"{API}/retention/policies").json()}["deviation"]["eligible_for_archive"] == 0
     # legal hold blocks archival; hold needs a reason
     pid = p2["id"]
     assert w["qa"].patch(f"{API}/retention/policies/{pid}", headers=w["hqa"], json={"legal_hold": True, "reason": "inspection"}).status_code == 422       # hold reason required

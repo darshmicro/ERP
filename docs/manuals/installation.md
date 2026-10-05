@@ -1,6 +1,6 @@
-# Installation & Deployment Guide (Phase 1)
+# Installation & Deployment Guide
 
-> Written for the validated-environment workflow DEV → TEST/UAT → PROD. SQL Server/ODBC/IIS/Docker steps below were **authored but not executed** in the Phase 1 build environment (SQLite + Linux only); verify them in your IQ.
+> Written for the validated-environment workflow DEV → TEST/UAT → PROD. **Executed by the supplier:** SQL Server 2022 (Linux container) with ODBC Driver 18, `alembic upgrade/downgrade/upgrade` of migrations 0001–0009, the full test suite, uvicorn with 2 workers under a 50-user load test, backup/restore test (`docs/validation/evidence/`). **Authored but not executed by the supplier:** Windows Server service wrappers (NSSM/WinSW), IIS-ARR, the Docker compose application stack, LDAP against a real AD — verify these in your IQ (`docs/validation/iq-protocol.md`).
 
 ## 1. Prerequisites
 | Item | Recommendation |
@@ -34,5 +34,11 @@ Run as a service (NSSM/WinSW): `uvicorn app.main:create_app --factory --host 127
 `cp .env.example .env` (add `MSSQL_SA_PASSWORD`, `MERP_HOSTNAME`), then `docker compose -f docker/docker-compose.yml up -d --build`. After the DB is healthy, run migrations and bootstrap inside the `api` container:
 `docker compose exec api sh -c "cd backend && alembic -c alembic.ini upgrade head"` and `docker compose exec -e MERP_BOOTSTRAP_ADMIN_USERNAME=... -e MERP_BOOTSTRAP_ADMIN_PASSWORD=... api python scripts/bootstrap_admin.py`.
 
-## 5. Post-install checks (IQ seeds)
+## 5. Sizing and tuning
+* Start with 4 uvicorn workers per application server; each worker has its own DB pool (`MERP_DB_POOL_SIZE` 25 + `MERP_DB_MAX_OVERFLOW` 35 by default). Keep `pool_size + overflow ≥ 40` (threads per worker) and make sure the database allows `workers × (pool + overflow)` connections.
+* Keep the database on a **separate** server from the application for production; the load figures in `docs/validation/performance-and-load.md` were measured with everything on one host.
+* Schedule `scripts/run_jobs.py` daily and the backup/restore-test routine (`docs/manuals/admin-manual.md`).
+* For a training/demo system only: `python database/seeds/demo_data.py` (refuses `MERP_ENVIRONMENT=production`).
+
+## 6. Post-install checks (IQ seeds)
 `/api/v1/health/ready` = ready · login as bootstrap admin forces password change · `/api/docs` reachable only on the internal network · audit trail shows LOGIN · `scripts`: confirm `merp_app` cannot `UPDATE audit_trail` (expect permission error).
