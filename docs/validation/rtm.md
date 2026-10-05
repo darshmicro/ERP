@@ -274,6 +274,7 @@ URS → business rule → automated test (OQ evidence) → result. Every referen
 * Requirements: **59**; all have at least one automated test: **True**
 * Mapped test references: **190** (distinct tests: **188**)
 * Results of mapped tests (SQLite): PASS: 190; SQL Server: {'PASS': 188, 'not run': 2}
+* SQL Server column: the two `tests/integration/test_migrations.py` tests spawn SQLite subprocesses and are deselected there; the migration chain is verified on SQL Server separately (`docs/validation/sqlserver-verification.md`: 0001→0009 up/down/up, 110 tables, 17 triggers).
 * Collected automated tests in total: **232**; not referenced by a requirement (supporting/unit tests): **44**
 
 ### The 15 mandatory critical tests (prompt §77)
