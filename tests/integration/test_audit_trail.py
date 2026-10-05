@@ -10,6 +10,13 @@ from app.models import AuditTrail, Company, User
 from tests.conftest import login, make_user, reason
 
 
+def _drop_audit_triggers(conn):
+    """Simulate a DBA removing the protection (dialect-aware)."""
+    from app.audit.immutability import drop_statements
+    for stmt in drop_statements(conn.dialect.name, ("audit_trail",)):
+        conn.execute(text(stmt))
+
+
 def test_field_level_audit_with_old_new_user_reason(client, admin):
     r = client.put("/api/v1/company", headers=admin, json={"gst_no": "29ABCDE1234F1Z5", "reason": "initial setup"})
     assert r.status_code == 200
@@ -70,7 +77,7 @@ def test_hash_chain_verifies_and_detects_tampering(session, engine):
     assert audit.verify_chain(session)["ok"]
     # an attacker with DBA rights drops the trigger and edits a row
     with engine.begin() as c:
-        c.execute(text("DROP TRIGGER trg_audit_trail_no_update"))
+        _drop_audit_triggers(c)
         c.execute(text("UPDATE audit_trail SET new_value='forged' WHERE id=3"))
     res = audit.verify_chain(session)
     assert res["ok"] is False and res["first_bad_audit_id"] == 3
@@ -81,7 +88,7 @@ def test_hash_chain_detects_removed_tail(session, engine):
         audit.log_event(session, module="t", entity="x", record_id=i, action="A")
         session.commit()
     with engine.begin() as c:
-        c.execute(text("DROP TRIGGER trg_audit_trail_no_delete"))
+        _drop_audit_triggers(c)
         c.execute(text("DELETE FROM audit_trail WHERE id=(SELECT MAX(id) FROM audit_trail)"))
     assert audit.verify_chain(session)["ok"] is False
 

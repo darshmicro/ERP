@@ -1,4 +1,5 @@
 """Segregation of duties (spec 8, Doc 04). Driven by sod_rule + record_action history."""
+from sqlalchemy import false as sa_false, true as sa_true
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -20,7 +21,7 @@ def check(session: Session, user_id: int, entity: str, record_id, action_code: s
     """Raise if user previously performed a conflicting action on the same record.
     Returns warnings for WARN-level rules."""
     rules = session.execute(select(SodRule).where(SodRule.action_code == action_code,
-                                                  SodRule.is_active.is_(True))).scalars().all()
+                                                  SodRule.is_active == sa_true())).scalars().all()
     warnings: list[str] = []
     for r in rules:
         done = session.execute(select(RecordAction.id).where(

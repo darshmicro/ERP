@@ -141,3 +141,16 @@ class WorkflowTransaction(AppendOnlyMixin, Base):
     signature_id: Mapped[int | None] = mapped_column(PK, ForeignKey("e_signature.id"))
     comment: Mapped[str | None] = mapped_column(String(1000))
     occurred_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow, nullable=False)
+
+
+class DocLink(Base):
+    """Attaches a controlled Document to any record (e.g. material, specification)."""
+
+    __tablename__ = "doc_link"
+    __table_args__ = (UniqueConstraint("document_id", "entity", "record_id"),)
+    id: Mapped[int] = mapped_column(PK, primary_key=True, autoincrement=True)
+    document_id: Mapped[int] = mapped_column(PK, ForeignKey("document.id"), nullable=False)
+    entity: Mapped[str] = mapped_column(String(80), nullable=False, index=True)
+    record_id: Mapped[str] = mapped_column(String(60), nullable=False)
+    linked_by_id: Mapped[int | None] = mapped_column(PK)
+    linked_at: Mapped[datetime] = mapped_column(UTCDateTime, default=utcnow)

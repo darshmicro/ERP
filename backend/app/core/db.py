@@ -25,6 +25,13 @@ class UTCDateTime(TypeDecorator):
     impl = DateTime
     cache_ok = True
 
+    def load_dialect_impl(self, dialect):
+        # SQL Server DATETIME rounds to 1/300 s, which would break audit hash verification.
+        if dialect.name == "mssql":
+            from sqlalchemy.dialects.mssql import DATETIME2
+            return dialect.type_descriptor(DATETIME2(6))
+        return dialect.type_descriptor(DateTime())
+
     def process_bind_param(self, value, dialect):
         if value is None:
             return None

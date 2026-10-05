@@ -15,7 +15,12 @@ from app.core.errors import NotFound
 from app.core.time import utcnow
 from app.models.platform import NumberRegistry, NumberSequence
 
-DEFAULT_REGISTRY = {  # doc_type -> prefix
+MASTER_FORMAT = "{prefix}-{seq:05d}"
+# doc types numbered without yearly reset (masters): doc_type -> prefix
+MASTER_REGISTRY = {"VENDOR": "VEN", "MATERIAL": "MAT", "CUSTOMER": "CUS", "SPEC": "SPEC", "STP": "STP",
+                   "SPLAN": "SPL", "EQUIPMENT": "EQ", "IMPORT": "IMP"}
+
+DEFAULT_REGISTRY = {  # doc_type -> prefix (yearly reset)
     "PR": "PR", "PO": "PO", "GRN": "GRN", "SAMPLE": "SMP", "SFG": "SFG", "FG": "FG",
     "DISPATCH": "DSP", "DEVIATION": "DEV", "CAPA": "CAPA", "CC": "CC", "QCNO": "QC", "QARELEASE": "QAR",
     "INDENT": "IND", "COA": "COA", "OOS": "OOS", "LABEL": "LBL",
@@ -27,6 +32,11 @@ def seed_registry(session: Session, plant_id: int) -> None:
         if session.execute(select(NumberRegistry.id).where(NumberRegistry.plant_id == plant_id,
                                                            NumberRegistry.doc_type == doc_type)).first() is None:
             session.add(NumberRegistry(plant_id=plant_id, doc_type=doc_type, prefix=prefix))
+    for doc_type, prefix in MASTER_REGISTRY.items():
+        if session.execute(select(NumberRegistry.id).where(NumberRegistry.plant_id == plant_id,
+                                                           NumberRegistry.doc_type == doc_type)).first() is None:
+            session.add(NumberRegistry(plant_id=plant_id, doc_type=doc_type, prefix=prefix,
+                                       format=MASTER_FORMAT, reset_policy="NEVER"))
 
 
 def next_number(session: Session, plant_id: int, doc_type: str, when: datetime | None = None) -> str:
@@ -58,3 +68,11 @@ def _get_or_create(session: Session, plant_id: int, doc_type: str, period: str) 
             return row.id
     except IntegrityError:
         return session.execute(q).scalar_one()
+
+
+def default_plant_id(session: Session) -> int:
+    from app.models.org import Plant
+    pid = session.execute(select(Plant.id).order_by(Plant.id)).scalar()
+    if pid is None:
+        raise NotFound("No plant configured")
+    return pid

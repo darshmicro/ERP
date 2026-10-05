@@ -28,10 +28,26 @@ from app.services.rate_limit import login_limiter  # noqa: E402
 PW = "Str0ng!Passw0rd#1"
 
 
+def _reset_server_database(engine):
+    """Tests leave sessions open; on SQL Server their locks would block DROP TABLE. Roll them back first."""
+    from sqlalchemy import text
+    if engine.dialect.name == "mssql":
+        dbname = engine.url.database
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as c:
+            c.execute(text(f"ALTER DATABASE [{dbname}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE"))
+            c.execute(text(f"ALTER DATABASE [{dbname}] SET MULTI_USER"))
+        engine.dispose()
+    Base.metadata.drop_all(engine)
+
+
 @pytest.fixture()
 def engine(tmp_path):
-    engine = db.configure(f"sqlite:///{tmp_path/'t.db'}")
+    # MERP_TEST_DATABASE_URL lets the same suite run against SQL Server / PostgreSQL (see docs/validation).
+    url = os.environ.get("MERP_TEST_DATABASE_URL") or f"sqlite:///{tmp_path/'t.db'}"
+    engine = db.configure(url)
     import app.models  # noqa: F401
+    if not url.startswith("sqlite"):
+        _reset_server_database(engine)
     Base.metadata.create_all(engine)
     install_triggers(engine)
     hooks.install()

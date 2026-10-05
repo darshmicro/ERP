@@ -11,6 +11,12 @@ import Company from "./pages/Company";
 import Workflows from "./pages/Workflows";
 import Settings from "./pages/Settings";
 import ChangePassword from "./pages/ChangePassword";
+import Lookups from "./pages/Lookups";
+import Materials from "./pages/Materials";
+import Vendors from "./pages/Vendors";
+import QualityMasters from "./pages/QualityMasters";
+import { Locations, Equipment, Customers } from "./pages/Facilities";
+import Import from "./pages/Import";
 
 export default function App() {
   const { me, loading } = useAuth();
@@ -29,6 +35,14 @@ export default function App() {
         <Route path="security" element={<SecurityEvents />} />
         <Route path="company" element={<Company />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="materials" element={<Materials />} />
+        <Route path="vendors" element={<Vendors />} />
+        <Route path="quality-masters" element={<QualityMasters />} />
+        <Route path="locations" element={<Locations />} />
+        <Route path="equipment" element={<Equipment />} />
+        <Route path="customers" element={<Customers />} />
+        <Route path="lookups" element={<Lookups />} />
+        <Route path="import" element={<Import />} />
         <Route path="password" element={<ChangePassword />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Route>

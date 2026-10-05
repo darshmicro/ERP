@@ -9,3 +9,4 @@ ldap3>=2.9
 python-multipart>=0.0.9
 pyodbc>=5.1          # SQL Server (ODBC Driver 18); omit for SQLite-only dev
 gunicorn>=22.0; platform_system != "Windows"
+openpyxl>=3.1

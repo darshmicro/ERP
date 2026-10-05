@@ -54,3 +54,24 @@ class StatefulMixin:
 
 
 __all__ = ["AuditedMixin", "AppendOnlyMixin", "StatefulMixin", "Base"]
+
+
+class VersionedMixin(StatefulMixin):
+    """Controlled, versioned master (spec 60, BR-HIS-001).
+
+    Lifecycle DRAFT -> UNDER_REVIEW -> APPROVED -> SUPERSEDED. Only DRAFT rows may be edited; the
+    content of APPROVED/SUPERSEDED rows is immutable (enforced in audit/hooks.py). A change = new
+    version row (service `versioning.new_version`) that supersedes the current one when approved.
+    Concrete classes add: version_no, status, effective_from, effective_to, supersedes_id,
+    approved_signature_id, change_reason and a business-number column named in __version_key__.
+    """
+
+    __version_key__ = "doc_no"
+    __editable_statuses__ = ("DRAFT",)
+
+
+class VersionChildMixin:
+    """Row owned by a VersionedMixin parent; editable only while the parent is DRAFT."""
+
+    __version_parent_model__ = ""   # dotted name resolved lazily, e.g. "Specification"
+    __version_parent_fk__ = ""      # column name holding the parent id

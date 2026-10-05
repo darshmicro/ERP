@@ -1,6 +1,7 @@
 """Permission catalogue (single source of truth) and effective-permission resolution."""
 from datetime import date
 
+from sqlalchemy import false as sa_false, true as sa_true
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -20,6 +21,20 @@ CATALOGUE: dict[str, dict[str, list[str]]] = {
     "training": {"record": ["read", "create"]},
     "dashboard": {"view": ["read"]},
     "notification": {"own": ["read"]},
+    # --- Phase 2: master data ---
+    "md": {
+        "unit": ["create", "read", "update"], "material_type": ["create", "read", "update"],
+        "category": ["create", "read", "update"],
+        "vendor": ["create", "read", "update", "approve", "deactivate", "review_document"],
+        "material": ["create", "read", "update", "approve", "deactivate"],
+        "spec": ["create", "read", "update", "approve"], "stp": ["create", "read", "update", "approve"],
+        "sampling_plan": ["create", "read", "update", "approve"],
+        "warehouse": ["create", "read", "update"], "location": ["create", "read", "update"],
+        "equipment": ["create", "read", "update"], "calibration": ["create", "read"],
+        "customer": ["create", "read", "update"], "master": ["export"],
+    },
+    "doc": {"document": ["create", "read"]},
+    "import": {"job": ["create", "read", "approve"]},
 }
 
 # Actions that confer GMP approval authority (used by SoD-09: admin roles must not hold them)
@@ -42,9 +57,9 @@ def effective_permissions(session: Session, user_id: int, today: date | None = N
          .join(Role, Role.id == RolePermission.role_id)
          .join(UserRole, UserRole.role_id == Role.id)
          .where(UserRole.user_id == user_id, UserRole.revoked_at.is_(None),
-                UserRole.is_disabled.is_(False), UserRole.valid_from <= today,
+                UserRole.is_disabled == sa_false(), UserRole.valid_from <= today,
                 (UserRole.valid_to.is_(None)) | (UserRole.valid_to >= today),
-                RolePermission.revoked_at.is_(None), Role.is_active.is_(True)))
+                RolePermission.revoked_at.is_(None), Role.is_active == sa_true()))
     return set(session.execute(q).scalars().all())
 
 
@@ -52,7 +67,7 @@ def active_role_codes(session: Session, user_id: int, today: date | None = None)
     today = today or date.today()
     q = (select(Role.role_code).join(UserRole, UserRole.role_id == Role.id)
          .where(UserRole.user_id == user_id, UserRole.revoked_at.is_(None),
-                UserRole.is_disabled.is_(False), UserRole.valid_from <= today,
-                (UserRole.valid_to.is_(None)) | (UserRole.valid_to >= today), Role.is_active.is_(True))
+                UserRole.is_disabled == sa_false(), UserRole.valid_from <= today,
+                (UserRole.valid_to.is_(None)) | (UserRole.valid_to >= today), Role.is_active == sa_true())
          .order_by(Role.role_code))
     return list(session.execute(q).scalars().all())

@@ -3,6 +3,14 @@ import { useAuth } from "../hooks/useAuth";
 
 const NAV: { to: string; label: string; icon: string; perm?: string }[] = [
   { to: "/", label: "Home", icon: "speedometer2" },
+  { to: "/materials", label: "Materials", icon: "box-seam", perm: "md.material.read" },
+  { to: "/vendors", label: "Vendors", icon: "truck", perm: "md.vendor.read" },
+  { to: "/quality-masters", label: "Specs, STPs & Plans", icon: "clipboard-data", perm: "md.spec.read" },
+  { to: "/locations", label: "Warehouse & Locations", icon: "grid-3x3-gap", perm: "md.location.read" },
+  { to: "/equipment", label: "Equipment", icon: "speedometer", perm: "md.equipment.read" },
+  { to: "/customers", label: "Customers", icon: "people-fill", perm: "md.customer.read" },
+  { to: "/lookups", label: "Units & Categories", icon: "tags", perm: "md.unit.read" },
+  { to: "/import", label: "Excel Import", icon: "file-earmark-arrow-up", perm: "import.job.read" },
   { to: "/users", label: "Users", icon: "people", perm: "iam.user.read" },
   { to: "/roles", label: "Roles & Permissions", icon: "shield-lock", perm: "iam.role.read" },
   { to: "/workflows", label: "Workflows", icon: "diagram-3", perm: "workflow.definition.read" },

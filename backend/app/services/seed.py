@@ -27,21 +27,39 @@ AUDITOR_PERMS = ["audit.trail.read", "audit.trail.export", "security.event.read"
                  "workflow.instance.read", "config.system.read", "config.numbering.read",
                  "training.record.read"]
 
+def _md(resources: list[str], actions: list[str]) -> list[str]:
+    return [f"md.{r}.{a}" for r in resources for a in actions]
+
+
+MD_ALL = ["unit", "material_type", "category", "vendor", "material", "spec", "stp", "sampling_plan",
+          "warehouse", "location", "equipment", "calibration", "customer"]
+MD_READ = _md(MD_ALL, ["read"]) + ["md.master.export", "doc.document.read"]
+MD_CUD = ["vendor", "material", "spec", "stp", "sampling_plan", "warehouse", "location", "equipment", "customer"]
+ADMIN_MD = _md(["unit", "material_type", "category"], ["create", "read", "update"]) + ["md.master.export"]
+PURCHASE_MD = (_md(["vendor"], ["create", "read", "update"]) + MD_READ + ["doc.document.create",
+               "import.job.create", "import.job.read"])
+QC_MD = (_md(["material", "spec", "stp", "sampling_plan", "equipment"], ["create", "read", "update"])
+         + ["md.calibration.create"] + MD_READ + ["doc.document.create", "import.job.create", "import.job.read"])
+QA_MD = (_md(MD_CUD, ["create", "read", "update"]) + _md(["calibration"], ["create"]) + MD_READ +
+         ["md.vendor.review_document", "doc.document.create", "import.job.create", "import.job.read"])
+QA_HEAD_MD = QA_MD + _md(["vendor", "material", "spec", "stp", "sampling_plan"], ["approve"]) + \
+    ["md.vendor.deactivate", "md.material.deactivate", "import.job.approve"]
+
 ROLES: dict[str, tuple[str, bool, list[str]]] = {
     # code: (name, is_admin_role, extra permissions)
-    "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS),
-    "PURCHASE_USER": ("Purchase User", False, []),
-    "PURCHASE_MANAGER": ("Purchase Manager", False, []),
-    "WAREHOUSE_USER": ("Warehouse User", False, []),
-    "QC_ANALYST": ("QC Analyst", False, []),
-    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"]),
-    "QA_OFFICER": ("QA Officer", False, QA_PERMS),
-    "QA_HEAD": ("QA Head", False, QA_PERMS),
-    "PRODUCTION_USER": ("Production User", False, []),
-    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"]),
-    "DISPATCH_USER": ("Dispatch User", False, []),
-    "MANAGEMENT": ("Management", False, ["audit.trail.read"]),
-    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS),
+    "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD),
+    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD),
+    "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"]),
+    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"])),
+    "QC_ANALYST": ("QC Analyst", False, QC_MD),
+    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD),
+    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD),
+    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD),
+    "PRODUCTION_USER": ("Production User", False, MD_READ),
+    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ),
+    "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"])),
+    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ),
+    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"]),
 }
 
 # QA Officer may not approve/verify workflow definitions; only QA Head holds approve.
@@ -57,17 +75,26 @@ SOD_RULES = [
     ("SOD-06", "conditional_release.approve", "conditional_release.request", "Requester cannot approve"),
     ("SOD-08", "qc.amendment.approve", "qc.amendment.request", "Requester cannot approve a result amendment"),
     ("SOD-12", "workflow.definition.approve", "workflow.definition.author", "Workflow author cannot approve"),
+    ("SOD-13", "vendor.approve", "vendor.author", "Vendor record author cannot approve it"),
+    ("SOD-14", "material.approve", "material.author", "Material record author cannot approve it"),
+    ("SOD-15", "spec.approve", "spec.author", "Specification author cannot approve it"),
+    ("SOD-16", "stp.approve", "stp.author", "STP author cannot approve it"),
+    ("SOD-17", "sampling_plan.approve", "sampling_plan.author", "Sampling plan author cannot approve it"),
+    ("SOD-18", "import.approve", "import.submit", "Import submitter cannot approve the import"),
+    ("SOD-19", "vendor_document.review", "vendor_document.upload", "Uploader cannot review own vendor document"),
 ]
 
 
 def seed_baseline(session: Session, *, company_name: str = "Company Name (configure)",
                   plant_code: str = "P01", plant_name: str = "Main Plant") -> Plant:
     existing = {p.perm_code: p for p in session.execute(select(Permission)).scalars()}
+    new_codes: set[str] = set()
     for code, module, resource, action in all_permission_codes():
         if code not in existing:
             p = Permission(perm_code=code, module=module, resource=resource, action=action)
             session.add(p)
             existing[code] = p
+            new_codes.add(code)
     session.flush()
 
     for code, (name, is_admin, extra) in ROLES.items():
@@ -79,6 +106,10 @@ def seed_baseline(session: Session, *, company_name: str = "Company Name (config
             grants = set(COMMON) | set(extra)
             grants -= ROLE_EXCLUDE.get(code, set())
             for g in grants:
+                session.add(RolePermission(role_id=role.id, permission_id=existing[g].id))
+        elif new_codes:  # upgrade path: grant only the *newly introduced* defaults (never undo admin changes)
+            grants = (set(COMMON) | set(extra)) - ROLE_EXCLUDE.get(code, set())
+            for g in grants & new_codes:
                 session.add(RolePermission(role_id=role.id, permission_id=existing[g].id))
 
     for sod_id, action, conflict, desc in SOD_RULES:

@@ -9,7 +9,8 @@ Web-based ERP for GMP-regulated biological/antisera manufacturing: Vendor → Pu
 |---|---|---|
 | 0 | Architecture, DB design, RBAC, workflows, validation strategy | ✅ `docs/architecture/` |
 | 1 | Platform foundation (IAM, audit trail, e-signature, numbering, status/workflow engines, company master, app shell) | ✅ this release — see `docs/phase-reports/phase-1.md` |
-| 2–10 | Master data → Purchase → Warehouse → QC/LIMS → Manufacturing → Dispatch → Quality → Reports → Validation | planned (`docs/architecture/09-development-roadmap.md`) |
+| 2 | Master data: vendor, material, versioned specs/STPs/sampling plans, locations, equipment, customers, Excel import/export | ✅ `docs/phase-reports/phase-2.md` (SQL Server-verified: `docs/validation/sqlserver-verification.md`) |
+| 3–10 | Purchase → Warehouse → QC/LIMS → Manufacturing → Dispatch → Quality → Reports → Validation | planned (`docs/architecture/09-development-roadmap.md`) |
 
 ## Layout
 ```

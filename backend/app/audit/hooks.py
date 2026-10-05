@@ -7,11 +7,23 @@ from app.audit import service
 from app.audit.context import get_context
 from app.core.errors import ImmutableRecordError, ReasonRequired
 from app.core.time import utcnow
-from app.models.base import AppendOnlyMixin, AuditedMixin, StatefulMixin
+import importlib
+
+from app.models.base import (AppendOnlyMixin, AuditedMixin, StatefulMixin, VersionChildMixin,
+                             VersionedMixin)
 
 _TECH_FIELDS = {"row_version", "updated_at", "updated_by_id", "created_at", "created_by_id"}
 REDACTED = "[REDACTED]"
 _installed = False
+_VERSION_ALLOWED_CHANGES = {"status", "effective_from", "effective_to", "approved_signature_id",
+                            "row_version", "updated_at", "updated_by_id"}
+
+
+def _parent_editable(session, obj) -> bool:
+    mod, _, cls = type(obj).__version_parent_model__.rpartition(".")
+    parent_cls = getattr(importlib.import_module(mod), cls)
+    parent = session.get(parent_cls, getattr(obj, type(obj).__version_parent_fk__))
+    return parent is not None and parent.status in parent_cls.__editable_statuses__
 
 
 def _field_changes(obj) -> list[tuple[str, object, object]]:
@@ -54,11 +66,19 @@ def _before_flush(session: Session, flush_context, instances) -> None:
     from app.workflows import state_machine as sm  # local import (avoid cycle)
 
     for obj in list(session.deleted):
+        if isinstance(obj, VersionChildMixin) and _parent_editable(session, obj):
+            service.log_event(session, module=type(obj).__audit_module__, entity=type(obj).__tablename__,
+                              record_id=obj.id, action="DELETE", field_name="*", old=_snapshot(obj))
+            continue
         if isinstance(obj, (AuditedMixin, AppendOnlyMixin)):
             raise ImmutableRecordError(
                 f"{type(obj).__tablename__}: GMP records cannot be deleted", rule_id="BR-RET-001")
 
     for obj in list(session.new):
+        if isinstance(obj, VersionChildMixin) and not _parent_editable(session, obj):
+            raise ImmutableRecordError(f"{type(obj).__tablename__}: parent version is not editable "
+                                       "(approved versions are immutable; create a new version)",
+                                       rule_id="BR-HIS-001")
         if isinstance(obj, AuditedMixin):
             if obj.created_by_id is None and ctx.user_id:
                 obj.created_by_id = ctx.user_id
@@ -70,6 +90,17 @@ def _before_flush(session: Session, flush_context, instances) -> None:
         if isinstance(obj, AppendOnlyMixin):
             raise ImmutableRecordError(f"{type(obj).__tablename__}: record is append-only",
                                        rule_id="BR-AUD-001")
+        if isinstance(obj, VersionChildMixin) and not _parent_editable(session, obj):
+            raise ImmutableRecordError(f"{type(obj).__tablename__}: parent version is not editable",
+                                       rule_id="BR-HIS-001")
+        if isinstance(obj, VersionedMixin):
+            sh = inspect(obj).attrs["status"].history
+            prior = sh.deleted[0] if sh.deleted else obj.status
+            changed = {a for a, _o, _n in _field_changes(obj)} - _VERSION_ALLOWED_CHANGES
+            if prior not in type(obj).__editable_statuses__ and changed:
+                raise ImmutableRecordError(
+                    f"{type(obj).__tablename__}: {prior} versions are immutable "
+                    f"(changed: {', '.join(sorted(changed))}); create a new version", rule_id="BR-HIS-001")
         if isinstance(obj, StatefulMixin):
             field = obj.__status_field__
             hist = inspect(obj).attrs[field].history

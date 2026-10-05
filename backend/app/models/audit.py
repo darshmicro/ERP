@@ -40,7 +40,7 @@ class AuditChainHead(Base):
     """Single row; updating it first serialises audit writers so the hash chain stays linear."""
 
     __tablename__ = "audit_chain_head"
-    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False)
     lock_counter: Mapped[int] = mapped_column(PK, default=0, nullable=False)
     last_hash: Mapped[str] = mapped_column(String(64), nullable=False, default="GENESIS")
     row_count: Mapped[int] = mapped_column(PK, default=0, nullable=False)
