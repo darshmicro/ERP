@@ -17,6 +17,10 @@ import Vendors from "./pages/Vendors";
 import QualityMasters from "./pages/QualityMasters";
 import { Locations, Equipment, Customers } from "./pages/Facilities";
 import Import from "./pages/Import";
+import { Samples, ReleaseQueue, OOSPage, ConditionalReleases, Trends } from "./pages/QC";
+import { GRNs, Inventory } from "./pages/Warehouse";
+import { BOMs, Batches, Returns, Antisera } from "./pages/Manufacturing";
+import { Dispatches, Trace } from "./pages/Dispatch";
 import VendorQualification from "./pages/VendorQualification";
 import VendorMaterials from "./pages/VendorMaterials";
 import { PurchaseRequests, PurchaseOrders } from "./pages/Purchasing";
@@ -50,6 +54,19 @@ export default function App() {
         <Route path="vendor-materials" element={<VendorMaterials />} />
         <Route path="purchase-requests" element={<PurchaseRequests />} />
         <Route path="purchase-orders" element={<PurchaseOrders />} />
+        <Route path="grn" element={<GRNs />} />
+        <Route path="inventory" element={<Inventory />} />
+        <Route path="samples" element={<Samples />} />
+        <Route path="release" element={<ReleaseQueue />} />
+        <Route path="oos" element={<OOSPage />} />
+        <Route path="conditional-release" element={<ConditionalReleases />} />
+        <Route path="trends" element={<Trends />} />
+        <Route path="dispatch" element={<Dispatches />} />
+        <Route path="trace" element={<Trace />} />
+        <Route path="boms" element={<BOMs />} />
+        <Route path="batches" element={<Batches />} />
+        <Route path="returns" element={<Returns />} />
+        <Route path="antisera" element={<Antisera />} />
         <Route path="password" element={<ChangePassword />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Route>

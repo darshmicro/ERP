@@ -33,8 +33,7 @@ def _machine(name: str, approve_perm: str) -> StateMachine:
 
 KINDS: dict[type, dict[str, Any]] = {
     Specification: {"key": "spec_no", "doc_type": "SPEC", "prefix": "spec",
-                    "machine": _machine("specification", "md.spec.approve"), "children": SpecificationParameter,
-                    "child_fk": "specification_id"},
+                    "machine": _machine("specification", "md.spec.approve"), "children": [(SpecificationParameter, "specification_id")]},
     STP: {"key": "stp_no", "doc_type": "STP", "prefix": "stp", "machine": _machine("stp", "md.stp.approve")},
     SamplingPlan: {"key": "plan_no", "doc_type": "SPLAN", "prefix": "sampling_plan",
                    "machine": _machine("sampling_plan", "md.sampling_plan.approve")},
@@ -60,6 +59,10 @@ def create_draft(session: Session, Model, data: dict, key_value: str | None = No
     session.flush()
     masters.record_author(session, obj, f"{k['prefix']}.author")
     return obj
+
+
+def _children(session: Session, C, fk: str, parent_id: int) -> list:
+    return list(session.execute(select(C).where(getattr(C, fk) == parent_id).order_by(C.seq)).scalars())
 
 
 def parameters(session: Session, spec: Specification) -> list[SpecificationParameter]:
@@ -102,7 +105,7 @@ def approve(session: Session, obj, user, password: str, reason: str) -> None:
     previous = session.execute(select(type(obj)).where(
         getattr(type(obj), k["key"]) == getattr(obj, k["key"]), type(obj).status == "APPROVED",
         type(obj).id != obj.id)).scalars().all()
-    extra = {"children": [masters.snapshot(p) for p in parameters(session, obj)]} if isinstance(obj, Specification) else None
+    extra = {"children": [masters.snapshot(c) for C, fk in k.get("children", []) for c in _children(session, C, fk, obj.id)]} if k.get("children") else None
     sig = masters.sign_and_transition(session, obj, k["machine"], "APPROVED", user, password, reason=reason,
                                 meaning="QA_APPROVED", sod_action=f"{k['prefix']}.approve", extra=extra)
     now = utcnow()
@@ -131,13 +134,11 @@ def new_version(session: Session, obj, reason: str):
     new = Model(**cols, version_no=latest + 1, status="DRAFT", supersedes_id=obj.id, change_reason=reason)
     session.add(new)
     session.flush()
-    if "children" in k:
-        C = k["children"]
-        for ch in session.execute(select(C).where(getattr(C, k["child_fk"]) == obj.id).order_by(C.seq)).scalars():
-            ccols = {a.key: getattr(ch, a.key) for a in sa_inspect(C).column_attrs
-                     if a.key not in _SKIP_COPY and a.key != k["child_fk"]}
-            session.add(C(**ccols, **{k["child_fk"]: new.id}))
-        session.flush()
+    for C, fk in k.get("children", []):
+        for ch in _children(session, C, fk, obj.id):
+            ccols = {a.key: getattr(ch, a.key) for a in sa_inspect(C).column_attrs if a.key not in _SKIP_COPY and a.key != fk}
+            session.add(C(**ccols, **{fk: new.id}))
+    session.flush()
     masters.record_author(session, new, f"{k['prefix']}.author")
     return new
 
@@ -158,3 +159,12 @@ def version_in_force(session: Session, Model, *filters, on: datetime | None = No
 
 def current_spec_for_material(session: Session, material_id: int, on: datetime | None = None):
     return version_in_force(session, Specification, Specification.material_id == material_id, on=on)
+
+
+def register_bom() -> None:
+    from app.models.manufacturing import BOMHeader, BOMLine, MBRStep
+    KINDS[BOMHeader] = {"key": "bom_no", "doc_type": "BOM", "prefix": "bom", "machine": _machine("bom_header", "md.bom.approve"),
+                        "children": [(BOMLine, "bom_id"), (MBRStep, "bom_id")]}
+
+
+register_bom()

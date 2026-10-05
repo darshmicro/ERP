@@ -1,3 +1,4 @@
+import { GlobalSearch } from "../pages/Dispatch";
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
@@ -7,6 +8,19 @@ const NAV: { to: string; label: string; icon: string; perm?: string }[] = [
   { to: "/purchase-orders", label: "Purchase Orders", icon: "receipt", perm: "po.order.read" },
   { to: "/vendor-qualification", label: "Vendor Qualification", icon: "patch-check", perm: "vq.qualification.read" },
   { to: "/vendor-materials", label: "Approved Vendors", icon: "link-45deg", perm: "vm.mapping.read" },
+  { to: "/grn", label: "Goods Receipt (GRN)", icon: "box-arrow-in-down", perm: "grn.receipt.read" },
+  { to: "/inventory", label: "Inventory & Lots", icon: "boxes", perm: "inventory.lot.read" },
+  { to: "/samples", label: "Samples & QC Tests", icon: "eyedropper", perm: "qc.sample.read" },
+  { to: "/release", label: "Release (QC/QA)", icon: "patch-check-fill", perm: "inventory.lot.read" },
+  { to: "/oos", label: "OOS / OOT", icon: "exclamation-triangle", perm: "oos.investigation.read" },
+  { to: "/conditional-release", label: "Conditional Release", icon: "shield-exclamation", perm: "conditional_release.request.read" },
+  { to: "/trends", label: "QC Trends / Cpk", icon: "graph-up", perm: "stats.trend.read" },
+  { to: "/boms", label: "BOM", icon: "list-check", perm: "md.bom.read" },
+  { to: "/batches", label: "Manufacturing Batches", icon: "gear-wide-connected", perm: "mfg.batch.read" },
+  { to: "/returns", label: "Material Returns", icon: "arrow-return-left", perm: "mfg.return.read" },
+  { to: "/antisera", label: "Antisera (animals/pools)", icon: "droplet-half", perm: "antisera.animal.read" },
+  { to: "/dispatch", label: "Dispatch", icon: "truck-flatbed", perm: "dispatch.order.read" },
+  { to: "/trace", label: "Traceability", icon: "diagram-3-fill", perm: "trace.record.read" },
   { to: "/materials", label: "Materials", icon: "box-seam", perm: "md.material.read" },
   { to: "/vendors", label: "Vendors", icon: "truck", perm: "md.vendor.read" },
   { to: "/quality-masters", label: "Specs, STPs & Plans", icon: "clipboard-data", perm: "md.spec.read" },
@@ -45,6 +59,7 @@ export default function Layout() {
       <div className="flex-grow-1 d-flex flex-column">
         <header className="navbar bg-light border-bottom px-3 justify-content-between">
           <span className="text-muted small">{me?.roles.join(", ")}</span>
+          <GlobalSearch />
           <div className="d-flex align-items-center gap-3">
             <NavLink to="/password" className="small">Change password</NavLink>
             <span className="small"><i className="bi bi-person-circle me-1" />{me?.user.full_name}</span>

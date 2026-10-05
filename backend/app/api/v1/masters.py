@@ -40,7 +40,7 @@ router.include_router(crud_router(
     fields=[("customer_code", S, False), ("name", S, True), ("address", S, False), ("state", S, False),
             ("gst_no", S, False), ("licence_no", S, False), ("licence_expiry", date, False),
             ("contact_person", S, False), ("email", S, False), ("phone", S, False),
-            ("is_authorised", bool, False), ("is_active", bool, False)]))
+            ("is_authorised", bool, False), ("is_active", bool, False), ("min_remaining_shelf_life_days", int, False)]))
 
 
 def _wh_plant(s: Session, data: dict, existing) -> None:
@@ -333,6 +333,9 @@ def _material_query(request: Request, q: str | None):
     for f in ("master_status", "type_id", "category_id", "gmp_criticality"):
         if request.query_params.get(f):
             stmt = stmt.where(getattr(Material, f) == request.query_params[f])
+    if request.query_params.get("type_code"):
+        codes = [c.strip() for c in request.query_params["type_code"].split(",") if c.strip()]
+        stmt = stmt.where(Material.type_id.in_(select(MaterialType.id).where(MaterialType.code.in_(codes))))
     return stmt
 
 

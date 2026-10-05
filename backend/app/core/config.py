@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     password_min_length: int = 12
     password_history: int = 12
     password_max_age_days: int = 90
+    argon2_time_cost: int = 3
+    argon2_memory_kib: int = 65536
+    argon2_parallelism: int = 4
     lockout_threshold: int = 5
     lockout_minutes: int = 15
     login_rate_limit_per_minute: int = 20

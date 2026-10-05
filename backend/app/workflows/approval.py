@@ -141,6 +141,12 @@ def act(session: Session, inst: WorkflowInstance, user: User, decision: str, *, 
         WorkflowTransaction.actor_id == user.id, WorkflowTransaction.decision == "APPROVE")).scalar()
     if prior:
         raise BusinessRuleError("You have already approved this step.", rule_id="WF-003")
+    if decision == "APPROVE" and inst.process_code.endswith(".release"):
+        other = session.execute(select(func.count()).select_from(WorkflowTransaction).where(
+            WorkflowTransaction.instance_id == inst.id, WorkflowTransaction.actor_id == user.id,
+            WorkflowTransaction.decision == "APPROVE")).scalar()
+        if other:   # SOD-03: one person cannot be both the QC reviewer and the QA releaser
+            raise BusinessRuleError("SOD-03: you already approved an earlier step of this release; a different person must release.", rule_id="SOD-03")
     sig_id = None
     if step.esig_required:
         meaning = step.meaning if decision == "APPROVE" else "REJECTED_BY"

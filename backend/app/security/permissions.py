@@ -41,6 +41,25 @@ CATALOGUE: dict[str, dict[str, list[str]]] = {
     "pr": {"request": ["create", "read", "update", "submit", "approve", "cancel", "export"]},
     "po": {"order": ["create", "read", "update", "submit", "approve", "cancel", "export"]},
 }
+CATALOGUE["grn"] = {"receipt": ["create", "read", "update", "submit", "verify", "reject", "cancel", "exception", "export"]}
+CATALOGUE["inventory"] = {"stock": ["read", "transfer", "export"], "lot": ["read"], "ledger": ["read", "verify"]}
+CATALOGUE["qa"] = {"hold": ["place", "read", "release"], "lot": ["reject"]}
+CATALOGUE["label"] = {"lot": ["print"], "location": ["print"]}
+CATALOGUE["warehouse"] = {"temperature": ["create", "read"], "destruction": ["create", "read", "approve"], "checklist": ["read", "update"]}
+CATALOGUE["qc"] = {"sample": ["create", "read", "dispose"], "test": ["assign", "read", "start", "enter", "override_calibration"],
+                   "result": ["amend_request", "amend_approve"], "release": ["submit", "approve"]}
+CATALOGUE["oos"] = {"investigation": ["create", "read", "update", "decide"]}
+CATALOGUE["oot"] = {"event": ["read", "review"]}
+CATALOGUE["coa"] = {"document": ["read", "generate"]}
+CATALOGUE["stats"] = {"trend": ["read"]}
+CATALOGUE["conditional_release"] = {"request": ["create", "read", "approve"]}
+CATALOGUE["md"]["bom"] = ["create", "read", "update", "approve"]
+CATALOGUE["mfg"] = {"batch": ["create", "read", "update", "override_number", "cancel", "release_check"], "issue": ["create", "read", "additional"],
+                    "return": ["request", "accept", "read"], "step": ["execute", "verify"], "ipc": ["create", "read"], "consumption": ["record"],
+                    "equipment": ["use"], "reconciliation": ["read", "approve", "qa_approve"], "output": ["create"]}
+CATALOGUE["antisera"] = {"animal": ["create", "read", "update"], "bleed": ["create", "read"], "pool": ["create", "read"]}
+CATALOGUE["dispatch"] = {"order": ["create", "read", "update", "validate", "approve", "dispatch", "deliver", "cancel", "export"]}
+CATALOGUE["trace"] = {"record": ["read"]}
 CATALOGUE["org"]["department"] = ["read", "create", "update"]
 CATALOGUE["config"]["job"] = ["run"]
 

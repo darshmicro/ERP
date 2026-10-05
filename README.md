@@ -11,7 +11,11 @@ Web-based ERP for GMP-regulated biological/antisera manufacturing: Vendor → Pu
 | 1 | Platform foundation (IAM, audit trail, e-signature, numbering, status/workflow engines, company master, app shell) | ✅ this release — see `docs/phase-reports/phase-1.md` |
 | 2 | Master data: vendor, material, versioned specs/STPs/sampling plans, locations, equipment, customers, Excel import/export | ✅ `docs/phase-reports/phase-2.md` (SQL Server-verified: `docs/validation/sqlserver-verification.md`) |
 | 3 | Purchase: vendor qualification, vendor–material approval, PR, PO with expiry/approval gates | ✅ `docs/phase-reports/phase-3.md` |
-| 4–10 | Warehouse → QC/LIMS → Manufacturing → Dispatch → Quality → Reports → Validation | planned (`docs/architecture/09-development-roadmap.md`) |
+| 4 | Warehouse: GRN + checklist, lots/containers, quarantine, inventory ledger, FEFO/FIFO, holds, labels, temperature, destruction | ✅ `docs/phase-reports/phase-4.md` |
+| 5 | QC/LIMS: sampling, tests/results, amendments, OOS/OOT, release chain, CoA, conditional release, statistics | ✅ `docs/phase-reports/phase-5.md` |
+| 6 / 6b | Manufacturing: BOM, batches, issue/return, IPC, reconciliation, output; antisera donors/bleeds/pools | ✅ `docs/phase-reports/phase-6.md` |
+| 7 | FG dispatch with release gates, traceability graph (forward/backward), global search, QR resolve | ✅ `docs/phase-reports/phase-7.md` |
+| 8–10 | Quality system → Reports/dashboards → Validation & hardening | planned (`docs/architecture/09-development-roadmap.md`) |
 
 ## Layout
 ```

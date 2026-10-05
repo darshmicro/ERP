@@ -16,3 +16,12 @@ from app.models.spec import STP, SamplingPlan, Specification, SpecificationParam
 from app.models.importing import ImportJob, ImportRow  # noqa: E402,F401
 from app.models.purchase import (PurchaseOrder, PurchaseOrderLine, PurchaseRequest, PurchaseRequestLine,  # noqa: E402,F401
                                  VendorMaterial, VendorQualification)
+from app.models.warehouse import (GRN, ChecklistItem, DestructionRecord, GRNChecklist, GRNLine, InventoryBalance,  # noqa: E402,F401
+                                  InventoryTransaction, MaterialBatch, MaterialContainer, MaterialLabel, QualityHold,
+                                  StorageTemperatureLog)
+from app.models.qc import (COA, ConditionalRelease, OOSInvestigation, OOTEvent, QCResult, QCResultAmendment,  # noqa: E402,F401
+                           QCTest, Sample)
+from app.models.manufacturing import (Animal, BatchEquipmentUse, BatchMaterial, BatchReconciliation, BatchStepExecution,  # noqa: E402,F401
+                                      BleedRecord, BOMHeader, BOMLine, ImmunisationRecord, IPCResult, ManufacturingBatch,
+                                      MaterialIssue, MaterialIssueIndent, MaterialReturn, MBRStep, PlasmaPool)
+from app.models.dispatch import Dispatch, DispatchLine  # noqa: E402,F401

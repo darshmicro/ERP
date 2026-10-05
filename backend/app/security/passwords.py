@@ -5,28 +5,36 @@ from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatc
 
 from app.core.config import get_settings
 
-_ph = PasswordHasher()  # Argon2id defaults
+_ph_cache: dict = {}
+
+
+def _hasher() -> PasswordHasher:
+    # Argon2id; cost parameters come from settings (tests lower them for speed; production keeps defaults).
+    if "ph" not in _ph_cache:
+        cfg = get_settings()
+        _ph_cache["ph"] = PasswordHasher(time_cost=cfg.argon2_time_cost, memory_cost=cfg.argon2_memory_kib,
+                                         parallelism=cfg.argon2_parallelism)
+    return _ph_cache["ph"]
 
 
 def hash_password(password: str) -> str:
-    return _ph.hash(password)
+    return _hasher().hash(password)
 
 
 def verify_password(stored_hash: str | None, password: str) -> bool:
     if not stored_hash or not password:
         return False
     try:
-        return _ph.verify(stored_hash, password)
+        return _hasher().verify(stored_hash, password)
     except (VerifyMismatchError, VerificationError, InvalidHashError):
         return False
 
 
-_DUMMY = hash_password("dummy-password-for-timing")
-
-
 def dummy_verify(password: str) -> None:
     """Constant-ish work for unknown users (reduces user-enumeration timing signal)."""
-    verify_password(_DUMMY, password)
+    if "dummy" not in _ph_cache:
+        _ph_cache["dummy"] = hash_password("dummy-password-for-timing")
+    verify_password(_ph_cache["dummy"], password)
 
 
 def policy_errors(password: str, username: str = "", full_name: str = "") -> list[str]:

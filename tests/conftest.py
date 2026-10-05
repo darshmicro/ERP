@@ -4,6 +4,9 @@ import tempfile
 os.environ.setdefault("MERP_SECRET_KEY", "test-secret-key-0123456789")
 os.environ.setdefault("MERP_AUDIT_HMAC_KEY", "test-audit-hmac-key-0123456789")
 os.environ["MERP_COOKIE_SECURE"] = "false"
+os.environ.setdefault("MERP_ARGON2_TIME_COST", "1")
+os.environ.setdefault("MERP_ARGON2_MEMORY_KIB", "1024")
+os.environ.setdefault("MERP_ARGON2_PARALLELISM", "1")
 os.environ["MERP_ENVIRONMENT"] = "test"
 os.environ["MERP_FRONTEND_DIST"] = tempfile.mkdtemp(prefix="merp-nodist-")  # tests never depend on a built SPA
 os.environ["MERP_LOG_DIR"] = tempfile.mkdtemp(prefix="merp-logs-")

@@ -171,6 +171,7 @@ class Customer(AuditedMixin, Base):
     phone: Mapped[str | None] = mapped_column(String(40))
     is_authorised: Mapped[bool] = mapped_column(Boolean, default=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    min_remaining_shelf_life_days: Mapped[int | None] = mapped_column(Integer)      # BR-DSP-002 customer policy
 
 
 class Warehouse(AuditedMixin, Base):

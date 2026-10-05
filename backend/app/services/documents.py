@@ -57,3 +57,13 @@ def read(session: Session, doc: Document) -> bytes:
         raise ValidationFailed("Stored document failed its integrity (SHA-256) check", code="DOC_INTEGRITY")
     audit.log_event(session, module="document", entity="document", record_id=doc.id, action="DOWNLOAD")
     return data
+
+
+def read_raw(doc: Document) -> bytes:
+    """Integrity-checked read without an audit event (internal use, e.g. embedding the company logo)."""
+    cfg = get_settings()
+    with open(os.path.join(cfg.file_storage_path, doc.storage_key), "rb") as fh:
+        data = fh.read()
+    if hashlib.sha256(data).hexdigest() != doc.sha256:
+        raise ValidationFailed("Stored document failed its integrity (SHA-256) check", code="DOC_INTEGRITY")
+    return data

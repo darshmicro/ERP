@@ -41,18 +41,39 @@ def dashboard(p: Principal = Depends(require("dashboard.view.read")), s: Session
     open_pr = s.execute(select(func.count()).select_from(PurchaseRequest).where(
         PurchaseRequest.status.in_(("SUBMITTED", "DEPARTMENT_APPROVED", "APPROVED")))).scalar()
 
-    def later(label, phase):
-        return {"label": label, "value": None, "available": False, "phase": phase}
+    from app.models.warehouse import InventoryBalance, MaterialBatch
+    quarantine = s.execute(select(func.count(func.distinct(MaterialBatch.id))).select_from(MaterialBatch).join(
+        InventoryBalance, InventoryBalance.material_batch_id == MaterialBatch.id).where(
+        MaterialBatch.disposition.in_(("QUARANTINE", "QC_TESTING", "QC_APPROVED", "QA_REVIEW")), InventoryBalance.qty_on_hand > 0)).scalar()
+    near_exp = s.execute(select(func.count()).select_from(MaterialBatch).where(
+        MaterialBatch.disposition == "APPROVED", MaterialBatch.expiry_date <= date.today() + timedelta(days=90))).scalar()
+
+    from app.models.dispatch import Dispatch
+    from app.models.manufacturing import ManufacturingBatch
+    from app.models.master import Material, MaterialType
+
+    def lots_in(*disp):
+        return s.execute(select(func.count()).select_from(MaterialBatch).where(MaterialBatch.disposition.in_(disp))).scalar()
+    active_batches = s.execute(select(func.count()).select_from(ManufacturingBatch).where(
+        ManufacturingBatch.status.in_(("CREATED", "MATERIAL_ISSUED", "IN_PROCESS", "PRODUCTION_COMPLETE", "RECONCILED", "QC_QA")))).scalar()
+    fg_avail = s.execute(select(func.count(func.distinct(MaterialBatch.id))).select_from(MaterialBatch).join(
+        InventoryBalance, InventoryBalance.material_batch_id == MaterialBatch.id).join(Material, Material.id == MaterialBatch.material_id).join(
+        MaterialType, MaterialType.id == Material.type_id).where(MaterialType.code == "FG", MaterialBatch.disposition == "APPROVED",
+                                                                 InventoryBalance.qty_on_hand > 0)).scalar()
+    disp_pending = s.execute(select(func.count()).select_from(Dispatch).where(Dispatch.status.in_(("DRAFT", "VALIDATED", "APPROVED")))).scalar()
+
+    def card(label, value):
+        return {"label": label, "value": value, "available": True}
 
     return {"cards": {
         "pending_approvals": {"label": "Pending Approvals", "value": pending, "available": True},
-        "quarantine_materials": later("Quarantine Materials", 4),
-        "qc_pending": later("QC Pending", 5), "qa_pending": later("QA Pending", 5),
+        "quarantine_materials": {"label": "Quarantine Lots", "value": quarantine, "available": True},
+        "qc_pending": card("QC Pending (lots)", lots_in("QUARANTINE", "QC_TESTING")), "qa_pending": card("QA Pending (lots)", lots_in("QC_APPROVED", "QA_REVIEW")),
         "vendor_qualification_due": {"label": "Vendor Qualification Due (60 d)", "value": vq_due, "available": True},
-        "near_expiry": later("Near Expiry", 4), "open_purchase_orders": {"label": "Open Purchase Orders", "value": open_po, "available": True},
+        "near_expiry": {"label": "Near Expiry (90 d)", "value": near_exp, "available": True}, "open_purchase_orders": {"label": "Open Purchase Orders", "value": open_po, "available": True},
         "open_purchase_requests": {"label": "Open Purchase Requests", "value": open_pr, "available": True},
-        "active_production_batches": later("Active Production Batches", 6),
-        "fg_available": later("FG Available", 7), "dispatch_pending": later("Dispatch Pending", 7)},
+        "active_production_batches": card("Active Production Batches", active_batches),
+        "fg_available": card("FG Batches Available", fg_avail), "dispatch_pending": card("Dispatch Pending", disp_pending)},
         "unread_notifications": unread}
 
 

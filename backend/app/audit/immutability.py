@@ -7,7 +7,8 @@ from sqlalchemy import text
 from sqlalchemy.engine import Connection, Engine
 
 APPEND_ONLY_TABLES = ("audit_trail", "e_signature", "security_event", "gmp_status_history",
-                      "record_action", "workflow_transaction")
+                      "record_action", "workflow_transaction", "inventory_transaction", "material_label",
+                      "storage_temperature_log", "coa", "material_issue", "ipc_result", "immunisation_record")
 MSG = "Append-only GMP record: UPDATE/DELETE is not permitted"
 
 
@@ -34,11 +35,11 @@ def trigger_statements(dialect: str, tables=APPEND_ONLY_TABLES) -> list[str]:
     return stmts
 
 
-def install_triggers(bind: Engine | Connection) -> None:
+def install_triggers(bind: Engine | Connection, tables=APPEND_ONLY_TABLES) -> None:
     dialect = bind.dialect.name
     conn_ctx = bind.begin() if isinstance(bind, Engine) else _Passthrough(bind)
     with conn_ctx as conn:
-        for stmt in trigger_statements(dialect):
+        for stmt in trigger_statements(dialect, tables):
             conn.execute(text(stmt))
 
 
@@ -65,6 +66,6 @@ def drop_statements(dialect: str, tables=APPEND_ONLY_TABLES) -> list[str]:
     return out
 
 
-def drop_triggers(bind) -> None:
-    for stmt in drop_statements(bind.dialect.name):
+def drop_triggers(bind, tables=APPEND_ONLY_TABLES) -> None:
+    for stmt in drop_statements(bind.dialect.name, tables):
         bind.execute(text(stmt))

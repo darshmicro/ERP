@@ -51,4 +51,4 @@ def test_dashboard_cards(client):
     login(client, "mgr")
     d = client.get("/api/v1/dashboard/summary").json()
     assert d["cards"]["pending_approvals"]["available"] is True
-    assert d["cards"]["quarantine_materials"]["available"] is False
+    assert d["cards"]["fg_available"] == {"label": "FG Batches Available", "value": 0, "available": True}

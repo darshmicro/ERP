@@ -56,22 +56,61 @@ QA_P3 = ["vq.qualification.create", "vq.qualification.read", "vq.qualification.u
 QA_HEAD_P3 = QA_P3 + ["vq.qualification.approve", "vq.qualification.suspend", "vq.qualification.disqualify",
                       "vm.mapping.approve", "vm.mapping.withdraw"]
 
+WH_USER_P4 = ["grn.receipt.create", "grn.receipt.read", "grn.receipt.update", "grn.receipt.submit", "grn.receipt.verify",
+              "grn.receipt.cancel", "grn.receipt.export", "inventory.stock.read", "inventory.stock.transfer", "inventory.stock.export",
+              "inventory.lot.read", "inventory.ledger.read", "label.lot.print", "label.location.print", "warehouse.temperature.create",
+              "warehouse.temperature.read", "warehouse.destruction.create", "warehouse.destruction.read", "qa.hold.read", "warehouse.checklist.read"]
+INV_READ_P4 = ["inventory.stock.read", "inventory.lot.read", "inventory.ledger.read", "qa.hold.read", "grn.receipt.read",
+               "warehouse.temperature.read", "warehouse.destruction.read", "inventory.stock.export", "grn.receipt.export"]
+QC_P4 = ["inventory.stock.read", "inventory.lot.read", "qa.hold.read", "label.lot.print", "grn.receipt.read"]
+QA_P4 = INV_READ_P4 + ["qa.hold.place", "label.lot.print", "grn.receipt.reject", "warehouse.checklist.read"]
+QA_HEAD_P4 = QA_P4 + ["qa.hold.release", "qa.lot.reject", "grn.receipt.exception", "warehouse.destruction.approve",
+                      "inventory.ledger.verify", "warehouse.checklist.update"]
+
+QC_ANALYST_P5 = ["qc.sample.create", "qc.sample.read", "qc.test.read", "qc.test.start", "qc.test.enter", "qc.result.amend_request",
+                 "qc.release.submit", "oos.investigation.create", "oos.investigation.read", "oos.investigation.update", "oot.event.read",
+                 "coa.document.read", "stats.trend.read", "label.lot.print", "conditional_release.request.read"]
+QC_HEAD_P5 = QC_ANALYST_P5 + ["qc.test.assign", "qc.release.approve", "qc.result.amend_approve", "oot.event.review", "coa.document.generate"]
+QA_P5 = ["qc.sample.read", "qc.test.read", "qc.release.approve", "oos.investigation.read", "oos.investigation.update", "oot.event.read",
+         "oot.event.review", "coa.document.read", "stats.trend.read", "conditional_release.request.create", "conditional_release.request.read"]
+QA_HEAD_P5 = QA_P5 + ["oos.investigation.decide", "conditional_release.request.approve", "qc.test.override_calibration", "coa.document.generate",
+                      "qc.sample.dispose"]
+READ_P5 = ["qc.sample.read", "qc.test.read", "oos.investigation.read", "oot.event.read", "coa.document.read", "stats.trend.read",
+           "conditional_release.request.read"]
+
+PROD_P6 = ["md.bom.create", "md.bom.read", "md.bom.update", "mfg.batch.create", "mfg.batch.read", "mfg.batch.update", "mfg.issue.read",
+           "mfg.return.request", "mfg.return.read", "mfg.step.execute", "mfg.ipc.create", "mfg.ipc.read", "mfg.consumption.record",
+           "mfg.equipment.use", "mfg.reconciliation.read", "mfg.output.create", "antisera.animal.create", "antisera.animal.read",
+           "antisera.animal.update", "antisera.bleed.create", "antisera.bleed.read", "antisera.pool.create", "antisera.pool.read"]
+PROD_MGR_P6 = PROD_P6 + ["mfg.step.verify", "mfg.reconciliation.approve", "mfg.batch.cancel", "mfg.issue.additional"]
+WH_P6 = ["mfg.batch.read", "mfg.issue.create", "mfg.issue.read", "mfg.return.accept", "mfg.return.read", "md.bom.read"]
+QA_P6 = ["md.bom.read", "mfg.batch.read", "mfg.issue.read", "mfg.return.read", "mfg.ipc.read", "mfg.reconciliation.read", "mfg.batch.release_check",
+         "antisera.animal.read", "antisera.bleed.read", "antisera.pool.read"]
+QA_HEAD_P6 = QA_P6 + ["md.bom.approve", "mfg.reconciliation.qa_approve", "mfg.batch.override_number"]
+READ_P6 = ["md.bom.read", "mfg.batch.read", "mfg.issue.read", "mfg.return.read", "mfg.ipc.read", "mfg.reconciliation.read",
+           "antisera.animal.read", "antisera.bleed.read", "antisera.pool.read"]
+
+DISP_P7 = ["dispatch.order.create", "dispatch.order.read", "dispatch.order.update", "dispatch.order.validate", "dispatch.order.dispatch", "dispatch.order.deliver",
+           "dispatch.order.cancel", "dispatch.order.export", "inventory.stock.read", "inventory.lot.read", "mfg.batch.read", "coa.document.read", "trace.record.read"]
+QA_P7 = ["dispatch.order.read", "dispatch.order.approve", "dispatch.order.export", "trace.record.read", "coa.document.read"]
+READ_P7 = ["dispatch.order.read", "trace.record.read"]
+
 ROLES: dict[str, tuple[str, bool, list[str]]] = {
     # code: (name, is_admin_role, extra permissions)
     "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD + ["org.department.read", "org.department.create", "org.department.update", "config.job.run"]),
-    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD + PURCHASE_USER_P3),
+    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD + PURCHASE_USER_P3 + ["grn.receipt.read"]),
     "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + PURCHASE_MGR_P3 + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"]),
-    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"]) + PURCHASE_REQ),
-    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ),
-    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ),
-    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ),
-    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ),
-    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ),
-    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ + PURCHASE_REQ),
+    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"]) + PURCHASE_REQ + WH_USER_P4 + WH_P6),
+    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ + QC_P4 + QC_ANALYST_P5 + READ_P6 + READ_P7),
+    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ + QC_P4 + QC_HEAD_P5 + READ_P6 + READ_P7),
+    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ + QA_P4 + QA_P5 + QA_P6 + QA_P7),
+    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ + QA_HEAD_P4 + QA_HEAD_P5 + QA_HEAD_P6 + QA_P7),
+    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_P6),
+    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_MGR_P6),
     "DEPARTMENT_HEAD": ("Department Head", False, ["pr.request.read", "pr.request.approve", "pr.request.create", "pr.request.update", "pr.request.submit", "pr.request.cancel"] + MD_READ),
-    "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"])),
-    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ),
-    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ),
+    "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"]) + DISP_P7),
+    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7),
+    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7),
 }
 
 # QA Officer may not approve/verify workflow definitions; only QA Head holds approve.
@@ -95,6 +134,15 @@ SOD_RULES = [
     ("SOD-18", "import.approve", "import.submit", "Import submitter cannot approve the import"),
     ("SOD-19", "vendor_document.review", "vendor_document.upload", "Uploader cannot review own vendor document"),
     ("SOD-20", "vendor_material.approve", "vendor_material.author", "Mapping author cannot approve it"),
+    ("SOD-24", "material.release.approve", "qc.result.enter", "Analyst cannot review/release a lot they tested"),
+    ("SOD-25", "bom.approve", "bom.author", "BOM author cannot approve it"),
+    ("SOD-26", "mfg.return.accept", "mfg.return.request", "Return requester cannot accept it"),
+    ("SOD-27", "mfg.step.verify", "mfg.step.perform", "A second person verifies critical steps"),
+    ("SOD-28", "mfg.reconciliation.qa_approve", "mfg.reconciliation.production_approve", "QA approval of reconciliation by a different person"),
+    ("SOD-29", "dispatch.order.approve", "dispatch.order.create", "Dispatch creator cannot approve it"),
+    ("SOD-30", "dispatch.order.dispatch", "dispatch.order.approve", "Approver cannot also execute the dispatch"),
+    ("SOD-22", "grn.receipt.verify", "grn.receipt.create", "GRN must be verified by a second person"),
+    ("SOD-23", "warehouse.destruction.approve", "warehouse.destruction.request", "Destruction requester cannot approve"),
     ("SOD-21", "vendor_qualification.approve", "vendor_qualification.author", "Qualification author cannot approve it"),
 ]
 
@@ -143,6 +191,8 @@ def seed_baseline(session: Session, *, company_name: str = "Company Name (config
         session.add(plant)
         session.flush()
     seed_workflows(session)
+    from app.services import grn as grn_service
+    grn_service.seed_checklist(session)
     numbering.seed_registry(session, plant.id)
     config_service.seed_defaults(session)
     if session.get(AuditChainHead, 1) is None:
@@ -154,6 +204,14 @@ BASELINE_WORKFLOWS = {
     "pr.request": ("Purchase request approval", [
         {"seq": 1, "name": "Department approval", "role_code": "DEPARTMENT_HEAD", "esig_required": False, "meaning": "REVIEWED_BY", "sla_hours": 48},
         {"seq": 2, "name": "Purchase review", "role_code": "PURCHASE_MANAGER", "esig_required": True, "meaning": "APPROVED_BY", "sla_hours": 48}]),
+    "material.release": ("Material release (QC to QA)", [
+        {"seq": 1, "name": "QC Head review", "role_code": "QC_HEAD", "esig_required": True, "meaning": "REVIEWED_BY", "sla_hours": 48},
+        {"seq": 2, "name": "QA Officer verification", "role_code": "QA_OFFICER", "esig_required": True, "meaning": "VERIFIED_BY", "sla_hours": 48},
+        {"seq": 3, "name": "QA Head release", "role_code": "QA_HEAD", "esig_required": True, "meaning": "QA_RELEASED", "sla_hours": 48}]),
+    "fg.release": ("Finished goods release (QC to QA)", [
+        {"seq": 1, "name": "QC Head review", "role_code": "QC_HEAD", "esig_required": True, "meaning": "REVIEWED_BY", "sla_hours": 48},
+        {"seq": 2, "name": "QA Officer verification", "role_code": "QA_OFFICER", "esig_required": True, "meaning": "VERIFIED_BY", "sla_hours": 48},
+        {"seq": 3, "name": "QA Head release", "role_code": "QA_HEAD", "esig_required": True, "meaning": "QA_RELEASED", "sla_hours": 48}]),
     "po.order": ("Purchase order approval", [
         {"seq": 1, "name": "Purchase Manager approval", "role_code": "PURCHASE_MANAGER", "esig_required": True, "meaning": "APPROVED_BY", "sla_hours": 24}]),
 }
