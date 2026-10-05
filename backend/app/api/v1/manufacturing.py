@@ -492,7 +492,7 @@ def approve_recon(bid: int, body: SignedAction, p: Principal = Depends(require("
 
 
 class QAReconIn(SignedAction):
-    deviation_ref: str = Field(min_length=2)
+    deviation_ref: str | None = None
     justification: str = Field(min_length=5)
 
 

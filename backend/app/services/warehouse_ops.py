@@ -33,6 +33,10 @@ def log_temperature(session: Session, loc: Location, reading: Decimal, user_id: 
                                 f"Temperature excursion at {loc.location_code}: {r} °C (range {loc.temp_min}–{loc.temp_max})",
                                 source="TEMPERATURE", ref=f"LOG{row.id}", user_id=user_id)
             held.append(h.hold_no)
+            from app.services import quality_system
+            quality_system.auto_deviation(session, source="TEMPERATURE", title=f"Temperature excursion at {loc.location_code}",
+                                          description=f"{r} °C recorded (range {loc.temp_min}–{loc.temp_max}); lot {lot.lot_no} placed on hold.",
+                                          entity_type="MATERIAL_BATCH", record_id=lot.id, user_id=user_id)
         notifications.notify_roles(session, ["QA_OFFICER", "QA_HEAD", "WAREHOUSE_USER"], category="TEMPERATURE",
                                    title=f"Temperature excursion at {loc.location_code}: {r} °C",
                                    body="Lots in this location were placed on quality hold. Raise a deviation.",

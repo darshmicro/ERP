@@ -18,6 +18,11 @@ DEFAULTS = {
     "po.required_docs.CRITICAL": ("GMP_CERTIFICATE,MANUFACTURING_LICENCE,QUALITY_AGREEMENT,COA_SAMPLE", "Vendor documents that must be approved and unexpired (critical vendors)"),
     "po.required_docs.HIGH": ("GMP_CERTIFICATE,MANUFACTURING_LICENCE", "Required vendor documents (high risk)"),
     "po.required_docs.MEDIUM": ("MANUFACTURING_LICENCE", "Required vendor documents (medium risk)"),
+    "cc.required_for_master_changes": ("false", "New versions of controlled masters need an approved change control (BR-CC-001)"),
+    "risk.rpn_high": ("200", "FMEA RPN at or above which a risk is HIGH"),
+    "risk.rpn_medium": ("100", "FMEA RPN at or above which a risk is MEDIUM"),
+    "backup.max_age_hours": ("26", "Alert when the newest successful backup record is older than this (hours)"),
+    "backup.restore_test_days": ("180", "Alert when the last restore test is older than this (days)"),
     "recon.tolerance_pct": ("0.5", "Batch reconciliation tolerance % (unaccounted / issued)"),
     "po.required_docs.LOW": ("", "Required vendor documents (low risk)"),
 }

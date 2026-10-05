@@ -131,4 +131,5 @@ def require(*codes: str) -> Callable[..., Principal]:
             raise PermissionDenied("You are not authorised to perform this action.")
         return p
 
+    dep.required_permissions = tuple(codes)       # introspected by the generated access-matrix test
     return dep

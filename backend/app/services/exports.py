@@ -38,7 +38,18 @@ def build_xlsx(title: str, filters: dict[str, Any], columns: Sequence[tuple[str,
     return buf.getvalue()
 
 
+_FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
+
+
+def safe_text(v: Any) -> Any:
+    """Neutralise spreadsheet formula injection: text beginning with = + - @ is prefixed with an apostrophe so Excel shows it as text."""
+    if isinstance(v, str) and v.startswith(_FORMULA_START):
+        return "'" + v
+    return v
+
+
 def _cell(v: Any) -> Any:
+    v = safe_text(v)
     if isinstance(v, datetime) and v.tzinfo:
         return v.astimezone(timezone.utc).replace(tzinfo=None)
     if isinstance(v, bool):

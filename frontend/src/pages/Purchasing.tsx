@@ -3,6 +3,7 @@ import { DataList, useLookup } from "../components/DataList";
 import { Alert, Modal, PageHeader, ReasonDialog, StatusBadge, fmt } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { api, errText } from "../services/api";
+import { PrintButton } from "./Reports";
 
 function Chain({ wf }: { wf: any }) {
   if (!wf) return null;
@@ -124,6 +125,7 @@ function PODetail({ id, onClose }: { id: number; onClose: () => void }) {
   const run = async (path: string) => { try { await api(`/purchase-orders/${id}/${path}`, { method: "POST" }); setErr(""); load(); } catch (e) { setErr(errText(e)); } };
   return (<Modal title={`${d.po_no} — ${d.vendor_name}`} onClose={onClose}>
     <Alert>{err}</Alert>
+    {["APPROVED", "PARTIALLY_RECEIVED", "CLOSED"].includes(d.status) && <div className="mb-2"><PrintButton path={`/purchase-orders/${id}/pdf`} label="Purchase order (PDF)" /></div>}
     <div className="mb-2"><StatusBadge status={d.status} /> {d.po_date} · {d.currency} <b>{d.total?.toLocaleString()}</b>
       {d.vendor_qualification && <span className="ms-2 small">Vendor qualification v{d.vendor_qualification.version_no} <StatusBadge status={d.vendor_qualification.status} /> due {d.vendor_qualification.due}</span>}</div>
     <table className="table table-sm small"><thead><tr><th>#</th><th>Material</th><th>Qty</th><th>Rate</th><th>Tax%</th><th>Total</th><th>Spec / mapping</th></tr></thead>

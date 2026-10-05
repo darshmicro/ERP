@@ -61,8 +61,11 @@ def make_engine(url: str) -> Engine:
             kwargs["poolclass"] = StaticPool
     else:
         kwargs["pool_pre_ping"] = True
-        kwargs["pool_size"] = 10
-        kwargs["max_overflow"] = 20
+        from app.core.config import get_settings
+        cfg = get_settings()
+        kwargs["pool_size"] = cfg.db_pool_size
+        kwargs["max_overflow"] = cfg.db_max_overflow
+        kwargs["pool_timeout"] = cfg.db_pool_timeout
     engine = create_engine(url, **kwargs)
     if url.startswith("sqlite"):
 

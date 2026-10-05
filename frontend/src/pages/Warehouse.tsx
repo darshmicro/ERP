@@ -3,6 +3,7 @@ import { DataList, useLookup } from "../components/DataList";
 import { Alert, Modal, PageHeader, ReasonDialog, StatusBadge, fmt } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { api, errText } from "../services/api";
+import { PrintButton } from "./Reports";
 
 async function openPdf(path: string, body: any) {
   const res: any = await api(path, { method: "POST", body, raw: true });
@@ -71,6 +72,7 @@ function GRNDetail({ id, onClose }: { id: number; onClose: () => void }) {
         <td>{i.exception_granted ? <span className="badge text-bg-warning">QA exception {i.exception_ref}</span> : i.answer === "NO" && i.critical && can("grn.receipt.exception") && d.status === "SUBMITTED" && <button className="btn btn-sm btn-outline-warning" onClick={() => setExc(i)}>Exception</button>}</td></tr>))}</tbody></table>
       {can("grn.receipt.verify") && d.status === "SUBMITTED" && <button className="btn btn-sm btn-outline-primary mb-2" onClick={saveChecklist}>Save checklist</button>}</>}
     <div className="d-flex gap-2 flex-wrap align-items-center">
+      {can("reports.export.run") && <PrintButton path={`/grn/${id}/pdf`} label="GRN (PDF)" />}
       {d.status === "DRAFT" && can("grn.receipt.submit") && <button className="btn btn-sm btn-primary" onClick={() => call("submit")}>Submit</button>}
       {d.status === "SUBMITTED" && can("grn.receipt.verify") && <>
         <select className="form-select form-select-sm" style={{ width: 220 }} value={loc} onChange={(e) => setLoc(e.target.value)}><option value="">Quarantine location…</option>{locs.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}</select>

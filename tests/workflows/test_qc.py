@@ -109,7 +109,7 @@ def _equipment(w, due_ago_days=None, calibrated=True):
     return eq["id"]
 
 
-def test_crit_11_invalid_calibration_blocks_testing_and_override_is_controlled(w):
+def test_calibration_gate_blocks_testing_and_override_is_controlled(w):
     eq_bad = _equipment(w, due_ago_days=30)
     sm = take_sample(w)
     t = assign(w, sm["id"])

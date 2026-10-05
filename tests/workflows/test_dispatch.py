@@ -12,8 +12,7 @@ from tests.workflows.test_manufacturing import API, finish_production, issue, ma
 pytestmark = pytest.mark.filterwarnings("ignore")
 
 
-@pytest.fixture()
-def w(app):
+def build_dispatch_world(app):
     w = build_qc_world(app)
     w["pr"], w["hpr"] = as_user(app, "prod1", ["PRODUCTION_USER"])
     w["pm"], w["hpm"] = as_user(app, "prod_mgr", ["PRODUCTION_MANAGER"])
@@ -47,6 +46,11 @@ def w(app):
     assert c.status_code == 201, c.text
     w["cust"] = c.json()["id"]
     return w
+
+
+@pytest.fixture()
+def w(app):
+    return build_dispatch_world(app)
 
 
 def release_fg(w):

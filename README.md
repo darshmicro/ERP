@@ -15,7 +15,9 @@ Web-based ERP for GMP-regulated biological/antisera manufacturing: Vendor → Pu
 | 5 | QC/LIMS: sampling, tests/results, amendments, OOS/OOT, release chain, CoA, conditional release, statistics | ✅ `docs/phase-reports/phase-5.md` |
 | 6 / 6b | Manufacturing: BOM, batches, issue/return, IPC, reconciliation, output; antisera donors/bleeds/pools | ✅ `docs/phase-reports/phase-6.md` |
 | 7 | FG dispatch with release gates, traceability graph (forward/backward), global search, QR resolve | ✅ `docs/phase-reports/phase-7.md` |
-| 8–10 | Quality system → Reports/dashboards → Validation & hardening | planned (`docs/architecture/09-development-roadmap.md`) |
+| 8 | Quality system: deviation, CAPA, change control (linked to versioned masters), FMEA, SOP control, complaints, recall | ✅ `docs/phase-reports/phase-8.md` |
+| 9 | Reports (37), dashboards, controlled printouts, retention/archive, backup evidence | ✅ `docs/phase-reports/phase-9.md` |
+| 10 | Validation & hardening | in progress |
 
 ## Layout
 ```

@@ -14,8 +14,7 @@ pytestmark = pytest.mark.filterwarnings("ignore")
 API = "/api/v1"
 
 
-@pytest.fixture()
-def w(app):
+def build_mfg_world(app):
     w = build_qc_world(app)
     w["pr"], w["hpr"] = as_user(app, "prod1", ["PRODUCTION_USER"])
     w["pm"], w["hpm"] = as_user(app, "prod_mgr", ["PRODUCTION_MANAGER"])
@@ -29,6 +28,11 @@ def w(app):
     w["qa"].post(f"{API}/materials/{w['product']}/activate", headers=w["hqa"], json={"password": PW, "reason": "ok"})
     w["stock"] = make_lot(w["material"], w["ids"]["kg"], w["aloc"], qty=100)
     return w
+
+
+@pytest.fixture()
+def w(app):
+    return build_mfg_world(app)
 
 
 def make_bom(w, approve=True, qty=10, batch_size=100):
@@ -98,7 +102,7 @@ def test_batch_requires_approved_bom_and_scales_requirements(w):
     assert b["bom"]["version_no"] == 1
 
 
-def test_crit_12_duplicate_batch_number_prevented_and_override_controlled(w):
+def test_duplicate_batch_number_prevented_and_override_controlled(w):
     make_bom(w)
     b1 = new_batch(w)
     b2 = new_batch(w)
@@ -119,7 +123,7 @@ def test_crit_12_duplicate_batch_number_prevented_and_override_controlled(w):
 
 
 # ------------------------------------------------------------------ issue gates
-def test_crit_04_05_07_issue_gates(w):
+def test_issue_gates_quarantine_rejected_expired_held(w):
     make_bom(w)
     b = new_batch(w)
     qlot = w["lot"]                                                    # QUARANTINE (received, untested)
@@ -271,7 +275,7 @@ def finish_production(w, b, actual=98, consumed=9.96, sampled=0.0, waste=0.0):
     return r.json()
 
 
-def test_crit_14_reconciliation_within_tolerance(w):
+def test_reconciliation_within_tolerance(w):
     make_bom(w)
     b = new_batch(w)
     run_to_in_process(w, b)
@@ -284,7 +288,7 @@ def test_crit_14_reconciliation_within_tolerance(w):
     assert a.status_code == 200 and a.json()["status"] == "RECONCILED" and a.json()["reconciliation"]["status"] == "APPROVED"
 
 
-def test_crit_14_reconciliation_discrepancy_blocks_until_qa_deviation(w):
+def test_reconciliation_discrepancy_blocks_until_qa_deviation(w):
     make_bom(w)
     b = new_batch(w)
     run_to_in_process(w, b)
@@ -297,8 +301,12 @@ def test_crit_14_reconciliation_discrepancy_blocks_until_qa_deviation(w):
     out = w["pm"].post(f"{API}/mfg/batches/{b['id']}/output", headers=w["hpm"], json={"quarantine_location_id": w["qloc"]})
     assert out.status_code == 409
     assert w["qa"].post(f"{API}/mfg/batches/{b['id']}/reconciliation/qa-approve", headers=w["hqa"], json={"password": PW, "deviation_ref": "", "justification": "x"}).status_code == 422
-    q = w["qa"].post(f"{API}/mfg/batches/{b['id']}/reconciliation/qa-approve", headers=w["hqa"], json={"password": PW, "deviation_ref": "DEV-2026-001", "justification": "weighing loss on transfer lines"})
-    assert q.status_code == 200 and q.json()["status"] == "RECONCILED" and q.json()["reconciliation"]["deviation_ref"] == "DEV-2026-001"
+    auto = get(w, b)["reconciliation"]["deviation_ref"]
+    assert auto and auto.startswith("DEV-")                                           # the discrepancy raised a deviation automatically
+    bogus = w["qa"].post(f"{API}/mfg/batches/{b['id']}/reconciliation/qa-approve", headers=w["hqa"], json={"password": PW, "deviation_ref": "DEV-9999-999999", "justification": "weighing loss on transfer lines"})
+    assert bogus.status_code == 409 and bogus.json()["rule_id"] == "BR-REC-001"        # must reference a real deviation record
+    q = w["qa"].post(f"{API}/mfg/batches/{b['id']}/reconciliation/qa-approve", headers=w["hqa"], json={"password": PW, "justification": "weighing loss on transfer lines"})
+    assert q.status_code == 200 and q.json()["status"] == "RECONCILED" and q.json()["reconciliation"]["deviation_ref"] == auto
 
 
 def test_output_lot_flows_into_qc_and_release_marks_batch(w):
@@ -325,7 +333,7 @@ def test_output_lot_flows_into_qc_and_release_marks_batch(w):
     assert get(w, b)["status"] == "RELEASED"
 
 
-def test_crit_conditional_material_blocks_batch_release(w):
+def test_conditional_material_blocks_batch_release(w):
     make_bom(w)
     b = new_batch(w, qty=100)
     cl = w["lot"]                                                          # received lot still in QUARANTINE

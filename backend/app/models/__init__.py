@@ -25,3 +25,6 @@ from app.models.manufacturing import (Animal, BatchEquipmentUse, BatchMaterial, 
                                       BleedRecord, BOMHeader, BOMLine, ImmunisationRecord, IPCResult, ManufacturingBatch,
                                       MaterialIssue, MaterialIssueIndent, MaterialReturn, MBRStep, PlasmaPool)
 from app.models.dispatch import Dispatch, DispatchLine  # noqa: E402,F401
+from app.models.quality import (CAPA, CAPAAction, ChangeControl, ChangeControlLink, Complaint, Deviation, Recall, RecallLine,  # noqa: E402,F401
+                                RiskAssessment, RiskItem, SOP, SOPAcknowledgement)
+from app.models.reporting import ArchiveBatch, BackupRecord, ReportRun, RetentionPolicy  # noqa: E402,F401

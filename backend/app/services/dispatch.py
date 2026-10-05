@@ -55,6 +55,8 @@ def lot_blockers(session: Session, lot: MaterialBatch) -> list[tuple[str, str]]:
     n = session.execute(select(func.count()).select_from(OOSInvestigation).where(OOSInvestigation.material_batch_id == lot.id, OOSInvestigation.status != "CLOSED")).scalar()
     if n:
         out.append(("BR-DSP-004", f"Lot {lot.lot_no} has an open OOS investigation"))
+    from app.services import quality_system
+    out += quality_system.deviation_blockers(session, lot)
     for fn in LOT_BLOCKERS:
         out += fn(session, lot)
     return out

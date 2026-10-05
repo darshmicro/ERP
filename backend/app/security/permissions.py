@@ -60,6 +60,14 @@ CATALOGUE["mfg"] = {"batch": ["create", "read", "update", "override_number", "ca
 CATALOGUE["antisera"] = {"animal": ["create", "read", "update"], "bleed": ["create", "read"], "pool": ["create", "read"]}
 CATALOGUE["dispatch"] = {"order": ["create", "read", "update", "validate", "approve", "dispatch", "deliver", "cancel", "export"]}
 CATALOGUE["trace"] = {"record": ["read"]}
+CATALOGUE["quality"] = {"deviation": ["create", "read", "update", "investigate", "close", "cancel"], "capa": ["create", "read", "update", "close"],
+                        "cc": ["create", "read", "update", "assess", "approve", "close"], "risk": ["create", "read", "update", "approve"],
+                        "sop": ["create", "read", "update", "approve", "acknowledge"], "complaint": ["create", "read", "update", "close"],
+                        "recall": ["create", "read", "update", "close"]}
+CATALOGUE["reports"] = {"catalog": ["read"], "export": ["run"], "run": ["read"]}
+CATALOGUE["dashboard"].update({"management": ["read"], "qc": ["read"], "qa": ["read"], "warehouse": ["read"]})
+CATALOGUE["retention"] = {"policy": ["read", "update"], "archive": ["create", "read"]}
+CATALOGUE["backup"] = {"status": ["read", "record"]}
 CATALOGUE["org"]["department"] = ["read", "create", "update"]
 CATALOGUE["config"]["job"] = ["run"]
 

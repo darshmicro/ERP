@@ -4,7 +4,7 @@ import secrets
 from datetime import timedelta
 from typing import NamedTuple
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from app.audit import service as audit
@@ -96,9 +96,8 @@ def login(username: str, password: str, ip: str | None, user_agent: str | None,
                                             action="LOGIN_FAILED", reason="bad credentials")
             raise AuthenticationError(GENERIC_FAIL)
 
-        user.failed_attempts = 0
-        user.locked_until = None
-        user.last_login_at = utcnow()
+        # Core UPDATE (no optimistic row_version check): simultaneous logins of one account from several devices must not conflict.
+        s.execute(update(User).where(User.id == user.id).values(failed_attempts=0, locked_until=None, last_login_at=utcnow()))
         token = secrets.token_urlsafe(32)
         csrf = secrets.token_urlsafe(24)
         now = utcnow()
@@ -111,9 +110,9 @@ def login(username: str, password: str, ip: str | None, user_agent: str | None,
             active = s.execute(select(UserSession).where(
                 UserSession.user_id == user.id, UserSession.revoked_at.is_(None),
                 UserSession.id != sess.id).order_by(UserSession.created_at.desc())).scalars().all()
-            for old in active[cfg.max_concurrent_sessions - 1:]:
-                old.revoked_at = now
-                old.revoke_reason = "concurrent session limit"
+            stale_ids = [o.id for o in active[cfg.max_concurrent_sessions - 1:]]
+            if stale_ids:
+                s.execute(update(UserSession).where(UserSession.id.in_(stale_ids)).values(revoked_at=now, revoke_reason="concurrent session limit"))
         roles = ", ".join(active_role_codes(s, user.id))
         must_change = user.must_change_password or _password_expired(user)
         with audit_context(AuditContext(user_id=user.id, user_name=user.username, role_name=roles,

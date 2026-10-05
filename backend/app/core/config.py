@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     lockout_threshold: int = 5
     lockout_minutes: int = 15
     login_rate_limit_per_minute: int = 20
+    db_pool_size: int = 25            # connections kept per worker process (server databases)
+    db_max_overflow: int = 35         # extra short-lived connections per worker; size >= worker threads (default thread pool 40) avoids pool starvation under load
+    db_pool_timeout: int = 30
 
     ldap_enabled: bool = False
     ldap_server_uri: str = ""

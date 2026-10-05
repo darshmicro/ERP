@@ -388,6 +388,8 @@ def release_readiness(session: Session, lot: MaterialBatch) -> list[str]:
         problems.append(f"Lot is {lot.disposition}; release review starts from QC_TESTING")
     from app.services import manufacturing
     problems += manufacturing.conditional_material_problems(session, lot)
+    from app.services import quality_system
+    problems += [f"{m} (BR-DEV-001)" for _, m in quality_system.deviation_blockers(session, lot)]
     if lot.specification_id is None:
         problems.append("No specification pinned to the lot")
         return problems

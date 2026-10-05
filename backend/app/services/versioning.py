@@ -101,6 +101,8 @@ def return_to_draft(session: Session, obj, reason: str) -> None:
 
 
 def approve(session: Session, obj, user, password: str, reason: str) -> None:
+    from app.services import quality_system
+    quality_system.assert_change_control(session, obj)          # BR-CC-001 (configurable)
     k = KINDS[type(obj)]
     previous = session.execute(select(type(obj)).where(
         getattr(type(obj), k["key"]) == getattr(obj, k["key"]), type(obj).status == "APPROVED",
@@ -167,4 +169,10 @@ def register_bom() -> None:
                         "children": [(BOMLine, "bom_id"), (MBRStep, "bom_id")]}
 
 
+def register_sop() -> None:
+    from app.models.quality import SOP
+    KINDS[SOP] = {"key": "sop_no", "doc_type": "SOP", "prefix": "sop", "machine": _machine("sop", "quality.sop.approve"), "children": []}
+
+
 register_bom()
+register_sop()

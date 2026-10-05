@@ -113,3 +113,27 @@ def test_unhandled_error_hides_internals(app, client):
     r = client.get("/boom")
     assert r.status_code == 500
     assert "secret" not in r.text and r.json()["reference"].startswith("ERR-")
+
+
+def test_concurrent_logins_of_the_same_account_do_not_conflict(app):
+    """Found by the SQL Server load test: simultaneous logins of one account returned 409 CONCURRENT_MODIFICATION (optimistic row_version on users).
+    Only meaningful on a server database (SQLite serialises writers), so it is skipped there."""
+    import os
+    import threading
+
+    import pytest
+    from fastapi.testclient import TestClient
+
+    if not os.environ.get("MERP_TEST_DATABASE_URL"):
+        pytest.skip("needs a multi-writer database (set MERP_TEST_DATABASE_URL)")
+    make_user("multi_dev", ["QA_HEAD"])
+    codes = []
+
+    def go():
+        c = TestClient(app, raise_server_exceptions=False)
+        codes.append(c.post("/api/v1/auth/login", json={"username": "multi_dev", "password": PW}).status_code)
+
+    ts = [threading.Thread(target=go) for _ in range(10)]
+    [t.start() for t in ts]
+    [t.join() for t in ts]
+    assert codes == [200] * 10

@@ -18,13 +18,24 @@ GRANT ALTER ANY SCHEMA TO merp_migrator;   -- needed for triggers created by mig
 GO
 -- Run AFTER `alembic upgrade head`:
 GRANT SELECT, INSERT, UPDATE, DELETE ON SCHEMA::dbo TO merp_app;   -- baseline for mutable tables
--- Append-only GMP tables: INSERT + SELECT only (defence in depth; triggers also block UPDATE/DELETE)
-DENY UPDATE, DELETE ON dbo.audit_trail        TO merp_app;
-DENY UPDATE, DELETE ON dbo.e_signature        TO merp_app;
-DENY UPDATE, DELETE ON dbo.security_event     TO merp_app;
-DENY UPDATE, DELETE ON dbo.gmp_status_history TO merp_app;
-DENY UPDATE, DELETE ON dbo.record_action      TO merp_app;
-DENY UPDATE, DELETE ON dbo.workflow_transaction TO merp_app;
+-- Append-only GMP tables: INSERT + SELECT only (defence in depth; INSTEAD OF triggers also block UPDATE/DELETE). Keep in sync with app/audit/immutability.py APPEND_ONLY_TABLES.
+DENY UPDATE, DELETE ON dbo.audit_trail              TO merp_app;
+DENY UPDATE, DELETE ON dbo.e_signature              TO merp_app;
+DENY UPDATE, DELETE ON dbo.security_event           TO merp_app;
+DENY UPDATE, DELETE ON dbo.gmp_status_history       TO merp_app;
+DENY UPDATE, DELETE ON dbo.record_action            TO merp_app;
+DENY UPDATE, DELETE ON dbo.workflow_transaction     TO merp_app;
+DENY UPDATE, DELETE ON dbo.inventory_transaction    TO merp_app;
+DENY UPDATE, DELETE ON dbo.material_label           TO merp_app;
+DENY UPDATE, DELETE ON dbo.storage_temperature_log  TO merp_app;
+DENY UPDATE, DELETE ON dbo.coa                      TO merp_app;
+DENY UPDATE, DELETE ON dbo.material_issue           TO merp_app;
+DENY UPDATE, DELETE ON dbo.ipc_result               TO merp_app;
+DENY UPDATE, DELETE ON dbo.immunisation_record      TO merp_app;
+DENY UPDATE, DELETE ON dbo.sop_acknowledgement      TO merp_app;
+DENY UPDATE, DELETE ON dbo.report_run               TO merp_app;
+DENY UPDATE, DELETE ON dbo.archive_batch            TO merp_app;
+DENY UPDATE, DELETE ON dbo.backup_record            TO merp_app;
 DENY ALTER ANY SCHEMA TO merp_app; DENY CREATE TABLE TO merp_app;
 -- audit_chain_head must stay updatable (hash-chain head); it is intentionally NOT denied.
 -- Reporting account: read-only

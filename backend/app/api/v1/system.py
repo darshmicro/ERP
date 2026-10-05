@@ -62,6 +62,11 @@ def dashboard(p: Principal = Depends(require("dashboard.view.read")), s: Session
                                                                  InventoryBalance.qty_on_hand > 0)).scalar()
     disp_pending = s.execute(select(func.count()).select_from(Dispatch).where(Dispatch.status.in_(("DRAFT", "VALIDATED", "APPROVED")))).scalar()
 
+    from app.models.quality import CAPA, Deviation
+    open_dev = s.execute(select(func.count()).select_from(Deviation).where(Deviation.status.notin_(("CLOSED", "CANCELLED")))).scalar()
+    open_capa = s.execute(select(func.count()).select_from(CAPA).where(CAPA.status.notin_(("CLOSED", "CANCELLED")))).scalar()
+    overdue_capa = s.execute(select(func.count()).select_from(CAPA).where(CAPA.status.in_(("OPEN", "IN_PROGRESS")), CAPA.due_date < date.today())).scalar()
+
     def card(label, value):
         return {"label": label, "value": value, "available": True}
 
@@ -73,7 +78,8 @@ def dashboard(p: Principal = Depends(require("dashboard.view.read")), s: Session
         "near_expiry": {"label": "Near Expiry (90 d)", "value": near_exp, "available": True}, "open_purchase_orders": {"label": "Open Purchase Orders", "value": open_po, "available": True},
         "open_purchase_requests": {"label": "Open Purchase Requests", "value": open_pr, "available": True},
         "active_production_batches": card("Active Production Batches", active_batches),
-        "fg_available": card("FG Batches Available", fg_avail), "dispatch_pending": card("Dispatch Pending", disp_pending)},
+        "fg_available": card("FG Batches Available", fg_avail), "dispatch_pending": card("Dispatch Pending", disp_pending),
+        "open_deviations": card("Open Deviations", open_dev), "open_capa": card("Open CAPA", open_capa), "overdue_capa": card("Overdue CAPA", overdue_capa)},
         "unread_notifications": unread}
 
 

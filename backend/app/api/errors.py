@@ -3,7 +3,7 @@ import uuid
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import DataError, IntegrityError
 from sqlalchemy.orm.exc import StaleDataError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -64,6 +64,12 @@ def register(app: FastAPI) -> None:
         return JSONResponse(status_code=409, content=_body(
             "This record was changed by another user. Reload and try again.", "CONCURRENT_MODIFICATION",
             cid=getattr(request.state, "correlation_id", None)))
+
+    @app.exception_handler(OverflowError)
+    @app.exception_handler(DataError)
+    async def _bad_value(request: Request, exc: Exception):
+        """An identifier/number outside the database range (e.g. /lots/99999999999999999999) is a client error, not a server fault."""
+        return JSONResponse(status_code=422, content=_body("A value is outside the permitted range.", "VALIDATION_FAILED", cid=getattr(request.state, "correlation_id", None)))
 
     @app.exception_handler(IntegrityError)
     async def _integrity(request: Request, exc: IntegrityError):

@@ -4,6 +4,7 @@ import { DataList, useLookup } from "../components/DataList";
 import { Alert, Modal, PageHeader, ReasonDialog, StatusBadge } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { api, errText } from "../services/api";
+import { PrintButton } from "./Reports";
 
 /* ------------------------------------------------------------------ Dispatch */
 export function Dispatches() {
@@ -61,6 +62,7 @@ function DispatchDetail({ id, onClose }: { id: number; onClose: () => void }) {
     {chk && <div className="mb-2">{chk.violations.length === 0 ? <div className="alert alert-success py-1">All dispatch rules satisfied.</div> : chk.violations.map((v: any, i: number) => <div key={i} className={"alert py-1 mb-1 " + (v.severity === "BLOCK" ? "alert-danger" : "alert-warning")}><b>{v.rule_id}</b> {v.message}</div>)}</div>}
     <div className="d-flex gap-2 flex-wrap">
       <button className="btn btn-sm btn-outline-secondary" onClick={check}>Check rules</button>
+      {can("reports.export.run") && <PrintButton path={`/dispatches/${id}/pdf`} label="Dispatch note (PDF)" />}
       {s === "DRAFT" && can("dispatch.order.validate") && <button className="btn btn-sm btn-primary" onClick={() => post("validate")}>Validate & reserve stock</button>}
       {s === "VALIDATED" && can("dispatch.order.update") && <button className="btn btn-sm btn-outline-secondary" onClick={() => setSign({ title: "Re-open for editing", path: "reopen", noPw: true })}>Re-open</button>}
       {s === "VALIDATED" && can("dispatch.order.approve") && <button className="btn btn-sm btn-success" onClick={() => setSign({ title: "Approve dispatch", path: "approve" })}><i className="bi bi-pen" /> Approve</button>}

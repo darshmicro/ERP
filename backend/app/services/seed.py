@@ -95,22 +95,38 @@ DISP_P7 = ["dispatch.order.create", "dispatch.order.read", "dispatch.order.updat
 QA_P7 = ["dispatch.order.read", "dispatch.order.approve", "dispatch.order.export", "trace.record.read", "coa.document.read"]
 READ_P7 = ["dispatch.order.read", "trace.record.read"]
 
+QUAL_RAISE_P8 = ["quality.deviation.create", "quality.deviation.read", "quality.deviation.update", "quality.capa.read", "quality.sop.read", "quality.sop.acknowledge",
+                 "quality.complaint.read", "quality.recall.read", "quality.cc.read", "quality.risk.read"]
+QA_P8 = QUAL_RAISE_P8 + ["quality.deviation.investigate", "quality.deviation.cancel", "quality.capa.create", "quality.capa.update", "quality.cc.create", "quality.cc.update",
+                         "quality.cc.assess", "quality.risk.create", "quality.risk.update", "quality.sop.create", "quality.sop.update", "quality.complaint.create",
+                         "quality.complaint.update", "quality.recall.update"]
+QA_HEAD_P8 = QA_P8 + ["quality.deviation.close", "quality.capa.close", "quality.cc.approve", "quality.cc.close", "quality.risk.approve", "quality.sop.approve",
+                      "quality.complaint.close", "quality.recall.create", "quality.recall.close"]
+INVESTIGATE_P8 = QUAL_RAISE_P8 + ["quality.deviation.investigate", "quality.capa.create", "quality.capa.update", "quality.risk.create", "quality.risk.update"]
+READ_P8 = ["quality.deviation.read", "quality.capa.read", "quality.cc.read", "quality.risk.read", "quality.sop.read", "quality.sop.acknowledge", "quality.complaint.read", "quality.recall.read"]
+
+REPORT_USER_P9 = ["reports.catalog.read", "reports.export.run"]
+QA_P9 = REPORT_USER_P9 + ["reports.run.read", "dashboard.qa.read", "dashboard.qc.read", "dashboard.warehouse.read", "dashboard.management.read", "retention.policy.read", "retention.archive.read", "backup.status.read"]
+QA_HEAD_P9 = QA_P9 + ["retention.archive.create", "retention.policy.update", "backup.status.record"]
+ADMIN_P9 = ["backup.status.read", "backup.status.record", "retention.policy.read", "reports.catalog.read", "reports.run.read"]
+READ_P9 = REPORT_USER_P9 + ["reports.run.read", "dashboard.management.read", "dashboard.qa.read", "dashboard.qc.read", "dashboard.warehouse.read", "retention.policy.read", "retention.archive.read", "backup.status.read"]
+
 ROLES: dict[str, tuple[str, bool, list[str]]] = {
     # code: (name, is_admin_role, extra permissions)
-    "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD + ["org.department.read", "org.department.create", "org.department.update", "config.job.run"]),
-    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD + PURCHASE_USER_P3 + ["grn.receipt.read"]),
-    "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + PURCHASE_MGR_P3 + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"]),
-    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"]) + PURCHASE_REQ + WH_USER_P4 + WH_P6),
-    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ + QC_P4 + QC_ANALYST_P5 + READ_P6 + READ_P7),
-    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ + QC_P4 + QC_HEAD_P5 + READ_P6 + READ_P7),
-    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ + QA_P4 + QA_P5 + QA_P6 + QA_P7),
-    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ + QA_HEAD_P4 + QA_HEAD_P5 + QA_HEAD_P6 + QA_P7),
-    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_P6),
-    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_MGR_P6),
+    "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD + ["org.department.read", "org.department.create", "org.department.update", "config.job.run"] + ADMIN_P9),
+    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD + PURCHASE_USER_P3 + ["grn.receipt.read"] + REPORT_USER_P9),
+    "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + PURCHASE_MGR_P3 + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"] + REPORT_USER_P9),
+    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"]) + PURCHASE_REQ + WH_USER_P4 + WH_P6 + QUAL_RAISE_P8 + REPORT_USER_P9 + ["dashboard.warehouse.read"]),
+    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ + QC_P4 + QC_ANALYST_P5 + READ_P6 + READ_P7 + QUAL_RAISE_P8 + REPORT_USER_P9),
+    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ + QC_P4 + QC_HEAD_P5 + READ_P6 + READ_P7 + INVESTIGATE_P8 + REPORT_USER_P9 + ["dashboard.qc.read"]),
+    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ + QA_P4 + QA_P5 + QA_P6 + QA_P7 + QA_P8 + QA_P9),
+    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ + QA_HEAD_P4 + QA_HEAD_P5 + QA_HEAD_P6 + QA_P7 + QA_HEAD_P8 + QA_HEAD_P9),
+    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_P6 + QUAL_RAISE_P8 + REPORT_USER_P9),
+    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_MGR_P6 + INVESTIGATE_P8 + REPORT_USER_P9),
     "DEPARTMENT_HEAD": ("Department Head", False, ["pr.request.read", "pr.request.approve", "pr.request.create", "pr.request.update", "pr.request.submit", "pr.request.cancel"] + MD_READ),
-    "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"]) + DISP_P7),
-    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7),
-    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7),
+    "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"]) + DISP_P7 + ["quality.complaint.create", "quality.complaint.read", "quality.recall.read", "quality.sop.read", "quality.sop.acknowledge"] + REPORT_USER_P9),
+    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7 + READ_P8 + READ_P9),
+    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7 + READ_P8 + READ_P9),
 }
 
 # QA Officer may not approve/verify workflow definitions; only QA Head holds approve.
@@ -141,6 +157,11 @@ SOD_RULES = [
     ("SOD-28", "mfg.reconciliation.qa_approve", "mfg.reconciliation.production_approve", "QA approval of reconciliation by a different person"),
     ("SOD-29", "dispatch.order.approve", "dispatch.order.create", "Dispatch creator cannot approve it"),
     ("SOD-30", "dispatch.order.dispatch", "dispatch.order.approve", "Approver cannot also execute the dispatch"),
+    ("SOD-31", "quality.deviation.close", "quality.deviation.raise", "Deviation raiser cannot close it"),
+    ("SOD-32", "quality.cc.approve", "quality.cc.create", "Change requester cannot approve it"),
+    ("SOD-33", "quality.risk.approve", "quality.risk.author", "Risk assessment author cannot approve it"),
+    ("SOD-34", "quality.capa.close", "quality.capa.create", "CAPA creator cannot close it"),
+    ("SOD-35", "sop.approve", "sop.author", "SOP author cannot approve it"),
     ("SOD-22", "grn.receipt.verify", "grn.receipt.create", "GRN must be verified by a second person"),
     ("SOD-23", "warehouse.destruction.approve", "warehouse.destruction.request", "Destruction requester cannot approve"),
     ("SOD-21", "vendor_qualification.approve", "vendor_qualification.author", "Qualification author cannot approve it"),
@@ -195,6 +216,8 @@ def seed_baseline(session: Session, *, company_name: str = "Company Name (config
     grn_service.seed_checklist(session)
     numbering.seed_registry(session, plant.id)
     config_service.seed_defaults(session)
+    from app.services import retention
+    retention.seed_defaults(session)
     if session.get(AuditChainHead, 1) is None:
         session.add(AuditChainHead(id=1, lock_counter=0, last_hash=GENESIS, row_count=0))
     return plant

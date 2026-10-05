@@ -21,6 +21,8 @@ import { Samples, ReleaseQueue, OOSPage, ConditionalReleases, Trends } from "./p
 import { GRNs, Inventory } from "./pages/Warehouse";
 import { BOMs, Batches, Returns, Antisera } from "./pages/Manufacturing";
 import { Dispatches, Trace } from "./pages/Dispatch";
+import { Reports, Dashboards, Compliance } from "./pages/Reports";
+import { Deviations, CAPAs, ChangeControls, Risks, SOPs, Complaints, Recalls } from "./pages/Quality";
 import VendorQualification from "./pages/VendorQualification";
 import VendorMaterials from "./pages/VendorMaterials";
 import { PurchaseRequests, PurchaseOrders } from "./pages/Purchasing";
@@ -61,6 +63,16 @@ export default function App() {
         <Route path="oos" element={<OOSPage />} />
         <Route path="conditional-release" element={<ConditionalReleases />} />
         <Route path="trends" element={<Trends />} />
+        <Route path="deviations" element={<Deviations />} />
+        <Route path="capa" element={<CAPAs />} />
+        <Route path="change-control" element={<ChangeControls />} />
+        <Route path="risk" element={<Risks />} />
+        <Route path="sops" element={<SOPs />} />
+        <Route path="complaints" element={<Complaints />} />
+        <Route path="recalls" element={<Recalls />} />
+        <Route path="reports" element={<Reports />} />
+        <Route path="dashboards" element={<Dashboards />} />
+        <Route path="compliance" element={<Compliance />} />
         <Route path="dispatch" element={<Dispatches />} />
         <Route path="trace" element={<Trace />} />
         <Route path="boms" element={<BOMs />} />

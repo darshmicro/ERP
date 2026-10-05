@@ -388,8 +388,12 @@ def record_ipc(session: Session, user, batch: ManufacturingBatch, stage: str, pa
     if pf == "FAIL":        # BR-MFG-003: hold + deviation prompt
         lots.place_hold(session, "MFG_BATCH", batch.id, f"IPC failure: {parameter} = {value} at stage '{stage}' (limits {lsl}–{usl})", source="OTHER",
                         ref=f"IPC{r.id}", user_id=user.id)
+        from app.services import quality_system
+        dev = quality_system.auto_deviation(session, source="IPC", title=f"IPC failure on batch {batch.batch_no}: {parameter}",
+                                            description=f"{parameter} = {value} at stage '{stage}' (limits {lsl}–{usl}). Batch placed on hold.",
+                                            entity_type="MFG_BATCH", record_id=batch.id, user_id=user.id)
         notifications.notify_roles(session, ["QA_OFFICER", "QA_HEAD", "PRODUCTION_MANAGER"], category="IPC", title=f"IPC failure on batch {batch.batch_no}",
-                                   body=f"{parameter}: {value}. Batch placed on hold; raise a deviation.", ref_entity="manufacturing_batch", ref_id=str(batch.id))
+                                   body=f"{parameter}: {value}. Batch placed on hold; deviation {dev.dev_no} raised.", ref_entity="manufacturing_batch", ref_id=str(batch.id))
     return r
 
 
@@ -460,6 +464,14 @@ def reconcile(session: Session, batch: ManufacturingBatch) -> BatchReconciliatio
     rec = BatchReconciliation(batch_id=batch.id, status="CALCULATED", within_tolerance=ok, yield_ok=yield_ok, tolerance_pct=tol, summary_json=summary)
     session.add(rec)
     session.flush()
+    if not (ok and yield_ok):          # BR-REC-001: a discrepancy raises a deviation that QA must accept
+        from app.services import quality_system
+        dev = quality_system.auto_deviation(session, source="RECONCILIATION", title=f"Reconciliation discrepancy on batch {batch.batch_no}",
+                                            description="Material reconciliation or yield outside limits: " + ("; ".join(
+                                                f"{l['material']} variance {l['variance_pct']}%" for l in lines if not l["within_tolerance"]) or "yield outside BOM limits"),
+                                            entity_type="MFG_BATCH", record_id=batch.id)
+        rec.deviation_ref = dev.dev_no
+        session.flush()
     return rec
 
 
@@ -479,8 +491,13 @@ def approve_reconciliation_production(session: Session, user, batch: Manufacturi
 def approve_reconciliation_qa(session: Session, user, batch: ManufacturingBatch, rec: BatchReconciliation, password: str, deviation_ref: str, justification: str) -> None:
     if rec.status != "PRODUCTION_APPROVED":
         raise BusinessRuleError("QA approval applies after production approval of an out-of-tolerance reconciliation", rule_id="BR-REC-001")
-    if not (deviation_ref or "").strip() or not (justification or "").strip():
+    deviation_ref = (deviation_ref or rec.deviation_ref or "").strip()
+    if not deviation_ref or not (justification or "").strip():
         raise ValidationFailed("A deviation reference and justification are required for an out-of-tolerance reconciliation", code="REASON_REQUIRED")
+    from app.models.quality import Deviation
+    dev = session.execute(select(Deviation).where(Deviation.dev_no == deviation_ref)).scalars().first()
+    if dev is None or dev.status == "CANCELLED":
+        raise BusinessRuleError(f"Deviation {deviation_ref} does not exist or was cancelled (BR-REC-001)", rule_id="BR-REC-001")
     sod.check(session, user.id, "batch_reconciliation", rec.id, "mfg.reconciliation.qa_approve")
     sig = masters.sign_and_transition(session, rec, RECON_MACHINE, "APPROVED", user, password, reason=justification, meaning="QA_APPROVED")
     rec.qa_approved_by_id, rec.qa_signature_id, rec.deviation_ref, rec.justification, rec.approved_at = user.id, sig.id, deviation_ref, justification, utcnow()

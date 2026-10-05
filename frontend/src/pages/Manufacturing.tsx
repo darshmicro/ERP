@@ -3,6 +3,7 @@ import { DataList, useLookup } from "../components/DataList";
 import { Alert, Modal, PageHeader, ReasonDialog, StatusBadge } from "../components/ui";
 import { useAuth } from "../hooks/useAuth";
 import { api, errText } from "../services/api";
+import { PrintButton } from "./Reports";
 
 /* ------------------------------------------------------------------ BOM */
 export function BOMs() {
@@ -153,6 +154,7 @@ function BatchDetail({ id, onClose }: { id: number; onClose: () => void }) {
       {s === "PRODUCTION_COMPLETE" && rec?.status === "PRODUCTION_APPROVED" && can("mfg.reconciliation.qa_approve") && <button className="btn btn-sm btn-danger" onClick={() => setSign({ title: "QA approval of out-of-tolerance reconciliation", path: "reconciliation/qa-approve", meaning: "QA_APPROVED", dev: true })}><i className="bi bi-pen" /> QA accept deviation</button>}
       {s === "RECONCILED" && can("mfg.output.create") && <><select className="form-select form-select-sm" style={{ width: 200 }} value={qloc} onChange={(e) => setQloc(e.target.value)}><option value="">Quarantine location…</option>{qlocs.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}</select><button className="btn btn-sm btn-primary" disabled={!qloc} onClick={() => call("output", { quarantine_location_id: Number(qloc), reason: "Output booked" })}>Book output to quarantine</button></>}
       {s === "CREATED" && can("mfg.batch.cancel") && <button className="btn btn-sm btn-outline-danger" onClick={() => setSign({ title: "Cancel batch", path: "cancel", noPw: true })}>Cancel batch</button>}</div>
+    {can("reports.export.run") && <div className="mt-2"><PrintButton path={`/mfg/batches/${id}/pdf`} label="Batch record (PDF)" /></div>}
     {d.output_lot && <div className="mt-2 small">Output lot <b>{d.output_lot.lot_no}</b> — {d.output_lot.disposition}</div>}
     {sign && <ReasonDialog title={sign.title} needPassword={!sign.noPw} meaning={sign.meaning} onClose={() => setSign(null)}
       onSubmit={async (reason, password) => { try { const body: any = { reason, password }; if (sign.dev) { body.justification = reason; body.deviation_ref = prompt("Deviation reference") || ""; } await api(`/mfg/batches/${id}/${sign.path}`, { method: "POST", body }); load(); } catch (e) { throw new Error(errText(e)); } }} />}
