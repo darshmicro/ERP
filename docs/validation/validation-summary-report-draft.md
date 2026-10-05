@@ -27,7 +27,17 @@
 | SOPs | `sop-requirements.md` (22 procedures) | **[SITE] to author/approve** |
 
 ## 2. Supplier test evidence (development environment, 2026-10-05)
-RESULTS_PLACEHOLDER
+| Database / run | Result |
+|---|---|
+| **SQLite** (development) — full suite, `evidence/junit.xml` (+ `junit-sqlite-extra.xml`) | **232 collected: 231 passed**, 1 skipped (the same-account concurrent-login test needs a multi-writer database); 0 failed |
+| **SQL Server 2022** (Linux container, ODBC Driver 18) — full suite in four parallel partitions, `evidence/junit-sqlserver-1…4.xml` | **230 passed**, 0 failed, 2 deselected (the two Alembic tests that spawn SQLite subprocesses; migrations are verified separately below). Includes the same-account concurrent-login regression test |
+| Migrations `0001 → 0009` up / down / up on a clean SQL Server database | Pass — 110 tables, 17 `INSTEAD OF` append-only triggers, final `alembic current` = `0009` |
+| Least-privilege grants script (`database/mssql/01_logins_and_grants.sql`) executed as `sa`; then as `merp_app` | `UPDATE`/`DELETE` on **all 17** append-only tables → *permission denied*; `CREATE TABLE` → *permission denied*; `SELECT` works |
+| Backup / restore (`scripts/restore_test.py`, `evidence/restore-test-sqlserver.json`) | SUCCESS — backup with CHECKSUM, `RESTORE VERIFYONLY` OK, restore to scratch DB in 0.7 s (2.7 s end-to-end), 110 tables / 5 010 rows identical, **audit hash chain verified on the restored copy (1 898 rows)** |
+| Load (`scripts/load_test.py`, `evidence/load-test-sqlserver.txt`) | 50 virtual users, 120 s, 4 786 requests, 39.6 req/s, **0 errors**, p95 < 2.3 s (single shared host) |
+| UI smoke (Playwright/Chromium on demo data) | 44 page loads across QA Head, Warehouse, Production and Auditor roles: no page or console errors |
+| Generated protocols | Access matrix: every route authenticated; ≈ 5 000 role × route checks pass on both databases. 15 mandatory critical tests: all pass on both databases |
+
 
 ## 3. Traceability
 `rtm.md`: every one of the 59 URS items is traced to business rules and to at least one automated test; the generator aborts if a referenced test does not exist. The 15 mandatory critical tests are explicit (§"mandatory critical tests" in the RTM).

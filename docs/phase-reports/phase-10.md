@@ -20,7 +20,7 @@
 | 6 | Generated matrix test | (control) public endpoint list had to be made explicit | Five reviewed public endpoints |
 
 ## Evidence
-* SQLite: full suite green (see VSR draft for counts). SQL Server 2022: full suite run, migrations 0001→0009 up/down/up (110 tables, 17 `INSTEAD OF` triggers), restore test (`evidence/restore-test-sqlserver.json`), load test (`evidence/load-test-sqlserver.txt`), JUnit (`evidence/junit-sqlserver.xml`).
+* **SQLite:** 232 tests collected, 231 passed, 1 skipped (server-database-only concurrency test). **SQL Server 2022: 230 passed**, 2 deselected (SQLite-subprocess migration tests). Migrations 0001→0009 up/down/up (110 tables, 17 `INSTEAD OF` triggers); least-privilege grants verified for all 17 append-only tables; restore test (`evidence/restore-test-sqlserver.json`); load test (`evidence/load-test-sqlserver.txt`); JUnit files in `docs/validation/evidence/`.
 * UI smoke (Playwright/Chromium, demo data): 44 page loads across four roles with no page or console errors.
 
 ## Known limitations
