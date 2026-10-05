@@ -41,6 +41,13 @@ def create_app(*, configure_db: bool = True) -> FastAPI:
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         return response
 
+    if cfg.scheduler_enabled:
+        from app.jobs.runner import Scheduler
+
+        scheduler = Scheduler(cfg.scheduler_interval_seconds)
+        app.add_event_handler("startup", scheduler.start)
+        app.add_event_handler("shutdown", scheduler.stop)
+
     errors.register(app)
     app.include_router(api_router)
     _mount_frontend(app)

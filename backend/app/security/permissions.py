@@ -35,7 +35,14 @@ CATALOGUE: dict[str, dict[str, list[str]]] = {
     },
     "doc": {"document": ["create", "read"]},
     "import": {"job": ["create", "read", "approve"]},
+    # --- Phase 3: purchase ---
+    "vq": {"qualification": ["create", "read", "update", "approve", "suspend", "disqualify"]},
+    "vm": {"mapping": ["create", "read", "update", "approve", "withdraw"]},
+    "pr": {"request": ["create", "read", "update", "submit", "approve", "cancel", "export"]},
+    "po": {"order": ["create", "read", "update", "submit", "approve", "cancel", "export"]},
 }
+CATALOGUE["org"]["department"] = ["read", "create", "update"]
+CATALOGUE["config"]["job"] = ["run"]
 
 # Actions that confer GMP approval authority (used by SoD-09: admin roles must not hold them)
 GMP_AUTHORITY_ACTIONS = {"approve", "release", "reject", "sign"}

@@ -91,16 +91,21 @@ def _before_flush(session: Session, flush_context, instances) -> None:
             raise ImmutableRecordError(f"{type(obj).__tablename__}: record is append-only",
                                        rule_id="BR-AUD-001")
         if isinstance(obj, VersionChildMixin) and not _parent_editable(session, obj):
-            raise ImmutableRecordError(f"{type(obj).__tablename__}: parent version is not editable",
-                                       rule_id="BR-HIS-001")
-        if isinstance(obj, VersionedMixin):
-            sh = inspect(obj).attrs["status"].history
-            prior = sh.deleted[0] if sh.deleted else obj.status
-            changed = {a for a, _o, _n in _field_changes(obj)} - _VERSION_ALLOWED_CHANGES
+            ok_fields = set(getattr(type(obj), "__child_mutable_fields__", ()))
+            bad = {a for a, _o, _n in _field_changes(obj)} - ok_fields
+            if bad:
+                raise ImmutableRecordError(f"{type(obj).__tablename__}: parent record is locked "
+                                           f"(changed: {', '.join(sorted(bad))})", rule_id="BR-HIS-001")
+        if isinstance(obj, StatefulMixin) and hasattr(type(obj), "__editable_statuses__"):
+            sf = obj.__status_field__
+            sh = inspect(obj).attrs[sf].history
+            prior = sh.deleted[0] if sh.deleted else getattr(obj, sf)
+            changed = ({a for a, _o, _n in _field_changes(obj)} - _VERSION_ALLOWED_CHANGES - {sf}
+                       - set(getattr(type(obj), "__version_mutable_fields__", ())))
             if prior not in type(obj).__editable_statuses__ and changed:
                 raise ImmutableRecordError(
-                    f"{type(obj).__tablename__}: {prior} versions are immutable "
-                    f"(changed: {', '.join(sorted(changed))}); create a new version", rule_id="BR-HIS-001")
+                    f"{type(obj).__tablename__}: {prior} records are locked "
+                    f"(changed: {', '.join(sorted(changed))}); use the controlled change process", rule_id="BR-HIS-001")
         if isinstance(obj, StatefulMixin):
             field = obj.__status_field__
             hist = inspect(obj).attrs[field].history

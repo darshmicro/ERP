@@ -184,6 +184,16 @@ def _fire(session: Session, inst: WorkflowInstance, outcome: str) -> None:
         fn(session, inst)
 
 
+def cancel(session: Session, inst: WorkflowInstance, user: User, reason: str) -> None:
+    """Withdraw an in-progress approval (e.g. the underlying record is cancelled)."""
+    if inst.status != "IN_PROGRESS":
+        return
+    session.add(WorkflowTransaction(instance_id=inst.id, seq=inst.current_seq, actor_id=user.id,
+                                    decision="CANCEL", comment=reason))
+    inst.completed_at = utcnow()
+    transition(session, INSTANCE_MACHINE, inst, "CANCELLED", reason=reason, module="workflow")
+
+
 def overdue_instances(session: Session) -> list[WorkflowInstance]:
     """SLA breach detection for the escalation job."""
     out = []

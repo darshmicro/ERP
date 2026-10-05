@@ -47,7 +47,7 @@ function VendorDetail({ id, onClose }: { id: number; onClose: () => void }) {
   return (<Modal title={`${v.vendor_code} — ${v.name}`} onClose={onClose}>
     <Alert>{err}</Alert>
     <div className="mb-2">Approval: <StatusBadge status={v.approval_status} /> · Risk <b>{v.risk_class}</b> · Quality agreement {v.quality_agreement_status}
-      <div className="small text-muted">Qualification status and requalification due date are managed in the Vendor Qualification module (Phase 3).</div></div>
+      {v.qualification && <div className="small mt-1">Qualification: <StatusBadge status={v.qualification.status} /> · due <b>{v.qualification.requalification_due_date ?? "—"}</b> · {v.qualification.purchasable ? "purchasing allowed" : <b className="text-danger">{v.qualification.message ?? "purchasing blocked"}</b>}</div>}</div>
     <dl className="row small">{["vendor_type", "country", "state", "city", "gst_no", "pan_no", "contact_person", "email", "phone", "bank_name", "bank_account_masked"].map((k) => (<><dt className="col-4">{k.replace(/_/g, " ")}</dt><dd className="col-8">{v[k] ?? "—"}</dd></>))}</dl>
     <div className="d-flex gap-2 mb-3">
       {v.approval_status !== "APPROVED" && can("md.vendor.approve") && <button className="btn btn-sm btn-success" onClick={() => setAct("approve")}><i className="bi bi-pen" /> Approve</button>}

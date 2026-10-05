@@ -30,6 +30,17 @@ def dashboard(p: Principal = Depends(require("dashboard.view.read")), s: Session
     unread = s.execute(select(func.count()).select_from(Notification).where(
         Notification.user_id == p.user.id, Notification.read_at.is_(None))).scalar()
 
+    from datetime import date, timedelta
+    from app.models.purchase import PurchaseOrder, PurchaseRequest, VendorQualification
+    horizon = date.today() + timedelta(days=60)
+    vq_due = s.execute(select(func.count()).select_from(VendorQualification).where(
+        VendorQualification.status.in_(("APPROVED", "CONDITIONAL", "EXPIRED")),
+        VendorQualification.requalification_due_date <= horizon)).scalar()
+    open_po = s.execute(select(func.count()).select_from(PurchaseOrder).where(
+        PurchaseOrder.status.in_(("PENDING_APPROVAL", "APPROVED", "PARTIALLY_RECEIVED")))).scalar()
+    open_pr = s.execute(select(func.count()).select_from(PurchaseRequest).where(
+        PurchaseRequest.status.in_(("SUBMITTED", "DEPARTMENT_APPROVED", "APPROVED")))).scalar()
+
     def later(label, phase):
         return {"label": label, "value": None, "available": False, "phase": phase}
 
@@ -37,8 +48,9 @@ def dashboard(p: Principal = Depends(require("dashboard.view.read")), s: Session
         "pending_approvals": {"label": "Pending Approvals", "value": pending, "available": True},
         "quarantine_materials": later("Quarantine Materials", 4),
         "qc_pending": later("QC Pending", 5), "qa_pending": later("QA Pending", 5),
-        "vendor_qualification_due": later("Vendor Qualification Due", 3),
-        "near_expiry": later("Near Expiry", 4), "open_purchase_orders": later("Open Purchase Orders", 3),
+        "vendor_qualification_due": {"label": "Vendor Qualification Due (60 d)", "value": vq_due, "available": True},
+        "near_expiry": later("Near Expiry", 4), "open_purchase_orders": {"label": "Open Purchase Orders", "value": open_po, "available": True},
+        "open_purchase_requests": {"label": "Open Purchase Requests", "value": open_pr, "available": True},
         "active_production_batches": later("Active Production Batches", 6),
         "fg_available": later("FG Available", 7), "dispatch_pending": later("Dispatch Pending", 7)},
         "unread_notifications": unread}

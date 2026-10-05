@@ -76,6 +76,6 @@ export function FormModal({ title, fields, initial, extra, onClose, onSave }: {
 
 export function useLookup(path: string, label = "name", valueKey = "id", codeKey?: string) {
   const [opts, setOpts] = useState<{ value: any; label: string }[]>([]);
-  useEffect(() => { api(`${path}?limit=200`).then((r) => setOpts(r.items.map((x: any) => ({ value: x[valueKey], label: codeKey ? `${x[codeKey]} — ${x[label]}` : x[label] })))).catch(() => {}); }, [path]);
+  useEffect(() => { api(`${path}${path.includes("?") ? "&" : "?"}limit=200`).then((r) => setOpts(r.items.map((x: any) => ({ value: x[valueKey], label: codeKey ? `${x[codeKey]} — ${x[label]}` : x[label] })))).catch(() => {}); }, [path]);
   return opts;
 }

@@ -9,6 +9,13 @@ DEFAULTS = {
     "po.over_delivery_tolerance_pct": ("0", "GRN over-delivery tolerance %"),
     "stats.min_n_capability": ("25", "Minimum n for Cp/Cpk/Pp/Ppk"),
     "expiry.alert_days": ("90,60,30", "Expiry/retest alert thresholds (days)"),
+    "vq.alert_days": ("90,60,30,7", "Vendor requalification due-date alert thresholds (days)"),
+    "vq.default_validity_months": ("36", "Default requalification interval (months) suggested on a new qualification"),
+    "po.warn_vendor_due_days": ("60", "Warn on PO when vendor requalification is due within this many days"),
+    "po.required_docs.CRITICAL": ("GMP_CERTIFICATE,MANUFACTURING_LICENCE,QUALITY_AGREEMENT,COA_SAMPLE", "Vendor documents that must be approved and unexpired (critical vendors)"),
+    "po.required_docs.HIGH": ("GMP_CERTIFICATE,MANUFACTURING_LICENCE", "Required vendor documents (high risk)"),
+    "po.required_docs.MEDIUM": ("MANUFACTURING_LICENCE", "Required vendor documents (medium risk)"),
+    "po.required_docs.LOW": ("", "Required vendor documents (low risk)"),
 }
 
 

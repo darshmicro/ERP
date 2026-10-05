@@ -3,6 +3,10 @@ import { useAuth } from "../hooks/useAuth";
 
 const NAV: { to: string; label: string; icon: string; perm?: string }[] = [
   { to: "/", label: "Home", icon: "speedometer2" },
+  { to: "/purchase-requests", label: "Purchase Requests", icon: "cart-plus", perm: "pr.request.read" },
+  { to: "/purchase-orders", label: "Purchase Orders", icon: "receipt", perm: "po.order.read" },
+  { to: "/vendor-qualification", label: "Vendor Qualification", icon: "patch-check", perm: "vq.qualification.read" },
+  { to: "/vendor-materials", label: "Approved Vendors", icon: "link-45deg", perm: "vm.mapping.read" },
   { to: "/materials", label: "Materials", icon: "box-seam", perm: "md.material.read" },
   { to: "/vendors", label: "Vendors", icon: "truck", perm: "md.vendor.read" },
   { to: "/quality-masters", label: "Specs, STPs & Plans", icon: "clipboard-data", perm: "md.spec.read" },

@@ -18,3 +18,7 @@ Executed against **SQL Server 2022 (RTM-CU27) in Docker**, ODBC Driver 18, pyodb
 ## How to repeat
 `docker compose -f docker/docker-compose.test.yml up -d`, then run pytest with `MERP_TEST_DATABASE_URL` (see compose file). The fixture rolls back leaked sessions and recreates the schema before each test (≈6 s/test on a laptop).
 Not yet covered: concurrency/lock behaviour under load, PostgreSQL, TDE/backup tooling.
+
+## Update — Phase 3 (2026-10-05)
+Full suite on SQL Server 2022: **115 passed** (Phase 3 included); migrations 0001→0003 up/down/up on a clean database (55 tables). Tests that build a full purchasing "world" take 30–60 s each on SQL Server; for CI use a pre-seeded template database.
+**Design note found while testing:** security events and failed-login counters are written in an *independent* transaction. If the request transaction already holds locks when that write happens, SQLite blocks (and SQL Server could wait on contended rows). Rule adopted: **perform authentication / SoD / gate checks before any write in a request** (applied in PO approval and cancellation).

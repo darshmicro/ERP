@@ -45,21 +45,33 @@ QA_MD = (_md(MD_CUD, ["create", "read", "update"]) + _md(["calibration"], ["crea
 QA_HEAD_MD = QA_MD + _md(["vendor", "material", "spec", "stp", "sampling_plan"], ["approve"]) + \
     ["md.vendor.deactivate", "md.material.deactivate", "import.job.approve"]
 
+PURCHASE_REQ = ["pr.request.create", "pr.request.read", "pr.request.update", "pr.request.submit", "pr.request.cancel"]
+PURCHASE_READ = ["vq.qualification.read", "vm.mapping.read", "pr.request.read", "po.order.read", "pr.request.export",
+                 "po.order.export"]
+PURCHASE_USER_P3 = (PURCHASE_REQ + PURCHASE_READ + ["po.order.create", "po.order.update", "po.order.submit",
+                                                    "po.order.cancel", "vm.mapping.create", "vm.mapping.update"])
+PURCHASE_MGR_P3 = PURCHASE_USER_P3 + ["po.order.approve", "pr.request.approve"]
+QA_P3 = ["vq.qualification.create", "vq.qualification.read", "vq.qualification.update", "vm.mapping.create",
+         "vm.mapping.read", "vm.mapping.update", "po.order.read", "pr.request.read"] + PURCHASE_READ
+QA_HEAD_P3 = QA_P3 + ["vq.qualification.approve", "vq.qualification.suspend", "vq.qualification.disqualify",
+                      "vm.mapping.approve", "vm.mapping.withdraw"]
+
 ROLES: dict[str, tuple[str, bool, list[str]]] = {
     # code: (name, is_admin_role, extra permissions)
-    "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD),
-    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD),
-    "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"]),
-    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"])),
-    "QC_ANALYST": ("QC Analyst", False, QC_MD),
-    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD),
-    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD),
-    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD),
-    "PRODUCTION_USER": ("Production User", False, MD_READ),
-    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ),
+    "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD + ["org.department.read", "org.department.create", "org.department.update", "config.job.run"]),
+    "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD + PURCHASE_USER_P3),
+    "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + PURCHASE_MGR_P3 + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"]),
+    "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"]) + PURCHASE_REQ),
+    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ),
+    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ),
+    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ),
+    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ),
+    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ),
+    "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ + PURCHASE_REQ),
+    "DEPARTMENT_HEAD": ("Department Head", False, ["pr.request.read", "pr.request.approve", "pr.request.create", "pr.request.update", "pr.request.submit", "pr.request.cancel"] + MD_READ),
     "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"])),
-    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ),
-    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"]),
+    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ),
+    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ),
 }
 
 # QA Officer may not approve/verify workflow definitions; only QA Head holds approve.
@@ -82,6 +94,8 @@ SOD_RULES = [
     ("SOD-17", "sampling_plan.approve", "sampling_plan.author", "Sampling plan author cannot approve it"),
     ("SOD-18", "import.approve", "import.submit", "Import submitter cannot approve the import"),
     ("SOD-19", "vendor_document.review", "vendor_document.upload", "Uploader cannot review own vendor document"),
+    ("SOD-20", "vendor_material.approve", "vendor_material.author", "Mapping author cannot approve it"),
+    ("SOD-21", "vendor_qualification.approve", "vendor_qualification.author", "Qualification author cannot approve it"),
 ]
 
 
@@ -128,8 +142,37 @@ def seed_baseline(session: Session, *, company_name: str = "Company Name (config
         plant = Plant(company_id=company.id, plant_code=plant_code, name=plant_name)
         session.add(plant)
         session.flush()
+    seed_workflows(session)
     numbering.seed_registry(session, plant.id)
     config_service.seed_defaults(session)
     if session.get(AuditChainHead, 1) is None:
         session.add(AuditChainHead(id=1, lock_counter=0, last_hash=GENESIS, row_count=0))
     return plant
+
+
+BASELINE_WORKFLOWS = {
+    "pr.request": ("Purchase request approval", [
+        {"seq": 1, "name": "Department approval", "role_code": "DEPARTMENT_HEAD", "esig_required": False, "meaning": "REVIEWED_BY", "sla_hours": 48},
+        {"seq": 2, "name": "Purchase review", "role_code": "PURCHASE_MANAGER", "esig_required": True, "meaning": "APPROVED_BY", "sla_hours": 48}]),
+    "po.order": ("Purchase order approval", [
+        {"seq": 1, "name": "Purchase Manager approval", "role_code": "PURCHASE_MANAGER", "esig_required": True, "meaning": "APPROVED_BY", "sla_hours": 24}]),
+}
+
+
+def seed_workflows(session: Session) -> None:
+    """Baseline approval chains installed as configuration (approved without signature as part of the release;
+    later changes require QA e-signature through the normal workflow-definition approval)."""
+    from app.models.platform import WorkflowDefinition
+    from app.core.time import utcnow
+    from app.workflows import approval
+    from app.workflows.state_machine import transition_context
+    for code, (name, steps) in BASELINE_WORKFLOWS.items():
+        if session.execute(select(WorkflowDefinition.id).where(WorkflowDefinition.process_code == code)).first():
+            continue
+        session.flush()
+        d = approval.create_definition(session, code, name, steps)
+        session.flush()
+        with transition_context():
+            d.status = "APPROVED"
+            d.effective_from = utcnow()
+            session.flush()

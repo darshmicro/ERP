@@ -211,8 +211,14 @@ def create_vendor(body: VendorIn, p: Principal = Depends(require("md.vendor.crea
 
 @router.get("/vendors/{vendor_id}", tags=["Vendors"])
 def get_vendor(vendor_id: int, p: Principal = Depends(require("md.vendor.read")), s: Session = Depends(get_db)):
+    from app.services import vendor_qualification as vqs
     v = masters.get_or_404(s, Vendor, vendor_id, "Vendor")
-    return {**_vendor_out(v), "documents": ms.vendor_documents(s, v.id)}
+    st = vqs.standing(s, v.id)
+    qual = {"status": st.effective_status, "purchasable": st.purchasable and v.approval_status == "APPROVED",
+            "qualified_on": st.qualification.qualified_on.isoformat() if st.qualification and st.qualification.qualified_on else None,
+            "requalification_due_date": st.qualification.requalification_due_date.isoformat() if st.qualification and st.qualification.requalification_due_date else None,
+            "days_to_due": st.days_to_due, "message": st.message}
+    return {**_vendor_out(v), "documents": ms.vendor_documents(s, v.id), "qualification": qual}
 
 
 @router.patch("/vendors/{vendor_id}", tags=["Vendors"])
@@ -529,3 +535,11 @@ from app.models.master import LocationCompatRule  # noqa: E402
 router.include_router(crud_router(
     prefix="/location-compat-rules", tag="Locations", Model=LocationCompatRule, perm="md.location", search_cols=[],
     fields=[("category_a_id", int, True), ("category_b_id", int, True), ("allowed", bool, False)]))
+
+
+from app.models.org import Department  # noqa: E402
+
+router.include_router(crud_router(
+    prefix="/departments", tag="Departments", Model=Department, perm="org.department", search_cols=["code", "name"],
+    filters=["is_active"], before_save=_wh_plant,
+    fields=[("code", S, True), ("name", S, True), ("plant_id", int, False), ("is_active", bool, False)]))

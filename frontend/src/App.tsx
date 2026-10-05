@@ -17,6 +17,9 @@ import Vendors from "./pages/Vendors";
 import QualityMasters from "./pages/QualityMasters";
 import { Locations, Equipment, Customers } from "./pages/Facilities";
 import Import from "./pages/Import";
+import VendorQualification from "./pages/VendorQualification";
+import VendorMaterials from "./pages/VendorMaterials";
+import { PurchaseRequests, PurchaseOrders } from "./pages/Purchasing";
 
 export default function App() {
   const { me, loading } = useAuth();
@@ -43,6 +46,10 @@ export default function App() {
         <Route path="customers" element={<Customers />} />
         <Route path="lookups" element={<Lookups />} />
         <Route path="import" element={<Import />} />
+        <Route path="vendor-qualification" element={<VendorQualification />} />
+        <Route path="vendor-materials" element={<VendorMaterials />} />
+        <Route path="purchase-requests" element={<PurchaseRequests />} />
+        <Route path="purchase-orders" element={<PurchaseOrders />} />
         <Route path="password" element={<ChangePassword />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Route>

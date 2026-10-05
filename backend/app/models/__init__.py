@@ -14,3 +14,5 @@ from app.models.master import (Calibration, Category, Customer, Equipment, Locat
                                VendorDocument, Warehouse)
 from app.models.spec import STP, SamplingPlan, Specification, SpecificationParameter  # noqa: E402,F401
 from app.models.importing import ImportJob, ImportRow  # noqa: E402,F401
+from app.models.purchase import (PurchaseOrder, PurchaseOrderLine, PurchaseRequest, PurchaseRequestLine,  # noqa: E402,F401
+                                 VendorMaterial, VendorQualification)

@@ -41,6 +41,8 @@ class Settings(BaseSettings):
     max_upload_mb: int = 10
     log_dir: str = "./logs"
     site_timezone: str = "Asia/Kolkata"
+    scheduler_enabled: bool = False   # run in exactly one app instance, or use scripts/run_jobs.py via cron
+    scheduler_interval_seconds: int = 3600
 
     @property
     def is_production(self) -> bool:

@@ -18,7 +18,7 @@ from app.models.platform import NumberRegistry, NumberSequence
 MASTER_FORMAT = "{prefix}-{seq:05d}"
 # doc types numbered without yearly reset (masters): doc_type -> prefix
 MASTER_REGISTRY = {"VENDOR": "VEN", "MATERIAL": "MAT", "CUSTOMER": "CUS", "SPEC": "SPEC", "STP": "STP",
-                   "SPLAN": "SPL", "EQUIPMENT": "EQ", "IMPORT": "IMP"}
+                   "SPLAN": "SPL", "EQUIPMENT": "EQ", "IMPORT": "IMP", "VQUAL": "VQ"}
 
 DEFAULT_REGISTRY = {  # doc_type -> prefix (yearly reset)
     "PR": "PR", "PO": "PO", "GRN": "GRN", "SAMPLE": "SMP", "SFG": "SFG", "FG": "FG",
