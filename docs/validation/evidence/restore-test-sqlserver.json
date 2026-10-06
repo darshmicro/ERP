@@ -1,0 +1,21 @@
+{
+  "started_at": "2026-10-05T20:27:28.759336+00:00",
+  "dialect": "mssql",
+  "database": "MERP_MIG",
+  "backup_file": "/var/opt/mssql/data/MERP_MIG_1791232048.bak",
+  "verifyonly": "OK",
+  "restore_seconds": 0.72,
+  "tables": 110,
+  "rows_source": 5010,
+  "rows_restored": 5010,
+  "count_differences": {},
+  "audit_chain_restored": {
+    "ok": true,
+    "checked": 1898,
+    "first_bad_audit_id": null
+  },
+  "elapsed_seconds_total": 2.71,
+  "rto_minutes_measured": 1,
+  "result": "SUCCESS",
+  "scratch_dropped": true
+}

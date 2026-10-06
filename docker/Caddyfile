@@ -1,0 +1,6 @@
+# Internal-CA TLS for LAN use; replace with your certificate for production.
+{$MERP_HOSTNAME:localhost} {
+	tls internal
+	encode gzip
+	reverse_proxy api:8000
+}

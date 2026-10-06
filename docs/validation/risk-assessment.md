@@ -1,0 +1,33 @@
+# Risk Assessment (FMEA) — GMP-MERP
+
+Method: S (severity: patient/product/data integrity), O (occurrence without the control), D (detectability) each 1–10; RPN = S×O×D. Levels: **HIGH ≥ 200**, MEDIUM ≥ 100, LOW < 100 (the system's own FMEA module uses the same thresholds). "Residual" = after the implemented controls and the verification listed. Testing depth follows the residual RPN (see Validation Plan §4).
+
+| # | Function / failure mode | Effect | S | O | D | RPN | Control implemented | Verification | S′ | O′ | D′ | Residual RPN |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | PO raised to an unqualified / expired vendor | Non-GMP material enters supply chain | 9 | 5 | 6 | 270 | Gate BR-PO-001..010 at create/submit/approve; live qualification evaluation; block logged | test_crit_01..03 | 9 | 1 | 2 | 18 |
+| 2 | Quarantined / rejected / expired / held material issued to production | Unapproved material in product | 10 | 5 | 7 | 350 | Lot state machine + issue gates BR-ISS-001..005, BR-HOLD-001/002 in one service used by every path | test_crit_04/05/07/08 + manufacturing gates | 10 | 1 | 2 | 20 |
+| 3 | Unreleased or held FG dispatched | Unreleased product to patients | 10 | 4 | 7 | 280 | Dispatch rules BR-DSP-001..006 at validate/approve/dispatch; stock reservation; recall hold | test_crit_06/08, dispatch tests | 10 | 1 | 2 | 20 |
+| 4 | QC result altered after submission | Falsified release data | 10 | 4 | 8 | 320 | Immutable submitted results; amendments with approval; audit + e-sign | test_qc result/amendment tests | 10 | 1 | 2 | 20 |
+| 5 | Same person tests, reviews and releases | No independent review | 9 | 5 | 6 | 270 | Release chain with distinct signers, SoD-02/03/24 | release SoD tests | 9 | 1 | 2 | 18 |
+| 6 | Audit trail altered or deleted | Loss of data integrity evidence | 10 | 3 | 9 | 270 | ORM refusal + DB INSTEAD OF triggers + least-privilege grants + HMAC hash chain | test_crit_09, audit tests | 10 | 1 | 2 | 20 |
+| 7 | E-signature without real re-authentication / detached from record | Repudiation | 9 | 4 | 6 | 216 | Password re-entry per signature, lockout accounting, record hash + manifest, append-only | test_crit_10, esign tests | 9 | 1 | 2 | 18 |
+| 8 | Specification/BOM changed in place after approval | Historic batches no longer reproducible | 9 | 5 | 7 | 315 | Versioned masters, immutable approved rows, pinned versions on POs/samples/batches | test_crit_12, versioned master tests | 9 | 1 | 2 | 18 |
+| 9 | Stock balance diverges from movements | Wrong availability / mix-ups | 8 | 5 | 6 | 240 | Append-only ledger, guarded balance updates, ledger-vs-balance verification and report | test_crit_13, ledger tests | 8 | 1 | 2 | 16 |
+| 10 | Issued material not linked to batch | Broken genealogy → impossible recall | 9 | 4 | 7 | 252 | NOT NULL FKs on issue rows, BR-ISS-003 BOM check, trace tests | test_crit_14, trace tests | 9 | 1 | 2 | 18 |
+| 11 | Reconciliation discrepancy ignored | Mix-up or diversion undetected | 8 | 5 | 6 | 240 | Server-side reconciliation, tolerance, auto deviation, QA acceptance | test_crit_15 | 8 | 1 | 2 | 16 |
+| 12 | Calculation errors (Cp/Cpk, rounding, yield) | Wrong disposition decision | 8 | 4 | 6 | 192 | Reference-value unit tests, explicit status codes, ROUND_HALF_UP | stats tests | 8 | 2 | 2 | 32 |
+| 13 | Conditional-release material used beyond authorisation | Unapproved material in a released batch | 9 | 4 | 6 | 216 | Quantity/batch/expiry bounded authorisation; BR-CRL-004 release block | conditional tests | 9 | 1 | 2 | 18 |
+| 14 | Unauthorised access / privilege escalation | Data theft or manipulation | 9 | 4 | 6 | 216 | RBAC on every route, generated role×route matrix test, SoD-09/10, lockout, CSRF | access-matrix + hardening tests | 9 | 1 | 2 | 18 |
+| 15 | Injection / mass assignment / malicious upload | Data compromise | 9 | 3 | 6 | 162 | Parameterised ORM, schema-validated payloads, status columns engine-controlled, magic-byte upload check | hardening tests | 9 | 1 | 3 | 27 |
+| 16 | Data loss (no or unusable backup) | Loss of records | 10 | 4 | 5 | 200 | Backup evidence page with alerts, restore-test script, hash chain verifies restored copy | backup tests + restore qualification | 10 | 2 | 3 | 60 |
+| 17 | Records deleted contrary to retention rules | Regulatory non-compliance | 8 | 3 | 6 | 144 | No deletion API, retention policy (extend-only), legal hold, hashed archive packages | retention tests | 8 | 1 | 2 | 16 |
+| 18 | Printed/exported copy not attributable or altered | Uncontrolled documents | 6 | 5 | 5 | 150 | Controlled-copy numbers, hash log, verification endpoint, footer with user/time | report tests | 6 | 2 | 3 | 36 |
+| 19 | Duplicate batch/lot/document numbers | Mix-up, traceability loss | 8 | 3 | 4 | 96 | Atomic numbering, DB uniqueness, no reuse of cancelled numbers | numbering + batch tests | 8 | 1 | 2 | 16 |
+| 20 | Time manipulation / wrong time zone | Contemporaneous recording compromised | 7 | 3 | 6 | 126 | Server UTC timestamps only, users cannot set transaction times; NTP is a site control | design review; IQ check of NTP | 7 | 2 | 3 | 42 |
+| 21 | Concurrent users overdraw stock / double-number | Negative stock, duplicates | 8 | 4 | 5 | 160 | Guarded atomic UPDATEs, row-lock numbering, tested on SQL Server | concurrency tests | 8 | 1 | 2 | 16 |
+| 22 | Upgrade / migration corrupts data | Loss/alteration | 9 | 3 | 5 | 135 | Versioned migrations up/down/up verified on SQL Server, triggers installed in migrations, release regression | migration tests | 9 | 1 | 3 | 27 |
+| 23 | Master-data change bypasses change control | Uncontrolled change to validated state | 7 | 4 | 5 | 140 | `cc.required_for_master_changes` gate (BR-CC-001) + SoD; site must enable and follow SOP | change-control tests | 7 | 2 | 3 | 42 |
+| 24 | Misconfiguration (weak secrets, debug in production) | Compromise | 8 | 4 | 4 | 128 | Fail-fast production configuration checks, secure defaults, IQ checklist | config tests, IQ | 8 | 1 | 2 | 16 |
+| 25 | Operator error in labelling/identity | Mix-up | 8 | 4 | 5 | 160 | Controlled labels (Code128/QR), reprint reason, QR resolve, status banner on labels | label tests; PQ label inspection | 8 | 2 | 3 | 48 |
+
+**Conclusion.** All HIGH inherent risks are controlled by technical measures with automated verification and have residual RPN < 100. Residual items to be managed by the site: #16 (execute backup + restore tests), #20 (NTP/time source), #23 (enable and follow change-control SOP), #25 (label inspection at PQ). The assessment must be reviewed whenever the intended use or configuration changes.

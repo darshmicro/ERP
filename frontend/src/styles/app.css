@@ -1,0 +1,5 @@
+body { font-size: 0.92rem; }
+.card-metric .value { font-size: 2rem; font-weight: 600; }
+.table-sm td, .table-sm th { vertical-align: middle; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; }
+@media (max-width: 992px) { aside { width: 200px !important; } }
