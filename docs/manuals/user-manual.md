@@ -47,5 +47,25 @@ Create a dispatch from released FG stock; *Validate* reserves stock and runs the
 * **CAPA:** actions with owners/dates → effectiveness check → QA Head closes. **Change control:** assess → QA Head approves → implement (link the new draft master version) → effectiveness → close.
 * **Risk (FMEA):** score S/O/D, RPN levels, mitigation and residual risk; QA Head approves. **SOPs:** read the current approved version and press *I have read and understood*. **Complaints:** record; critical ones hold the lot. **Recall:** QA Head initiates (lot held, affected customers listed), track notification and returns, close with signature.
 
-## 9. Reports and dashboards
-*Reports* lists the reports you may run (filters, preview, Excel/CSV/PDF with controlled-copy number). *Dashboards* give role views (Management, QC, QA, Warehouse). Typical reports: stock status/ledger, expiry forecast, quarantine ageing, QC pending, OOS register, batch register/reconciliation, dispatch register, deviation/CAPA registers, audit trail and e-signature log (QA/auditor).
+## 9. Environmental monitoring (QC analyst, QA officer / head, Production)
+* **Setup (QC head / QA):** *EM Locations* (room or point + cleanroom grade A/B/C/D/NC) and *EM Limits* (a versioned set of alert/action limits per grade, sample type and state). *Load Annex 1 reference limits* creates a **draft** from reference values; the site must verify them, submit and have the QA Head approve (e-signature, not the author). No result can be judged until a limit set is approved.
+* **Sampling:** *EM Samples → New* records what was taken, where and when (settle/contact plates, air, glove prints, particle counts, pressure, temperature, humidity; an optional batch and calibrated instrument). Instruments that are out of calibration are refused.
+* **Result:** the analyst enters the count/reading (and organisms). The system compares it with the limits in force and stores them on the sample. **Alert** → QA is notified. **Action** → a deviation is raised automatically (critical for grades A/B; it blocks release of a linked batch). A wrong entry is *amended* with a reason; the original value stays visible.
+* **Review:** QA reviews and signs; the person who entered the result cannot. A reviewed result is locked.
+* *EM Overview* shows points due/overdue, alert/action results (90 days) and a trend with Nelson-rule signals (indicative; the site's trending procedure decides).
+
+## 10. Stability studies (QC head, QC analyst, QA)
+* **Protocol:** product, approved specification, storage conditions (e.g. 25 °C/60 %RH long-term, 40 °C/75 %RH accelerated), time points (months), pull window. Submit → QA Head approves with e-signature. A change is a new version.
+* **Study:** choose an approved protocol and a lot, the start date, quantity per pull and the location to take stock from. *Start* books the total stability quantity out of the lot through the inventory ledger and schedules every pull (condition × time point).
+* **Pull and test:** *Pull* (outside the window you must give remarks and a minor deviation is raised); the analyst enters results for every specification parameter, then *Testing done*. A failing result raises a deviation linked to the lot (it blocks release/dispatch of that lot until closed). Corrections add a new result with a reason; the original is kept.
+* **Review and conclude:** QA reviews each pull with e-signature (not the analyst). When no pull is open the study is marked completed; *Trend evaluation* shows a regression (one-sided 95 % bound against the limit, extrapolation capped) as decision support; the QA Head signs the shelf-life conclusion (not the study creator). The system never changes a lot's expiry by itself — use change control.
+* *Stability Pulls Due* lists pulls due in 30 days. The daily job marks pulls whose window has closed as *missed* and raises a deviation.
+
+## 11. Costing (Costing analyst, Finance head; read-only for Management and Auditor)
+* **Rate card:** labour rate, machine rate and overhead % — versioned; the Finance Head approves with e-signature.
+* **Lot cost:** purchased lots take the PO rate (tax excluded unless configured); manufactured lots take their approved batch cost; anything else needs a manual cost with a reason. Lots without a cost block costing and are listed on *Inventory Valuation* as *NO COST*.
+* **Batch cost:** *Batch Costs → Calculate* uses the immutable issues and accepted returns of the batch at lot cost, plus labour and machine hours you enter, the approved rate card and overhead; variance to the *Standard Cost* is shown. The Finance Head approves (not the person who calculated); approval locks it and sets the cost of the output lot, so SFG → FG costs roll up.
+* Cost data is hidden from users without costing permission.
+
+## 12. Reports and dashboards
+*Reports* lists the reports you may run (filters, preview, Excel/CSV/PDF with controlled-copy number). *Dashboards* give role views (Management, QC, QA, Warehouse, Monitoring & stability, Costing). Typical reports: stock status/ledger, expiry forecast, quarantine ageing, QC pending, OOS register, batch register/reconciliation, dispatch register, deviation/CAPA registers, audit trail and e-signature log (QA/auditor).

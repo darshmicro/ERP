@@ -68,6 +68,12 @@ CATALOGUE["reports"] = {"catalog": ["read"], "export": ["run"], "run": ["read"]}
 CATALOGUE["dashboard"].update({"management": ["read"], "qc": ["read"], "qa": ["read"], "warehouse": ["read"]})
 CATALOGUE["retention"] = {"policy": ["read", "update"], "archive": ["create", "read"]}
 CATALOGUE["backup"] = {"status": ["read", "record"]}
+CATALOGUE["em"] = {"location": ["create", "read", "update"], "plan": ["create", "read", "update"], "limit": ["create", "read", "update", "approve"],
+                   "sample": ["create", "read", "enter", "review"]}
+CATALOGUE["stability"] = {"protocol": ["create", "read", "update", "approve"], "study": ["create", "read", "update", "start", "conclude", "terminate"],
+                          "pull": ["record", "read", "skip", "review"], "result": ["enter", "read"]}
+CATALOGUE["costing"] = {"rate": ["create", "read", "update", "approve"], "standard": ["read", "update"], "lot": ["read", "set"],
+                        "batch": ["calculate", "read", "approve"], "valuation": ["read"]}
 CATALOGUE["org"]["department"] = ["read", "create", "update"]
 CATALOGUE["config"]["job"] = ["run"]
 

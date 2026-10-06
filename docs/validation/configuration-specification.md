@@ -1,27 +1,29 @@
 # Configuration Specification (CS)
 
-Generated 2026-10-05 from a freshly seeded database (`seed_baseline`). This is the *as-delivered* configuration; the site documents its own changes through change control.
+Generated 2026-10-06 from a freshly seeded database (`seed_baseline`). This is the *as-delivered* configuration; the site documents its own changes through change control.
 
 ## 1. Roles
 
 | Role | Name | Admin role | Permissions |
 |---|---|---|---|
-| AUDITOR | Auditor / Read Only | no | 81 |
+| AUDITOR | Auditor / Read Only | no | 94 |
+| COSTING_ANALYST | Costing Analyst | no | 48 |
 | DEPARTMENT_HEAD | Department Head | no | 23 |
 | DISPATCH_USER | Dispatch User | no | 39 |
-| MANAGEMENT | Management | no | 69 |
+| FINANCE_HEAD | Finance Head | no | 50 |
+| MANAGEMENT | Management | no | 82 |
 | PRODUCTION_MANAGER | Production Manager | no | 79 |
-| PRODUCTION_USER | Production User | no | 69 |
+| PRODUCTION_USER | Production User | no | 72 |
 | PURCHASE_MANAGER | Purchase Manager | no | 45 |
 | PURCHASE_USER | Purchase User | no | 41 |
-| QA_HEAD | QA Head | no | 180 |
-| QA_OFFICER | QA Officer | no | 139 |
-| QC_ANALYST | QC Analyst | no | 78 |
-| QC_HEAD | QC Head | no | 90 |
+| QA_HEAD | QA Head | no | 206 |
+| QA_OFFICER | QA Officer | no | 159 |
+| QC_ANALYST | QC Analyst | no | 90 |
+| QC_HEAD | QC Head | no | 115 |
 | SYSTEM_ADMIN | System Administrator | yes | 49 |
 | WAREHOUSE_USER | Warehouse User | no | 65 |
 
-Permission catalogue: **256** permission codes across **36** modules.
+Permission catalogue: **298** permission codes across **39** modules.
 
 ## 2. Segregation-of-duties rules
 
@@ -59,6 +61,13 @@ Permission catalogue: **256** permission codes across **36** modules.
 | SOD-33 | `quality.risk.approve` | `quality.risk.author` | BLOCK | Risk assessment author cannot approve it |
 | SOD-34 | `quality.capa.close` | `quality.capa.create` | BLOCK | CAPA creator cannot close it |
 | SOD-35 | `sop.approve` | `sop.author` | BLOCK | SOP author cannot approve it |
+| SOD-36 | `em_limit_set.approve` | `em_limit_set.author` | BLOCK | EM limit-set author cannot approve it |
+| SOD-37 | `em.sample.review` | `em.result.enter` | BLOCK | EM result must be reviewed by someone other than the person who entered it |
+| SOD-38 | `stability_protocol.approve` | `stability_protocol.author` | BLOCK | Stability protocol author cannot approve it |
+| SOD-39 | `stability.pull.review` | `stability.result.enter` | BLOCK | Stability results must be reviewed by someone other than the person who entered them |
+| SOD-40 | `stability.study.conclude` | `stability.study.create` | BLOCK | Stability study creator cannot sign its conclusion |
+| SOD-41 | `cost_rate_card.approve` | `cost_rate_card.author` | BLOCK | Cost rate card author cannot approve it |
+| SOD-42 | `costing.batch.approve` | `costing.batch.calculate` | BLOCK | Batch cost must be approved by someone other than the person who calculated it |
 
 ## 3. Approval workflows (baseline)
 
@@ -104,11 +113,15 @@ Permission catalogue: **256** permission codes across **36** modules.
 | CC | CC | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | COA | COA | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | COMPLAINT | CMP | YEARLY | `{prefix}-{year}-{seq:06d}` |
+| COSTCARD | CRC | NEVER | `{prefix}-{seq:05d}` |
 | CRELEASE | CRL | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | CUSTOMER | CUS | NEVER | `{prefix}-{seq:05d}` |
 | DESTR | DES | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | DEVIATION | DEV | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | DISPATCH | DSP | YEARLY | `{prefix}-{year}-{seq:06d}` |
+| EMLIM | EML | NEVER | `{prefix}-{seq:05d}` |
+| EMLOC | EMP | NEVER | `{prefix}-{seq:05d}` |
+| EMSAMPLE | EMS | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | EQUIPMENT | EQ | NEVER | `{prefix}-{seq:05d}` |
 | FG | FG | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | GRN | GRN | YEARLY | `{prefix}-{year}-{seq:06d}` |
@@ -136,7 +149,9 @@ Permission catalogue: **256** permission codes across **36** modules.
 | SOP | SOP | NEVER | `{prefix}-{seq:05d}` |
 | SPEC | SPEC | NEVER | `{prefix}-{seq:05d}` |
 | SPLAN | SPL | NEVER | `{prefix}-{seq:05d}` |
+| STABPROT | SPR | NEVER | `{prefix}-{seq:05d}` |
 | STP | STP | NEVER | `{prefix}-{seq:05d}` |
+| STUDY | STB | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | TEST | TST | YEARLY | `{prefix}-{year}-{seq:06d}` |
 | VENDOR | VEN | NEVER | `{prefix}-{seq:05d}` |
 | VQUAL | VQ | NEVER | `{prefix}-{seq:05d}` |
@@ -149,6 +164,8 @@ Permission catalogue: **256** permission codes across **36** modules.
 | `backup.restore_test_days` | `180` | Alert when the last restore test is older than this (days) |
 | `calibration.override_allowed` | `false` | Allow QA-signed override of expired calibration |
 | `cc.required_for_master_changes` | `false` | New versions of controlled masters need an approved change control (BR-CC-001) |
+| `costing.include_tax` | `false` | Include PO tax in purchased-lot unit cost |
+| `em.alert_notify_roles` | `QA_OFFICER,QA_HEAD` | Roles notified of EM alert-limit results |
 | `expiry.alert_days` | `90,60,30` | Expiry/retest alert thresholds (days) |
 | `grn.over_delivery_tolerance_pct` | `0` | Allowed over-delivery % on GRN |
 | `label.max_copies` | `10` | Maximum copies per label print |
@@ -181,6 +198,9 @@ Permission catalogue: **256** permission codes across **36** modules.
 | Distribution records (`dispatch`) | 10 | EU GDP Ch.4 |
 | Deviations (`deviation`) | 10 | EU GMP Ch.1 |
 | CAPA (`capa`) | 10 | EU GMP Ch.1 |
+| Environmental monitoring samples (`em_sample`) | 10 | EU GMP Annex 1: monitoring records are batch-related evidence |
+| Stability results (`stability_result`) | 10 | EU GMP Ch.6.30 / ICH Q1A: for the shelf life plus one year |
+| Batch costs (`batch_cost`) | 10 | Financial record retention per site policy |
 
 ## 7. Environment settings
 

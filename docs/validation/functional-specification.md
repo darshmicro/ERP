@@ -17,6 +17,11 @@ Describes *what* the system does per module and links each function to URS items
 | **Reports & compliance** | 37 reports (JSON/XLSX/CSV/PDF), controlled copies, business PDFs, dashboards, retention/legal hold/archive, backup evidence | RPT, DI | phase-9 |
 | **Validation tooling** | Generated RTM/URS/CS/data dictionary/access matrix, demo data, load and restore scripts | — | phase-10 |
 
+## Phase 11 modules
+* **Environmental monitoring:** locations with grade, versioned e-signed limit sets (alert/action, high/low), monitoring plans (due/overdue), samples → result → QA review, automatic deviation on action-limit results, append-only amendments, organisms, trend with Nelson rules, excursion list. Rules BR-EM-001..003, SOD-36/37.
+* **Stability:** versioned e-signed protocols (conditions, time points, specification, pull window), studies on a lot with stock booked through the inventory ledger, scheduled pulls, append-only results with superseding corrections, deviation on failure/out-of-window/missed pulls, QA review and signed conclusion, ICH Q1E-style trend evaluation as decision support. Rules BR-STB-001..009, SOD-38..40.
+* **Costing:** versioned e-signed rate cards, standard costs, append-only lot costs (PO rate, approved batch cost, manual), derived actual batch cost with variance and SFG→FG roll-up, e-signed approval, valuation. Rules BR-COST-001..005, SOD-41/42.
+
 ## Interfaces
 * **Browser UI** (React/TypeScript/Bootstrap) over HTTPS; **REST API** `/api/v1` (OpenAPI at `/api/openapi.json`; export committed as `docs/api/openapi.json` on release).
 * **Database:** SQL Server (primary), PostgreSQL (best effort), SQLite (development/test only).

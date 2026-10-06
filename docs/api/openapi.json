@@ -87,46 +87,6 @@
     "title": "ActiveIn",
     "type": "object"
    },
-   "AmendIn": {
-    "properties": {
-     "conforms": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Conforms"
-     },
-     "reason": {
-      "minLength": 3,
-      "title": "Reason",
-      "type": "string"
-     },
-     "value": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Value"
-     }
-    },
-    "required": [
-     "reason"
-    ],
-    "title": "AmendIn",
-    "type": "object"
-   },
    "AnimalIn": {
     "properties": {
      "animal_tag": {
@@ -1259,6 +1219,53 @@
     "title": "CRIn",
     "type": "object"
    },
+   "CalcIn": {
+    "properties": {
+     "labour_hours": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Labour Hours"
+     },
+     "machine_hours": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Machine Hours"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "required": [
+     "labour_hours",
+     "machine_hours"
+    ],
+    "title": "CalcIn",
+    "type": "object"
+   },
    "CalibrationIn": {
     "properties": {
      "certificate_no": {
@@ -1422,6 +1429,182 @@
      "due_date"
     ],
     "title": "CapaIn",
+    "type": "object"
+   },
+   "CardIn": {
+    "properties": {
+     "card_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Card No"
+     },
+     "currency": {
+      "default": "INR",
+      "maxLength": 3,
+      "minLength": 3,
+      "title": "Currency",
+      "type": "string"
+     },
+     "labour_rate_per_hour": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Labour Rate Per Hour"
+     },
+     "machine_rate_per_hour": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Machine Rate Per Hour"
+     },
+     "overhead_pct": {
+      "anyOf": [
+       {
+        "maximum": 1000.0,
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "default": 0,
+      "title": "Overhead Pct"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "title": {
+      "maxLength": 200,
+      "minLength": 3,
+      "title": "Title",
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "labour_rate_per_hour",
+     "machine_rate_per_hour"
+    ],
+    "title": "CardIn",
+    "type": "object"
+   },
+   "CardUpdate": {
+    "additionalProperties": false,
+    "properties": {
+     "currency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Currency"
+     },
+     "labour_rate_per_hour": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Labour Rate Per Hour"
+     },
+     "machine_rate_per_hour": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Machine Rate Per Hour"
+     },
+     "overhead_pct": {
+      "anyOf": [
+       {
+        "maximum": 1000.0,
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Overhead Pct"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "title": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Title"
+     }
+    },
+    "title": "CardUpdate",
     "type": "object"
    },
    "CategoryCreate": {
@@ -2217,6 +2400,135 @@
     "title": "CompleteIn",
     "type": "object"
    },
+   "ConcludeIn": {
+    "properties": {
+     "conclusion": {
+      "minLength": 3,
+      "title": "Conclusion",
+      "type": "string"
+     },
+     "password": {
+      "title": "Password",
+      "type": "string"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "shelf_life_months": {
+      "maximum": 240.0,
+      "minimum": 0.0,
+      "title": "Shelf Life Months",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "password",
+     "shelf_life_months",
+     "conclusion"
+    ],
+    "title": "ConcludeIn",
+    "type": "object"
+   },
+   "ConditionIn": {
+    "properties": {
+     "chamber_location_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Chamber Location Id"
+     },
+     "condition_type": {
+      "pattern": "^(LONG_TERM|INTERMEDIATE|ACCELERATED|STRESS|REFRIGERATED|FROZEN)$",
+      "title": "Condition Type",
+      "type": "string"
+     },
+     "label": {
+      "maxLength": 80,
+      "minLength": 2,
+      "title": "Label",
+      "type": "string"
+     },
+     "rh_pct": {
+      "anyOf": [
+       {
+        "maximum": 100.0,
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rh Pct"
+     },
+     "rh_tol_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rh Tol Pct"
+     },
+     "temperature_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Temperature C"
+     },
+     "temperature_tol_c": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temperature Tol C"
+     }
+    },
+    "required": [
+     "label",
+     "condition_type",
+     "temperature_c"
+    ],
+    "title": "ConditionIn",
+    "type": "object"
+   },
    "ConfigIn": {
     "properties": {
      "reason": {
@@ -2352,6 +2664,34 @@
      "entries"
     ],
     "title": "ConsumptionIn",
+    "type": "object"
+   },
+   "CorrectionIn": {
+    "properties": {
+     "correction_of": {
+      "title": "Correction Of",
+      "type": "integer"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "result": {
+      "$ref": "#/components/schemas/app__api__v1__stability__ResultIn"
+     }
+    },
+    "required": [
+     "correction_of",
+     "result"
+    ],
+    "title": "CorrectionIn",
     "type": "object"
    },
    "CustomerCreate": {
@@ -4276,6 +4616,49 @@
     "title": "InvestigationIn",
     "type": "object"
    },
+   "IsolateIn": {
+    "properties": {
+     "cfu_count": {
+      "default": 1,
+      "minimum": 0.0,
+      "title": "Cfu Count",
+      "type": "integer"
+     },
+     "gram_stain": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gram Stain"
+     },
+     "identification_method": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Identification Method"
+     },
+     "organism": {
+      "maxLength": 150,
+      "minLength": 2,
+      "title": "Organism",
+      "type": "string"
+     }
+    },
+    "required": [
+     "organism"
+    ],
+    "title": "IsolateIn",
+    "type": "object"
+   },
    "IssueIn": {
     "properties": {
      "additional": {
@@ -4381,6 +4764,156 @@
      "label_type"
     ],
     "title": "LabelIn",
+    "type": "object"
+   },
+   "LimitIn": {
+    "properties": {
+     "action_high": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Action High"
+     },
+     "action_low": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Action Low"
+     },
+     "alert_high": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Alert High"
+     },
+     "alert_low": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Alert Low"
+     },
+     "grade": {
+      "title": "Grade",
+      "type": "string"
+     },
+     "sample_type": {
+      "title": "Sample Type",
+      "type": "string"
+     },
+     "state": {
+      "default": "OPERATIONAL",
+      "title": "State",
+      "type": "string"
+     },
+     "unit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit"
+     }
+    },
+    "required": [
+     "grade",
+     "sample_type"
+    ],
+    "title": "LimitIn",
+    "type": "object"
+   },
+   "LimitSetIn": {
+    "properties": {
+     "basis": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Basis"
+     },
+     "limits": {
+      "default": [],
+      "items": {
+       "$ref": "#/components/schemas/LimitIn"
+      },
+      "title": "Limits",
+      "type": "array"
+     },
+     "limitset_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Limitset No"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "title": {
+      "maxLength": 200,
+      "minLength": 3,
+      "title": "Title",
+      "type": "string"
+     }
+    },
+    "required": [
+     "title"
+    ],
+    "title": "LimitSetIn",
     "type": "object"
    },
    "LineIn": {
@@ -4536,377 +5069,6 @@
     "title": "LocationCompatRuleUpdate",
     "type": "object"
    },
-   "LocationIn": {
-    "properties": {
-     "allowed_category_ids": {
-      "default": [],
-      "items": {
-       "type": "integer"
-      },
-      "title": "Allowed Category Ids",
-      "type": "array"
-     },
-     "capacity": {
-      "anyOf": [
-       {
-        "minimum": 0.0,
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Capacity"
-     },
-     "capacity_unit_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Capacity Unit Id"
-     },
-     "humidity_max": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Humidity Max"
-     },
-     "humidity_min": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Humidity Min"
-     },
-     "is_quarantine": {
-      "default": false,
-      "title": "Is Quarantine",
-      "type": "boolean"
-     },
-     "is_rejected_area": {
-      "default": false,
-      "title": "Is Rejected Area",
-      "type": "boolean"
-     },
-     "location_code": {
-      "maxLength": 40,
-      "minLength": 1,
-      "title": "Location Code",
-      "type": "string"
-     },
-     "location_type": {
-      "title": "Location Type",
-      "type": "string"
-     },
-     "name": {
-      "title": "Name",
-      "type": "string"
-     },
-     "parent_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Parent Id"
-     },
-     "reason": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Reason"
-     },
-     "status": {
-      "default": "ACTIVE",
-      "pattern": "^(ACTIVE|INACTIVE)$",
-      "title": "Status",
-      "type": "string"
-     },
-     "storage_condition": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Storage Condition"
-     },
-     "temp_max": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Temp Max"
-     },
-     "temp_min": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Temp Min"
-     },
-     "warehouse_id": {
-      "title": "Warehouse Id",
-      "type": "integer"
-     }
-    },
-    "required": [
-     "warehouse_id",
-     "location_code",
-     "name",
-     "location_type"
-    ],
-    "title": "LocationIn",
-    "type": "object"
-   },
-   "LocationUpdate": {
-    "additionalProperties": false,
-    "properties": {
-     "allowed_category_ids": {
-      "anyOf": [
-       {
-        "items": {
-         "type": "integer"
-        },
-        "type": "array"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Allowed Category Ids"
-     },
-     "capacity": {
-      "anyOf": [
-       {
-        "minimum": 0.0,
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Capacity"
-     },
-     "capacity_unit_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Capacity Unit Id"
-     },
-     "humidity_max": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Humidity Max"
-     },
-     "humidity_min": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Humidity Min"
-     },
-     "is_quarantine": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Is Quarantine"
-     },
-     "is_rejected_area": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Is Rejected Area"
-     },
-     "location_type": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Location Type"
-     },
-     "name": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Name"
-     },
-     "parent_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Parent Id"
-     },
-     "reason": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Reason"
-     },
-     "status": {
-      "anyOf": [
-       {
-        "pattern": "^(ACTIVE|INACTIVE)$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Status"
-     },
-     "storage_condition": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Storage Condition"
-     },
-     "temp_max": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Temp Max"
-     },
-     "temp_min": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Temp Min"
-     }
-    },
-    "title": "LocationUpdate",
-    "type": "object"
-   },
    "LoginIn": {
     "properties": {
      "password": {
@@ -4927,6 +5089,39 @@
      "password"
     ],
     "title": "LoginIn",
+    "type": "object"
+   },
+   "LotCostIn": {
+    "properties": {
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "unit_cost": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Unit Cost"
+     }
+    },
+    "required": [
+     "unit_cost"
+    ],
+    "title": "LotCostIn",
     "type": "object"
    },
    "MaterialIn": {
@@ -7092,206 +7287,6 @@
     "title": "ParamUpdate",
     "type": "object"
    },
-   "PlanIn": {
-    "properties": {
-     "container_rule": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Container Rule"
-     },
-     "fixed_qty": {
-      "anyOf": [
-       {
-        "exclusiveMinimum": 0.0,
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Fixed Qty"
-     },
-     "material_id": {
-      "title": "Material Id",
-      "type": "integer"
-     },
-     "percent": {
-      "anyOf": [
-       {
-        "exclusiveMinimum": 0.0,
-        "maximum": 100.0,
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Percent"
-     },
-     "plan_no": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Plan No"
-     },
-     "reason": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Reason"
-     },
-     "remarks": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Remarks"
-     },
-     "sampling_rule": {
-      "default": "SQRT_N_PLUS_1",
-      "pattern": "^(FIXED|SQRT_N_PLUS_1|PERCENT|ALL)$",
-      "title": "Sampling Rule",
-      "type": "string"
-     },
-     "unit_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Unit Id"
-     }
-    },
-    "required": [
-     "material_id"
-    ],
-    "title": "PlanIn",
-    "type": "object"
-   },
-   "PlanUpdate": {
-    "additionalProperties": false,
-    "properties": {
-     "container_rule": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Container Rule"
-     },
-     "fixed_qty": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Fixed Qty"
-     },
-     "percent": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Percent"
-     },
-     "reason": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Reason"
-     },
-     "remarks": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Remarks"
-     },
-     "sampling_rule": {
-      "anyOf": [
-       {
-        "pattern": "^(FIXED|SQRT_N_PLUS_1|PERCENT|ALL)$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Sampling Rule"
-     },
-     "unit_id": {
-      "anyOf": [
-       {
-        "type": "integer"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Unit Id"
-     }
-    },
-    "title": "PlanUpdate",
-    "type": "object"
-   },
    "PolicyUpdate": {
     "additionalProperties": false,
     "properties": {
@@ -7391,6 +7386,138 @@
      "quarantine_location_id"
     ],
     "title": "PoolIn",
+    "type": "object"
+   },
+   "ProtocolIn": {
+    "properties": {
+     "container_closure": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Container Closure"
+     },
+     "material_id": {
+      "title": "Material Id",
+      "type": "integer"
+     },
+     "objective": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Objective"
+     },
+     "proposed_shelf_life_months": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Proposed Shelf Life Months"
+     },
+     "protocol_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Protocol No"
+     },
+     "pull_window_days": {
+      "default": 14,
+      "maximum": 90.0,
+      "minimum": 0.0,
+      "title": "Pull Window Days",
+      "type": "integer"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "specification_id": {
+      "title": "Specification Id",
+      "type": "integer"
+     },
+     "title": {
+      "maxLength": 200,
+      "minLength": 3,
+      "title": "Title",
+      "type": "string"
+     }
+    },
+    "required": [
+     "title",
+     "material_id",
+     "specification_id"
+    ],
+    "title": "ProtocolIn",
+    "type": "object"
+   },
+   "PullIn": {
+    "properties": {
+     "actual_qty": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Actual Qty"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     }
+    },
+    "title": "PullIn",
     "type": "object"
    },
    "QAReconIn": {
@@ -7564,19 +7691,8 @@
     "title": "ReleaseAct",
     "type": "object"
    },
-   "ResultIn": {
+   "ResultsIn": {
     "properties": {
-     "conforms": {
-      "anyOf": [
-       {
-        "type": "boolean"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Conforms"
-     },
      "reason": {
       "anyOf": [
        {
@@ -7588,45 +7704,19 @@
       ],
       "title": "Reason"
      },
-     "remarks": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Remarks"
-     },
-     "text": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Text"
-     },
-     "value": {
-      "anyOf": [
-       {
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Value"
+     "results": {
+      "items": {
+       "$ref": "#/components/schemas/app__api__v1__stability__ResultIn"
+      },
+      "minItems": 1,
+      "title": "Results",
+      "type": "array"
      }
     },
-    "title": "ResultIn",
+    "required": [
+     "results"
+    ],
+    "title": "ResultsIn",
     "type": "object"
    },
    "RetainIn": {
@@ -7682,24 +7772,6 @@
      "comment"
     ],
     "title": "ReturnDecision",
-    "type": "object"
-   },
-   "ReviewIn": {
-    "properties": {
-     "approve": {
-      "title": "Approve",
-      "type": "boolean"
-     },
-     "comment": {
-      "title": "Comment",
-      "type": "string"
-     }
-    },
-    "required": [
-     "approve",
-     "comment"
-    ],
-    "title": "ReviewIn",
     "type": "object"
    },
    "RiskIn": {
@@ -8081,71 +8153,6 @@
     "title": "RolePermissionsIn",
     "type": "object"
    },
-   "SampleIn": {
-    "properties": {
-     "containers_sampled": {
-      "default": 1,
-      "minimum": 1.0,
-      "title": "Containers Sampled",
-      "type": "integer"
-     },
-     "material_batch_id": {
-      "title": "Material Batch Id",
-      "type": "integer"
-     },
-     "quantity_sampled": {
-      "anyOf": [
-       {
-        "exclusiveMinimum": 0.0,
-        "type": "number"
-       },
-       {
-        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
-        "type": "string"
-       }
-      ],
-      "title": "Quantity Sampled"
-     },
-     "reason": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Reason"
-     },
-     "remarks": {
-      "anyOf": [
-       {
-        "type": "string"
-       },
-       {
-        "type": "null"
-       }
-      ],
-      "title": "Remarks"
-     },
-     "sample_type": {
-      "default": "RM_SAMPLE",
-      "title": "Sample Type",
-      "type": "string"
-     },
-     "sampling_location_id": {
-      "title": "Sampling Location Id",
-      "type": "integer"
-     }
-    },
-    "required": [
-     "material_batch_id",
-     "quantity_sampled",
-     "sampling_location_id"
-    ],
-    "title": "SampleIn",
-    "type": "object"
-   },
    "SignIn": {
     "properties": {
      "password": {
@@ -8355,6 +8362,55 @@
      }
     },
     "title": "SpecUpdate",
+    "type": "object"
+   },
+   "StandardIn": {
+    "properties": {
+     "material_id": {
+      "title": "Material Id",
+      "type": "integer"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     },
+     "std_unit_cost": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Std Unit Cost"
+     }
+    },
+    "required": [
+     "material_id",
+     "std_unit_cost"
+    ],
+    "title": "StandardIn",
     "type": "object"
    },
    "StartIn": {
@@ -8718,6 +8774,60 @@
     "title": "StpUpdate",
     "type": "object"
    },
+   "StudyIn": {
+    "properties": {
+     "material_batch_id": {
+      "title": "Material Batch Id",
+      "type": "integer"
+     },
+     "protocol_id": {
+      "title": "Protocol Id",
+      "type": "integer"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "source_location_id": {
+      "title": "Source Location Id",
+      "type": "integer"
+     },
+     "start_date": {
+      "format": "date",
+      "title": "Start Date",
+      "type": "string"
+     },
+     "units_per_pull": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Units Per Pull"
+     }
+    },
+    "required": [
+     "protocol_id",
+     "material_batch_id",
+     "start_date",
+     "units_per_pull",
+     "source_location_id"
+    ],
+    "title": "StudyIn",
+    "type": "object"
+   },
    "TempIn": {
     "properties": {
      "reading": {
@@ -8759,6 +8869,32 @@
      "reading"
     ],
     "title": "TempIn",
+    "type": "object"
+   },
+   "TimepointIn": {
+    "properties": {
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "month": {
+      "maximum": 240.0,
+      "minimum": 0.0,
+      "title": "Month",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "month"
+    ],
+    "title": "TimepointIn",
     "type": "object"
    },
    "TrainingIn": {
@@ -10413,6 +10549,432 @@
     "title": "WorkflowCreateIn",
     "type": "object"
    },
+   "app__api__v1__em__AmendIn": {
+    "properties": {
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Value"
+     }
+    },
+    "required": [
+     "value"
+    ],
+    "title": "AmendIn",
+    "type": "object"
+   },
+   "app__api__v1__em__LocationIn": {
+    "properties": {
+     "code": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Code"
+     },
+     "description": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Description"
+     },
+     "grade": {
+      "pattern": "^(A|B|C|D|NC)$",
+      "title": "Grade",
+      "type": "string"
+     },
+     "location_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location Id"
+     },
+     "name": {
+      "maxLength": 150,
+      "minLength": 2,
+      "title": "Name",
+      "type": "string"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "required": [
+     "name",
+     "grade"
+    ],
+    "title": "LocationIn",
+    "type": "object"
+   },
+   "app__api__v1__em__LocationUpdate": {
+    "additionalProperties": false,
+    "properties": {
+     "description": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Description"
+     },
+     "grade": {
+      "anyOf": [
+       {
+        "pattern": "^(A|B|C|D|NC)$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Grade"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Active"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "title": "LocationUpdate",
+    "type": "object"
+   },
+   "app__api__v1__em__PlanIn": {
+    "properties": {
+     "em_location_id": {
+      "title": "Em Location Id",
+      "type": "integer"
+     },
+     "frequency_days": {
+      "exclusiveMinimum": 0.0,
+      "title": "Frequency Days",
+      "type": "integer"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "sample_type": {
+      "title": "Sample Type",
+      "type": "string"
+     },
+     "start_date": {
+      "title": "Start Date",
+      "type": "string"
+     },
+     "state": {
+      "default": "OPERATIONAL",
+      "pattern": "^(AT_REST|OPERATIONAL)$",
+      "title": "State",
+      "type": "string"
+     }
+    },
+    "required": [
+     "em_location_id",
+     "sample_type",
+     "frequency_days",
+     "start_date"
+    ],
+    "title": "PlanIn",
+    "type": "object"
+   },
+   "app__api__v1__em__PlanUpdate": {
+    "additionalProperties": false,
+    "properties": {
+     "frequency_days": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Frequency Days"
+     },
+     "is_active": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Active"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "title": "PlanUpdate",
+    "type": "object"
+   },
+   "app__api__v1__em__ResultIn": {
+    "properties": {
+     "isolates": {
+      "default": [],
+      "items": {
+       "$ref": "#/components/schemas/IsolateIn"
+      },
+      "title": "Isolates",
+      "type": "array"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "unit": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Value"
+     }
+    },
+    "required": [
+     "value"
+    ],
+    "title": "ResultIn",
+    "type": "object"
+   },
+   "app__api__v1__em__ReviewIn": {
+    "properties": {
+     "comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Comment"
+     },
+     "password": {
+      "title": "Password",
+      "type": "string"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "required": [
+     "password"
+    ],
+    "title": "ReviewIn",
+    "type": "object"
+   },
+   "app__api__v1__em__SampleIn": {
+    "properties": {
+     "em_location_id": {
+      "title": "Em Location Id",
+      "type": "integer"
+     },
+     "equipment_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Equipment Id"
+     },
+     "manufacturing_batch_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Manufacturing Batch Id"
+     },
+     "plan_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Plan Id"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     },
+     "sample_point": {
+      "anyOf": [
+       {
+        "maxLength": 100,
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sample Point"
+     },
+     "sample_type": {
+      "title": "Sample Type",
+      "type": "string"
+     },
+     "state": {
+      "default": "OPERATIONAL",
+      "pattern": "^(AT_REST|OPERATIONAL)$",
+      "title": "State",
+      "type": "string"
+     }
+    },
+    "required": [
+     "em_location_id",
+     "sample_type"
+    ],
+    "title": "SampleIn",
+    "type": "object"
+   },
    "app__api__v1__manufacturing__ReturnIn": {
     "properties": {
      "damaged_qty": {
@@ -10484,6 +11046,565 @@
     "title": "ReturnIn",
     "type": "object"
    },
+   "app__api__v1__masters__LocationIn": {
+    "properties": {
+     "allowed_category_ids": {
+      "default": [],
+      "items": {
+       "type": "integer"
+      },
+      "title": "Allowed Category Ids",
+      "type": "array"
+     },
+     "capacity": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capacity"
+     },
+     "capacity_unit_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capacity Unit Id"
+     },
+     "humidity_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Humidity Max"
+     },
+     "humidity_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Humidity Min"
+     },
+     "is_quarantine": {
+      "default": false,
+      "title": "Is Quarantine",
+      "type": "boolean"
+     },
+     "is_rejected_area": {
+      "default": false,
+      "title": "Is Rejected Area",
+      "type": "boolean"
+     },
+     "location_code": {
+      "maxLength": 40,
+      "minLength": 1,
+      "title": "Location Code",
+      "type": "string"
+     },
+     "location_type": {
+      "title": "Location Type",
+      "type": "string"
+     },
+     "name": {
+      "title": "Name",
+      "type": "string"
+     },
+     "parent_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parent Id"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "status": {
+      "default": "ACTIVE",
+      "pattern": "^(ACTIVE|INACTIVE)$",
+      "title": "Status",
+      "type": "string"
+     },
+     "storage_condition": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Storage Condition"
+     },
+     "temp_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temp Max"
+     },
+     "temp_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temp Min"
+     },
+     "warehouse_id": {
+      "title": "Warehouse Id",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "warehouse_id",
+     "location_code",
+     "name",
+     "location_type"
+    ],
+    "title": "LocationIn",
+    "type": "object"
+   },
+   "app__api__v1__masters__LocationUpdate": {
+    "additionalProperties": false,
+    "properties": {
+     "allowed_category_ids": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "integer"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Allowed Category Ids"
+     },
+     "capacity": {
+      "anyOf": [
+       {
+        "minimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capacity"
+     },
+     "capacity_unit_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capacity Unit Id"
+     },
+     "humidity_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Humidity Max"
+     },
+     "humidity_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Humidity Min"
+     },
+     "is_quarantine": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Quarantine"
+     },
+     "is_rejected_area": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Is Rejected Area"
+     },
+     "location_type": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Location Type"
+     },
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "parent_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parent Id"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "status": {
+      "anyOf": [
+       {
+        "pattern": "^(ACTIVE|INACTIVE)$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Status"
+     },
+     "storage_condition": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Storage Condition"
+     },
+     "temp_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temp Max"
+     },
+     "temp_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Temp Min"
+     }
+    },
+    "title": "LocationUpdate",
+    "type": "object"
+   },
+   "app__api__v1__masters__ReviewIn": {
+    "properties": {
+     "approve": {
+      "title": "Approve",
+      "type": "boolean"
+     },
+     "comment": {
+      "title": "Comment",
+      "type": "string"
+     }
+    },
+    "required": [
+     "approve",
+     "comment"
+    ],
+    "title": "ReviewIn",
+    "type": "object"
+   },
+   "app__api__v1__qc__AmendIn": {
+    "properties": {
+     "conforms": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Conforms"
+     },
+     "reason": {
+      "minLength": 3,
+      "title": "Reason",
+      "type": "string"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     }
+    },
+    "required": [
+     "reason"
+    ],
+    "title": "AmendIn",
+    "type": "object"
+   },
+   "app__api__v1__qc__ResultIn": {
+    "properties": {
+     "conforms": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Conforms"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     },
+     "text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Text"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     }
+    },
+    "title": "ResultIn",
+    "type": "object"
+   },
+   "app__api__v1__qc__SampleIn": {
+    "properties": {
+     "containers_sampled": {
+      "default": 1,
+      "minimum": 1.0,
+      "title": "Containers Sampled",
+      "type": "integer"
+     },
+     "material_batch_id": {
+      "title": "Material Batch Id",
+      "type": "integer"
+     },
+     "quantity_sampled": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       }
+      ],
+      "title": "Quantity Sampled"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     },
+     "sample_type": {
+      "default": "RM_SAMPLE",
+      "title": "Sample Type",
+      "type": "string"
+     },
+     "sampling_location_id": {
+      "title": "Sampling Location Id",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "material_batch_id",
+     "quantity_sampled",
+     "sampling_location_id"
+    ],
+    "title": "SampleIn",
+    "type": "object"
+   },
    "app__api__v1__quality__ReturnIn": {
     "properties": {
      "location_id": {
@@ -10538,6 +11659,267 @@
      }
     },
     "title": "ReturnIn",
+    "type": "object"
+   },
+   "app__api__v1__quality_masters__PlanIn": {
+    "properties": {
+     "container_rule": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Container Rule"
+     },
+     "fixed_qty": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fixed Qty"
+     },
+     "material_id": {
+      "title": "Material Id",
+      "type": "integer"
+     },
+     "percent": {
+      "anyOf": [
+       {
+        "exclusiveMinimum": 0.0,
+        "maximum": 100.0,
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Percent"
+     },
+     "plan_no": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Plan No"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     },
+     "sampling_rule": {
+      "default": "SQRT_N_PLUS_1",
+      "pattern": "^(FIXED|SQRT_N_PLUS_1|PERCENT|ALL)$",
+      "title": "Sampling Rule",
+      "type": "string"
+     },
+     "unit_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit Id"
+     }
+    },
+    "required": [
+     "material_id"
+    ],
+    "title": "PlanIn",
+    "type": "object"
+   },
+   "app__api__v1__quality_masters__PlanUpdate": {
+    "additionalProperties": false,
+    "properties": {
+     "container_rule": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Container Rule"
+     },
+     "fixed_qty": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fixed Qty"
+     },
+     "percent": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Percent"
+     },
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     },
+     "remarks": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Remarks"
+     },
+     "sampling_rule": {
+      "anyOf": [
+       {
+        "pattern": "^(FIXED|SQRT_N_PLUS_1|PERCENT|ALL)$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Sampling Rule"
+     },
+     "unit_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Unit Id"
+     }
+    },
+    "title": "PlanUpdate",
+    "type": "object"
+   },
+   "app__api__v1__stability__ResultIn": {
+    "properties": {
+     "conforms": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Conforms"
+     },
+     "equipment_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Equipment Id"
+     },
+     "parameter_id": {
+      "title": "Parameter Id",
+      "type": "integer"
+     },
+     "text": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Text"
+     },
+     "value": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Value"
+     }
+    },
+    "required": [
+     "parameter_id"
+    ],
+    "title": "ResultIn",
     "type": "object"
    }
   }
@@ -13921,6 +15303,710 @@
     ]
    }
   },
+  "/api/v1/costing/batch-costs": {
+   "get": {
+    "operationId": "list_batch_costs_api_v1_costing_batch_costs_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Batch Costs",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/batch-costs/{bid}": {
+   "get": {
+    "operationId": "get_batch_cost_api_v1_costing_batch_costs__bid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "bid",
+      "required": true,
+      "schema": {
+       "title": "Bid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Batch Cost",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/batch-costs/{bid}/approve": {
+   "post": {
+    "operationId": "approve_batch_cost_api_v1_costing_batch_costs__bid__approve_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "bid",
+      "required": true,
+      "schema": {
+       "title": "Bid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SignedAction"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Approve Batch Cost",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/batches/{batch_id}/calculate": {
+   "post": {
+    "operationId": "calculate_api_v1_costing_batches__batch_id__calculate_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "batch_id",
+      "required": true,
+      "schema": {
+       "title": "Batch Id",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CalcIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Calculate",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/lots/{lot_id}": {
+   "get": {
+    "operationId": "lot_cost_api_v1_costing_lots__lot_id__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lot_id",
+      "required": true,
+      "schema": {
+       "title": "Lot Id",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Lot Cost",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/lots/{lot_id}/cost": {
+   "post": {
+    "operationId": "set_lot_cost_api_v1_costing_lots__lot_id__cost_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lot_id",
+      "required": true,
+      "schema": {
+       "title": "Lot Id",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LotCostIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Set Lot Cost",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/rate-cards": {
+   "get": {
+    "operationId": "list_cards_api_v1_costing_rate_cards_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Cards",
+    "tags": [
+     "Costing"
+    ]
+   },
+   "post": {
+    "operationId": "create_card_api_v1_costing_rate_cards_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CardIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Card",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/rate-cards/{cid}": {
+   "get": {
+    "operationId": "get_card_api_v1_costing_rate_cards__cid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "cid",
+      "required": true,
+      "schema": {
+       "title": "Cid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Card",
+    "tags": [
+     "Costing"
+    ]
+   },
+   "patch": {
+    "operationId": "update_card_api_v1_costing_rate_cards__cid__patch",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "cid",
+      "required": true,
+      "schema": {
+       "title": "Cid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CardUpdate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Update Card",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/rate-cards/{cid}/approve": {
+   "post": {
+    "operationId": "approve_card_api_v1_costing_rate_cards__cid__approve_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "cid",
+      "required": true,
+      "schema": {
+       "title": "Cid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SignedAction"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Approve Card",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/rate-cards/{cid}/new-version": {
+   "post": {
+    "operationId": "new_card_version_api_v1_costing_rate_cards__cid__new_version_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "cid",
+      "required": true,
+      "schema": {
+       "title": "Cid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "New Card Version",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/rate-cards/{cid}/submit": {
+   "post": {
+    "operationId": "submit_card_api_v1_costing_rate_cards__cid__submit_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "cid",
+      "required": true,
+      "schema": {
+       "title": "Cid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Submit Card",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/standards": {
+   "get": {
+    "operationId": "list_standards_api_v1_costing_standards_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 100,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Standards",
+    "tags": [
+     "Costing"
+    ]
+   },
+   "put": {
+    "operationId": "set_standard_api_v1_costing_standards_put",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StandardIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Set Standard",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
+  "/api/v1/costing/valuation": {
+   "get": {
+    "operationId": "valuation_api_v1_costing_valuation_get",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Valuation",
+    "tags": [
+     "Costing"
+    ]
+   }
+  },
   "/api/v1/customers": {
    "get": {
     "operationId": "list__api_v1_customers_get",
@@ -15825,6 +17911,1213 @@
     "summary": "Download",
     "tags": [
      "Documents"
+    ]
+   }
+  },
+  "/api/v1/em/excursions": {
+   "get": {
+    "operationId": "excursions_api_v1_em_excursions_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "days",
+      "required": false,
+      "schema": {
+       "default": 30,
+       "title": "Days",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Excursions",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets": {
+   "get": {
+    "operationId": "list_limit_sets_api_v1_em_limit_sets_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Limit Sets",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   },
+   "post": {
+    "operationId": "create_limit_set_api_v1_em_limit_sets_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LimitSetIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Limit Set",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/load-reference": {
+   "post": {
+    "description": "Creates a DRAFT limit set from Annex 1 style reference values; the site must verify and approve it.",
+    "operationId": "load_reference_api_v1_em_limit_sets_load_reference_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Load Reference",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/{lid}": {
+   "get": {
+    "operationId": "get_limit_set_api_v1_em_limit_sets__lid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Limit Set",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/{lid}/approve": {
+   "post": {
+    "operationId": "approve_limit_set_api_v1_em_limit_sets__lid__approve_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SignedAction"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Approve Limit Set",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/{lid}/limits": {
+   "post": {
+    "operationId": "add_limit_api_v1_em_limit_sets__lid__limits_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/LimitIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Add Limit",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/{lid}/limits/{xid}": {
+   "delete": {
+    "operationId": "delete_limit_api_v1_em_limit_sets__lid__limits__xid__delete",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "path",
+      "name": "xid",
+      "required": true,
+      "schema": {
+       "title": "Xid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Delete Limit",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/{lid}/new-version": {
+   "post": {
+    "operationId": "new_limit_set_version_api_v1_em_limit_sets__lid__new_version_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "New Limit Set Version",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/limit-sets/{lid}/submit": {
+   "post": {
+    "operationId": "submit_limit_set_api_v1_em_limit_sets__lid__submit_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Submit Limit Set",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/locations": {
+   "get": {
+    "operationId": "list_locations_api_v1_em_locations_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 100,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Locations",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   },
+   "post": {
+    "operationId": "create_location_api_v1_em_locations_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__LocationIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Location",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/locations/{lid}": {
+   "patch": {
+    "operationId": "update_location_api_v1_em_locations__lid__patch",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "lid",
+      "required": true,
+      "schema": {
+       "title": "Lid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__LocationUpdate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Update Location",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/plans": {
+   "get": {
+    "operationId": "list_plans_api_v1_em_plans_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 100,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Plans",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   },
+   "post": {
+    "operationId": "create_plan_api_v1_em_plans_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__PlanIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Plan",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/plans/{pid}": {
+   "patch": {
+    "operationId": "update_plan_api_v1_em_plans__pid__patch",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__PlanUpdate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Update Plan",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples": {
+   "get": {
+    "operationId": "list_samples_api_v1_em_samples_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Samples",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   },
+   "post": {
+    "operationId": "create_sample_api_v1_em_samples_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__SampleIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Sample",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples/{sid}": {
+   "get": {
+    "operationId": "get_sample_api_v1_em_samples__sid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Sample",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples/{sid}/amend": {
+   "post": {
+    "operationId": "amend_result_api_v1_em_samples__sid__amend_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__AmendIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Amend Result",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples/{sid}/cancel": {
+   "post": {
+    "operationId": "cancel_sample_api_v1_em_samples__sid__cancel_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Cancel Sample",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples/{sid}/isolates": {
+   "post": {
+    "operationId": "add_isolate_api_v1_em_samples__sid__isolates_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/IsolateIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Add Isolate",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples/{sid}/result": {
+   "post": {
+    "operationId": "enter_result_api_v1_em_samples__sid__result_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__ResultIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Enter Result",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/samples/{sid}/review": {
+   "post": {
+    "operationId": "review_sample_api_v1_em_samples__sid__review_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/app__api__v1__em__ReviewIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Review Sample",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/schedule": {
+   "get": {
+    "operationId": "schedule_api_v1_em_schedule_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "horizon_days",
+      "required": false,
+      "schema": {
+       "default": 7,
+       "title": "Horizon Days",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Schedule",
+    "tags": [
+     "Environmental monitoring"
+    ]
+   }
+  },
+  "/api/v1/em/trend": {
+   "get": {
+    "operationId": "trend_api_v1_em_trend_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "em_location_id",
+      "required": true,
+      "schema": {
+       "title": "Em Location Id",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "sample_type",
+      "required": true,
+      "schema": {
+       "title": "Sample Type",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "state",
+      "required": false,
+      "schema": {
+       "default": "OPERATIONAL",
+       "title": "State",
+       "type": "string"
+      }
+     },
+     {
+      "in": "query",
+      "name": "days",
+      "required": false,
+      "schema": {
+       "default": 365,
+       "title": "Days",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Trend",
+    "tags": [
+     "Environmental monitoring"
     ]
    }
   },
@@ -18027,7 +21320,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/LocationIn"
+        "$ref": "#/components/schemas/app__api__v1__masters__LocationIn"
        }
       }
      },
@@ -18272,7 +21565,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/LocationUpdate"
+        "$ref": "#/components/schemas/app__api__v1__masters__LocationUpdate"
        }
       }
      },
@@ -22304,7 +25597,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/AmendIn"
+        "$ref": "#/components/schemas/app__api__v1__qc__AmendIn"
        }
       }
      },
@@ -22465,7 +25758,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/ResultIn"
+        "$ref": "#/components/schemas/app__api__v1__qc__ResultIn"
        }
       }
      },
@@ -23910,7 +27203,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/SampleIn"
+        "$ref": "#/components/schemas/app__api__v1__qc__SampleIn"
        }
       }
      },
@@ -24244,7 +27537,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/PlanIn"
+        "$ref": "#/components/schemas/app__api__v1__quality_masters__PlanIn"
        }
       }
      },
@@ -24332,7 +27625,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/PlanUpdate"
+        "$ref": "#/components/schemas/app__api__v1__quality_masters__PlanUpdate"
        }
       }
      },
@@ -25646,6 +28939,1220 @@
     "summary": "Update Param",
     "tags": [
      "Specifications"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols": {
+   "get": {
+    "operationId": "list_protocols_api_v1_stability_protocols_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Protocols",
+    "tags": [
+     "Stability"
+    ]
+   },
+   "post": {
+    "operationId": "create_protocol_api_v1_stability_protocols_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ProtocolIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Protocol",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}": {
+   "get": {
+    "operationId": "get_protocol_api_v1_stability_protocols__pid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Protocol",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/approve": {
+   "post": {
+    "operationId": "approve_protocol_api_v1_stability_protocols__pid__approve_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SignedAction"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Approve Protocol",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/conditions": {
+   "post": {
+    "operationId": "add_condition_api_v1_stability_protocols__pid__conditions_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ConditionIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Add Condition",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/conditions/{cid}": {
+   "delete": {
+    "operationId": "delete_condition_api_v1_stability_protocols__pid__conditions__cid__delete",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "path",
+      "name": "cid",
+      "required": true,
+      "schema": {
+       "title": "Cid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Delete Condition",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/new-version": {
+   "post": {
+    "operationId": "new_protocol_version_api_v1_stability_protocols__pid__new_version_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "New Protocol Version",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/submit": {
+   "post": {
+    "operationId": "submit_protocol_api_v1_stability_protocols__pid__submit_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Submit Protocol",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/timepoints": {
+   "post": {
+    "operationId": "add_timepoint_api_v1_stability_protocols__pid__timepoints_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/TimepointIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Add Timepoint",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/protocols/{pid}/timepoints/{tid}": {
+   "delete": {
+    "operationId": "delete_timepoint_api_v1_stability_protocols__pid__timepoints__tid__delete",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "path",
+      "name": "tid",
+      "required": true,
+      "schema": {
+       "title": "Tid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Delete Timepoint",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/check-missed": {
+   "post": {
+    "operationId": "check_missed_api_v1_stability_pulls_check_missed_post",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     }
+    },
+    "summary": "Check Missed",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/due": {
+   "get": {
+    "operationId": "due_pulls_api_v1_stability_pulls_due_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "horizon_days",
+      "required": false,
+      "schema": {
+       "default": 14,
+       "title": "Horizon Days",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Due Pulls",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}": {
+   "get": {
+    "operationId": "get_pull_api_v1_stability_pulls__pid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Pull",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}/complete-testing": {
+   "post": {
+    "operationId": "complete_testing_api_v1_stability_pulls__pid__complete_testing_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Complete Testing",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}/correct": {
+   "post": {
+    "operationId": "correct_result_api_v1_stability_pulls__pid__correct_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CorrectionIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Correct Result",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}/pull": {
+   "post": {
+    "operationId": "record_pull_api_v1_stability_pulls__pid__pull_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/PullIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Record Pull",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}/results": {
+   "post": {
+    "operationId": "enter_results_api_v1_stability_pulls__pid__results_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ResultsIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Enter Results",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}/review": {
+   "post": {
+    "operationId": "review_pull_api_v1_stability_pulls__pid__review_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SignedAction"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Review Pull",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/pulls/{pid}/skip": {
+   "post": {
+    "operationId": "skip_pull_api_v1_stability_pulls__pid__skip_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "pid",
+      "required": true,
+      "schema": {
+       "title": "Pid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Skip Pull",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies": {
+   "get": {
+    "operationId": "list_studies_api_v1_stability_studies_get",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "limit",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "title": "Limit",
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "offset",
+      "required": false,
+      "schema": {
+       "default": 0,
+       "title": "Offset",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "List Studies",
+    "tags": [
+     "Stability"
+    ]
+   },
+   "post": {
+    "operationId": "create_study_api_v1_stability_studies_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/StudyIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Create Study",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies/{sid}": {
+   "get": {
+    "operationId": "get_study_api_v1_stability_studies__sid__get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Get Study",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies/{sid}/complete": {
+   "post": {
+    "operationId": "complete_study_api_v1_stability_studies__sid__complete_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Complete Study",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies/{sid}/conclude": {
+   "post": {
+    "operationId": "conclude_study_api_v1_stability_studies__sid__conclude_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ConcludeIn"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Conclude Study",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies/{sid}/evaluation": {
+   "get": {
+    "operationId": "evaluation_api_v1_stability_studies__sid__evaluation_get",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Evaluation",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies/{sid}/start": {
+   "post": {
+    "operationId": "start_study_api_v1_stability_studies__sid__start_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Start Study",
+    "tags": [
+     "Stability"
+    ]
+   }
+  },
+  "/api/v1/stability/studies/{sid}/terminate": {
+   "post": {
+    "operationId": "terminate_study_api_v1_stability_studies__sid__terminate_post",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "sid",
+      "required": true,
+      "schema": {
+       "title": "Sid",
+       "type": "integer"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/Reasoned"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      },
+      "description": "Successful Response"
+     },
+     "422": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      },
+      "description": "Validation Error"
+     }
+    },
+    "summary": "Terminate Study",
+    "tags": [
+     "Stability"
     ]
    }
   },
@@ -27115,7 +31622,7 @@
      "content": {
       "application/json": {
        "schema": {
-        "$ref": "#/components/schemas/ReviewIn"
+        "$ref": "#/components/schemas/app__api__v1__masters__ReviewIn"
        }
       }
      },

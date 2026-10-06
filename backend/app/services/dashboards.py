@@ -109,4 +109,32 @@ def system_health(s: Session) -> dict:
     return {"backup": backup.status(s)}
 
 
-DASHBOARDS = {"management": (management, "dashboard.management.read"), "qc": (qc, "dashboard.qc.read"), "qa": (qa, "dashboard.qa.read"), "warehouse": (warehouse, "dashboard.warehouse.read")}
+def monitoring(s: Session) -> dict:
+    from app.models.em import EMSample
+    from app.models.stability import StabilityPull, StabilityStudy
+    from app.services import em as em_svc, stability as stab_svc
+    since = datetime.now(timezone.utc) - timedelta(days=30)
+    cards = [
+        card("EM action-limit results (30 d)", _count(s, EMSample, EMSample.outcome == "ACTION", EMSample.sampled_at >= since), "danger"),
+        card("EM alert-limit results (30 d)", _count(s, EMSample, EMSample.outcome == "ALERT", EMSample.sampled_at >= since), "warn"),
+        card("EM results awaiting QA review", _count(s, EMSample, EMSample.status == "RESULT_ENTERED")),
+        card("EM sampling points overdue", sum(1 for r in em_svc.schedule(s, 0) if r["overdue"]), "warn"),
+        card("Active stability studies", _count(s, StabilityStudy, StabilityStudy.status == "ACTIVE")),
+        card("Stability pulls due (14 d)", len(stab_svc.due(s, 14)), "warn"),
+        card("Stability pulls overdue", sum(1 for r in stab_svc.due(s, 0) if r["overdue"]), "danger"),
+        card("Stability pulls awaiting QA review", _count(s, StabilityPull, StabilityPull.status == "TESTED")),
+    ]
+    return {"cards": cards, "series": {"em_outcomes_30d": _group(s, EMSample.outcome, EMSample.sampled_at >= since, EMSample.outcome.is_not(None)),
+                                       "stability_pulls_by_status": _group(s, StabilityPull.status)}}
+
+
+def costing(s: Session) -> dict:
+    from app.models.costing import BatchCost
+    from app.services import costing as cost_svc
+    v = cost_svc.valuation(s)
+    cards = [card("Inventory value (costed lots)", v["total_value"]), card("Lots on stock without a cost", v["uncosted_lots"], "warn"),
+             card("Batch costs awaiting approval", _count(s, BatchCost, BatchCost.status == "DRAFT")), card("Approved batch costs", _count(s, BatchCost, BatchCost.status == "APPROVED"))]
+    return {"cards": cards, "series": {"batch_cost_by_status": _group(s, BatchCost.status)}}
+
+
+DASHBOARDS = {"monitoring": (monitoring, "em.sample.read"), "costing": (costing, "costing.valuation.read"), "management": (management, "dashboard.management.read"), "qc": (qc, "dashboard.qc.read"), "qa": (qa, "dashboard.qa.read"), "warehouse": (warehouse, "dashboard.warehouse.read")}

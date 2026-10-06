@@ -7,7 +7,7 @@ import { api, errText } from "../services/api";
 type Act = { label: string; path: string; perm: string; show: (d: any) => boolean; sign?: boolean; reason?: boolean; cls?: string; body?: (d: any) => any; confirm?: string };
 
 /** Generic record dialog: shows fields + workflow action buttons; signed actions open the e-signature dialog. */
-function RecordDialog({ base, id, title, fields, actions, onClose, extra }: { base: string; id: number; title: (d: any) => string; fields: [string, (d: any) => any][]; actions: Act[]; onClose: () => void; extra?: (d: any, reload: () => void) => any }) {
+export function RecordDialog({ base, id, title, fields, actions, onClose, extra }: { base: string; id: number; title: (d: any) => string; fields: [string, (d: any) => any][]; actions: Act[]; onClose: () => void; extra?: (d: any, reload: () => void) => any }) {
   const { can } = useAuth(); const [d, setD] = useState<any>(null); const [err, setErr] = useState(""); const [dlg, setDlg] = useState<Act | null>(null);
   const load = () => api(`${base}/${id}`).then(setD).catch((e) => setErr(errText(e)));
   useEffect(() => { load(); }, []);
@@ -24,22 +24,23 @@ function RecordDialog({ base, id, title, fields, actions, onClose, extra }: { ba
   </Modal>);
 }
 
-function CreateDialog({ title, path, fields, onClose, onCreated, transform }: { title: string; path: string; fields: { key: string; label: string; type?: string; options?: string[]; area?: boolean }[]; onClose: () => void; onCreated: (id: number) => void; transform?: (b: any) => any }) {
+export function CreateDialog({ title, path, fields, onClose, onCreated, transform }: { title: string; path: string; fields: { key: string; label: string; type?: string; options?: string[]; area?: boolean; choices?: { value: any; label: string }[] }[]; onClose: () => void; onCreated: (id: number) => void; transform?: (b: any) => any }) {
   const [v, setV] = useState<any>({}); const [err, setErr] = useState("");
   const save = async () => { try { const r = await api(path, { method: "POST", body: { ...(transform ? transform(v) : v), reason: "Created" } }); onCreated(r.id); } catch (e) { setErr(errText(e)); } };
   return (<Modal title={title} onClose={onClose} footer={<><button className="btn btn-outline-secondary" onClick={onClose}>Cancel</button><button className="btn btn-primary" onClick={save}>Save</button></>}>
     <Alert>{err}</Alert>
     {fields.map((f) => (<div className="mb-2" key={f.key}><label className="form-label small mb-0">{f.label}</label>
-      {f.options ? <select className="form-select" onChange={(e) => setV({ ...v, [f.key]: e.target.value })}><option value="">…</option>{f.options.map((o) => <option key={o}>{o}</option>)}</select>
+      {f.choices ? <select className="form-select" onChange={(e) => setV({ ...v, [f.key]: e.target.value === "" ? undefined : Number(e.target.value) })}><option value="">…</option>{f.choices.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}</select>
+        : f.options ? <select className="form-select" onChange={(e) => setV({ ...v, [f.key]: e.target.value })}><option value="">…</option>{f.options.map((o) => <option key={o}>{o}</option>)}</select>
         : f.area ? <textarea className="form-control" rows={3} onChange={(e) => setV({ ...v, [f.key]: e.target.value })} />
           : <input type={f.type || "text"} className="form-control" onChange={(e) => setV({ ...v, [f.key]: f.type === "number" ? Number(e.target.value) : e.target.value })} />}</div>))}
   </Modal>);
 }
 
-function Page({ title, crumb, path, cols, filters, create, createPerm, detail }: any) {
+export function Page({ title, crumb, path, cols, filters, create, createPerm, detail, group = "Quality" }: any) {
   const { can } = useAuth(); const [sel, setSel] = useState<number | null>(null); const [creating, setCreating] = useState(false); const [reload, setReload] = useState<() => void>(() => () => {});
   return (<>
-    <DataList title={title} crumbs={["Quality", crumb]} path={path} filters={filters} cols={cols}
+    <DataList title={title} crumbs={[group, crumb]} path={path} filters={filters} cols={cols}
       extraActions={create && can(createPerm) && <button className="btn btn-primary" onClick={() => setCreating(true)}><i className="bi bi-plus-lg" /> New</button>}
       onRow={(r, load) => { setSel(r.id); setReload(() => load); }} />
     {creating && create(() => { setCreating(false); reload(); }, (id: number) => { setCreating(false); setSel(id); })}

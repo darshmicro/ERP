@@ -13,6 +13,9 @@ from sqlalchemy.orm import Session
 
 from app.core.errors import BusinessRuleError, NotFound, ValidationFailed
 from app.models.audit import AuditTrail, ESignature, SecurityEvent
+from app.models.costing import BatchCost
+from app.models.em import EMSample
+from app.models.stability import StabilityResult
 from app.models.dispatch import Dispatch
 from app.models.manufacturing import ManufacturingBatch
 from app.models.platform import Document
@@ -34,6 +37,9 @@ SOURCES = {
     "dispatch": ("Distribution records", Dispatch, Dispatch.created_at, 10, "EU GDP Ch.4"),
     "deviation": ("Deviations", Deviation, Deviation.created_at, 10, "EU GMP Ch.1"),
     "capa": ("CAPA", CAPA, CAPA.created_at, 10, "EU GMP Ch.1"),
+    "em_sample": ("Environmental monitoring samples", EMSample, EMSample.sampled_at, 10, "EU GMP Annex 1: monitoring records are batch-related evidence"),
+    "stability_result": ("Stability results", StabilityResult, StabilityResult.entered_at, 10, "EU GMP Ch.6.30 / ICH Q1A: for the shelf life plus one year"),
+    "batch_cost": ("Batch costs", BatchCost, BatchCost.created_at, 10, "Financial record retention per site policy"),
 }
 
 

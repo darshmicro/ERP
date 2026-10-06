@@ -1,6 +1,6 @@
 # Software Bill of Materials (SBOM)
 
-Generated 2026-10-05 by `scripts/gen_validation_docs.py`. Use with `pip-audit` / `npm audit` for vulnerability review (SEC-04).
+Generated 2026-10-06 by `scripts/gen_validation_docs.py`. Use with `pip-audit` / `npm audit` for vulnerability review (SEC-04).
 
 ## Backend (Python) — runtime dependency closure
 

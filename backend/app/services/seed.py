@@ -111,22 +111,39 @@ QA_HEAD_P9 = QA_P9 + ["retention.archive.create", "retention.policy.update", "ba
 ADMIN_P9 = ["backup.status.read", "backup.status.record", "retention.policy.read", "reports.catalog.read", "reports.run.read"]
 READ_P9 = REPORT_USER_P9 + ["reports.run.read", "dashboard.management.read", "dashboard.qa.read", "dashboard.qc.read", "dashboard.warehouse.read", "retention.policy.read", "retention.archive.read", "backup.status.read"]
 
+EM_READ_P11 = ["em.location.read", "em.plan.read", "em.limit.read", "em.sample.read"]
+EM_ANALYST_P11 = EM_READ_P11 + ["em.sample.create", "em.sample.enter"]
+EM_QCHEAD_P11 = EM_ANALYST_P11 + ["em.location.create", "em.location.update", "em.plan.create", "em.plan.update", "em.limit.create", "em.limit.update"]
+EM_QA_P11 = EM_READ_P11 + ["em.sample.review", "em.limit.create", "em.limit.update", "em.location.create", "em.location.update", "em.plan.create", "em.plan.update"]
+EM_QAHEAD_P11 = EM_QA_P11 + ["em.limit.approve"]
+STAB_READ_P11 = ["stability.protocol.read", "stability.study.read", "stability.pull.read", "stability.result.read"]
+STAB_ANALYST_P11 = STAB_READ_P11 + ["stability.pull.record", "stability.result.enter"]
+STAB_QCHEAD_P11 = STAB_ANALYST_P11 + ["stability.protocol.create", "stability.protocol.update", "stability.study.create", "stability.study.update", "stability.study.start",
+                                      "stability.study.terminate", "stability.pull.skip"]
+STAB_QA_P11 = STAB_READ_P11 + ["stability.protocol.create", "stability.protocol.update", "stability.study.create", "stability.pull.review", "stability.pull.skip"]
+STAB_QAHEAD_P11 = STAB_QA_P11 + ["stability.protocol.approve", "stability.study.update", "stability.study.start", "stability.study.terminate", "stability.study.conclude"]
+COST_READ_P11 = ["costing.rate.read", "costing.standard.read", "costing.lot.read", "costing.batch.read", "costing.valuation.read"]
+COST_ANALYST_P11 = COST_READ_P11 + ["costing.rate.create", "costing.rate.update", "costing.standard.update", "costing.lot.set", "costing.batch.calculate"]
+COST_HEAD_P11 = COST_ANALYST_P11 + ["costing.rate.approve", "costing.batch.approve"]
+
 ROLES: dict[str, tuple[str, bool, list[str]]] = {
     # code: (name, is_admin_role, extra permissions)
     "SYSTEM_ADMIN": ("System Administrator", True, ADMIN_PERMS + ADMIN_MD + ["org.department.read", "org.department.create", "org.department.update", "config.job.run"] + ADMIN_P9),
     "PURCHASE_USER": ("Purchase User", False, PURCHASE_MD + PURCHASE_USER_P3 + ["grn.receipt.read"] + REPORT_USER_P9),
     "PURCHASE_MANAGER": ("Purchase Manager", False, PURCHASE_MD + PURCHASE_MGR_P3 + ["md.vendor.approve", "md.vendor.deactivate", "import.job.approve"] + REPORT_USER_P9),
     "WAREHOUSE_USER": ("Warehouse User", False, MD_READ + _md(["warehouse", "location"], ["create", "update"]) + PURCHASE_REQ + WH_USER_P4 + WH_P6 + QUAL_RAISE_P8 + REPORT_USER_P9 + ["dashboard.warehouse.read"]),
-    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ + QC_P4 + QC_ANALYST_P5 + READ_P6 + READ_P7 + QUAL_RAISE_P8 + REPORT_USER_P9),
-    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ + QC_P4 + QC_HEAD_P5 + READ_P6 + READ_P7 + INVESTIGATE_P8 + REPORT_USER_P9 + ["dashboard.qc.read"]),
-    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ + QA_P4 + QA_P5 + QA_P6 + QA_P7 + QA_P8 + QA_P9),
-    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ + QA_HEAD_P4 + QA_HEAD_P5 + QA_HEAD_P6 + QA_P7 + QA_HEAD_P8 + QA_HEAD_P9),
-    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_P6 + QUAL_RAISE_P8 + REPORT_USER_P9),
+    "QC_ANALYST": ("QC Analyst", False, QC_MD + PURCHASE_REQ + QC_P4 + QC_ANALYST_P5 + READ_P6 + READ_P7 + QUAL_RAISE_P8 + REPORT_USER_P9 + EM_ANALYST_P11 + STAB_ANALYST_P11),
+    "QC_HEAD": ("QC Head", False, ["workflow.instance.read"] + QC_MD + PURCHASE_REQ + QC_P4 + QC_HEAD_P5 + READ_P6 + READ_P7 + INVESTIGATE_P8 + REPORT_USER_P9 + ["dashboard.qc.read"] + EM_QCHEAD_P11 + STAB_QCHEAD_P11),
+    "QA_OFFICER": ("QA Officer", False, QA_PERMS + QA_MD + QA_P3 + PURCHASE_REQ + QA_P4 + QA_P5 + QA_P6 + QA_P7 + QA_P8 + QA_P9 + EM_QA_P11 + STAB_QA_P11),
+    "QA_HEAD": ("QA Head", False, QA_PERMS + QA_HEAD_MD + QA_HEAD_P3 + PURCHASE_REQ + QA_HEAD_P4 + QA_HEAD_P5 + QA_HEAD_P6 + QA_P7 + QA_HEAD_P8 + QA_HEAD_P9 + EM_QAHEAD_P11 + STAB_QAHEAD_P11),
+    "PRODUCTION_USER": ("Production User", False, MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_P6 + QUAL_RAISE_P8 + REPORT_USER_P9 + ["em.sample.create", "em.sample.read", "em.location.read"]),
     "PRODUCTION_MANAGER": ("Production Manager", False, ["workflow.instance.read"] + MD_READ + PURCHASE_REQ + QC_P4 + READ_P5 + PROD_MGR_P6 + INVESTIGATE_P8 + REPORT_USER_P9),
     "DEPARTMENT_HEAD": ("Department Head", False, ["pr.request.read", "pr.request.approve", "pr.request.create", "pr.request.update", "pr.request.submit", "pr.request.cancel"] + MD_READ),
     "DISPATCH_USER": ("Dispatch User", False, MD_READ + _md(["customer"], ["create", "update"]) + DISP_P7 + ["quality.complaint.create", "quality.complaint.read", "quality.recall.read", "quality.sop.read", "quality.sop.acknowledge"] + REPORT_USER_P9),
-    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7 + READ_P8 + READ_P9),
-    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7 + READ_P8 + READ_P9),
+    "MANAGEMENT": ("Management", False, ["audit.trail.read"] + MD_READ + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7 + READ_P8 + READ_P9 + EM_READ_P11 + STAB_READ_P11 + COST_READ_P11),
+    "AUDITOR": ("Auditor / Read Only", False, AUDITOR_PERMS + MD_READ + ["import.job.read"] + PURCHASE_READ + INV_READ_P4 + READ_P5 + READ_P6 + READ_P7 + READ_P8 + READ_P9 + EM_READ_P11 + STAB_READ_P11 + COST_READ_P11),
+    "COSTING_ANALYST": ("Costing Analyst", False, MD_READ + INV_READ_P4 + READ_P6 + COST_ANALYST_P11 + REPORT_USER_P9 + ["dashboard.management.read"]),
+    "FINANCE_HEAD": ("Finance Head", False, MD_READ + INV_READ_P4 + READ_P6 + COST_HEAD_P11 + REPORT_USER_P9 + ["dashboard.management.read"]),
 }
 
 # QA Officer may not approve/verify workflow definitions; only QA Head holds approve.
@@ -162,6 +179,13 @@ SOD_RULES = [
     ("SOD-33", "quality.risk.approve", "quality.risk.author", "Risk assessment author cannot approve it"),
     ("SOD-34", "quality.capa.close", "quality.capa.create", "CAPA creator cannot close it"),
     ("SOD-35", "sop.approve", "sop.author", "SOP author cannot approve it"),
+    ("SOD-36", "em_limit_set.approve", "em_limit_set.author", "EM limit-set author cannot approve it"),
+    ("SOD-37", "em.sample.review", "em.result.enter", "EM result must be reviewed by someone other than the person who entered it"),
+    ("SOD-38", "stability_protocol.approve", "stability_protocol.author", "Stability protocol author cannot approve it"),
+    ("SOD-39", "stability.pull.review", "stability.result.enter", "Stability results must be reviewed by someone other than the person who entered them"),
+    ("SOD-40", "stability.study.conclude", "stability.study.create", "Stability study creator cannot sign its conclusion"),
+    ("SOD-41", "cost_rate_card.approve", "cost_rate_card.author", "Cost rate card author cannot approve it"),
+    ("SOD-42", "costing.batch.approve", "costing.batch.calculate", "Batch cost must be approved by someone other than the person who calculated it"),
     ("SOD-22", "grn.receipt.verify", "grn.receipt.create", "GRN must be verified by a second person"),
     ("SOD-23", "warehouse.destruction.approve", "warehouse.destruction.request", "Destruction requester cannot approve"),
     ("SOD-21", "vendor_qualification.approve", "vendor_qualification.author", "Qualification author cannot approve it"),

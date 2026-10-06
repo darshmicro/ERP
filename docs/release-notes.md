@@ -1,4 +1,13 @@
-# Release Notes — GMP-MERP 1.0.0-rc1
+# Release Notes — GMP-MERP 1.1.0-rc1
+
+## What is new since 1.0.0-rc1 (Phase 11)
+* **Environmental monitoring:** monitoring locations with cleanroom grade, versioned and e-signed alert/action limit sets (Annex 1 style reference values load as an unapproved draft only), monitoring plans with due/overdue schedule, samples → result → QA e-signed review, results judged against the limits in force (snapshotted on the sample), automatic deviation on action-limit results, append-only amendments, organism records, trend with Nelson-rule signals, excursion list.
+* **Stability studies:** versioned and e-signed protocols (conditions, time points, specification), studies on a lot with the stability quantity booked through the inventory ledger, scheduled pulls with windows (out-of-window and missed pulls raise deviations; daily job), append-only results with superseding corrections, failing results raise a lot-linked deviation, QA review and signed shelf-life conclusion, ICH Q1E-style trend evaluation as decision support.
+* **Costing:** versioned and e-signed rate cards, standard costs, append-only lot costs (PO rate / approved batch cost / manual), actual batch cost derived from issues and returns with variance to standard, SFG→FG roll-up, e-signed approval, inventory valuation, restricted visibility (new roles *Costing Analyst* and *Finance Head*).
+* 42 new permissions (298 total), 16 roles, SoD rules up to SOD-42, 43 reports, two new dashboards (*Monitoring*, *Costing*), 11 new UI pages, migration `0010` (127 tables, 20 append-only), URS 71 requirements.
+* **Upgrade:** `alembic upgrade head` → `0010`; re-run `scripts/bootstrap_admin.py` (seeds the new permissions, roles, SoD rules, numbering and retention defaults; existing roles receive only the *new* defaults); re-apply `database/mssql/01_logins_and_grants.sql` (three new append-only tables); approve an EM limit set and a cost rate card before using those modules.
+
+# Release Notes — GMP-MERP 1.0.0-rc1 (previous)
 
 Feature-complete release candidate covering Phases 1–10 of the build plan. **Not validated for any site** — see `docs/validation/` for the supplier evidence and the activities the site must perform.
 

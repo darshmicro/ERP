@@ -26,3 +26,7 @@ Procedures the site needs (not supplied as final text — content depends on sit
 | 20 | Excel import / master-data migration | Templates, validation, approval, reconciliation to source | Import module |
 | 21 | Training | Role-based training before access; training records feed the e-signature gate when enabled | Training records |
 | 22 | Supplier / software maintenance | Vulnerability and patch management, dependency review (SBOM) | `sbom.md` |
+| 23 | Environmental monitoring | Contamination-control strategy, grades and limits (verify the reference values), sampling plan and frequencies, excursion handling and investigation, organism identification and trending | EM module |
+| 24 | Stability programme | Protocol design, commitment studies, pull and testing procedure, OOS/out-of-trend handling, shelf-life evaluation and assignment | Stability module |
+| 25 | Product costing | Rate-card review, standard-cost setting, batch-cost approval, valuation review, handling of uncosted lots | Costing module |
+

@@ -461,3 +461,92 @@ def sec_events(s: Session, p: dict):
     if p.get("event_type"):
         q = q.where(SecurityEvent.event_type == p["event_type"].upper())
     return [{c: getattr(e, c) for c in ("occurred_at", "event_type", "username", "ip_address", "detail")} for e in s.execute(q.order_by(SecurityEvent.id.desc()).limit(20000)).scalars()]
+
+
+# ============================================================ Phase 11: environmental monitoring, stability, costing
+from app.models.costing import BatchCost  # noqa: E402
+from app.models.em import EMLocation, EMSample  # noqa: E402
+from app.models.stability import StabilityCondition, StabilityProtocol, StabilityPull, StabilityStudy  # noqa: E402
+from app.services import costing as _costing, em as _em, stability as _stability  # noqa: E402
+
+
+@register("em-results", "Environmental monitoring results and excursions", "Environmental monitoring", "em.sample.read",
+          [("sample_no", "Sample"), ("sampled_at", "Sampled (UTC)"), ("location", "Location"), ("grade", "Grade"), ("sample_type", "Type"), ("state", "State"), ("result_value", "Result"), ("result_unit", "Unit"),
+           ("alert_high", "Alert limit"), ("action_high", "Action limit"), ("outcome", "Outcome"), ("status", "Status"), ("deviation_id", "Deviation id")],
+          [D_FROM, D_TO, Param("outcome", "Outcome", "select", ["WITHIN", "ALERT", "ACTION"]), Param("grade", "Grade", "select", ["A", "B", "C", "D", "NC"])])
+def em_results(s: Session, p: dict):
+    q = select(EMSample, EMLocation.code).join(EMLocation, EMLocation.id == EMSample.em_location_id).where(*_dt_between(EMSample.sampled_at, p))
+    if p.get("outcome"):
+        q = q.where(EMSample.outcome == p["outcome"])
+    if p.get("grade"):
+        q = q.where(EMSample.grade == p["grade"])
+    return [{"sample_no": x.sample_no, "sampled_at": x.sampled_at, "location": code, "grade": x.grade, "sample_type": x.sample_type, "state": x.state, "result_value": x.result_value, "result_unit": x.result_unit,
+             "alert_high": x.alert_high, "action_high": x.action_high, "outcome": x.outcome, "status": x.status, "deviation_id": x.deviation_id}
+            for x, code in s.execute(q.order_by(EMSample.id.desc()).limit(20000)).all()]
+
+
+@register("em-schedule", "Environmental monitoring schedule (due / overdue)", "Environmental monitoring", "em.plan.read",
+          [("location_code", "Location"), ("location_name", "Name"), ("grade", "Grade"), ("sample_type", "Type"), ("state", "State"), ("due_date", "Due"), ("overdue", "Overdue"), ("last_sampled", "Last sampled")],
+          [Param("horizon_days", "Look ahead (days)", "number")])
+def em_schedule(s: Session, p: dict):
+    return [{**r, "overdue": "YES" if r["overdue"] else ""} for r in _em.schedule(s, int(p.get("horizon_days") or 7))]
+
+
+@register("stability-schedule", "Stability pull schedule", "Stability", "stability.pull.read",
+          [("study_no", "Study"), ("lot_no", "Lot"), ("condition", "Condition"), ("month", "Month"), ("due_date", "Due"), ("window_days", "Window (± d)"), ("status", "Status"), ("pulled_at", "Pulled (UTC)")],
+          [D_FROM, D_TO, STATUS(["SCHEDULED", "PULLED", "TESTED", "REVIEWED", "MISSED", "SKIPPED"])])
+def stability_schedule(s: Session, p: dict):
+    q = select(StabilityPull, StabilityStudy.study_no, StabilityStudy.material_batch_id, StabilityCondition.label).join(StabilityStudy, StabilityStudy.id == StabilityPull.study_id).join(
+        StabilityCondition, StabilityCondition.id == StabilityPull.condition_id).where(*_between(StabilityPull.due_date, p))
+    if p.get("status"):
+        q = q.where(StabilityPull.status == p["status"])
+    lots_ = {}
+    out = []
+    for pl, no, lot_id, cond in s.execute(q.order_by(StabilityPull.due_date).limit(20000)).all():
+        if lot_id not in lots_:
+            lots_[lot_id] = s.get(MaterialBatch, lot_id).lot_no
+        out.append({"study_no": no, "lot_no": lots_[lot_id], "condition": cond, "month": pl.month, "due_date": pl.due_date, "window_days": pl.window_days, "status": pl.status, "pulled_at": pl.pulled_at})
+    return out
+
+
+@register("stability-results", "Stability results by study", "Stability", "stability.result.read",
+          [("study_no", "Study"), ("lot_no", "Lot"), ("condition", "Condition"), ("month", "Month"), ("test_name", "Test"), ("result", "Result"), ("unit", "Unit"), ("lsl", "LSL"), ("usl", "USL"), ("pass_fail", "P/F"), ("pull_status", "Pull status")],
+          [Param("study_no", "Study no contains", "text")])
+def stability_results(s: Session, p: dict):
+    from app.models.spec import SpecificationParameter
+    q = select(StabilityPull, StabilityStudy, StabilityCondition.label).join(StabilityStudy, StabilityStudy.id == StabilityPull.study_id).join(
+        StabilityCondition, StabilityCondition.id == StabilityPull.condition_id)
+    if p.get("study_no"):
+        q = q.where(_like(StabilityStudy.study_no, p["study_no"]))
+    out = []
+    for pl, st, cond in s.execute(q.order_by(StabilityStudy.id, StabilityPull.month).limit(5000)).all():
+        lot = s.get(MaterialBatch, st.material_batch_id)
+        for r in _stability.current_results(s, pl.id):
+            prm = s.get(SpecificationParameter, r.parameter_id)
+            out.append({"study_no": st.study_no, "lot_no": lot.lot_no, "condition": cond, "month": pl.month, "test_name": prm.test_name, "result": r.rounded_value if r.rounded_value is not None else r.value_text,
+                        "unit": r.unit, "lsl": r.lsl, "usl": r.usl, "pass_fail": r.pass_fail, "pull_status": pl.status})
+    return out
+
+
+@register("batch-cost", "Batch cost and variance", "Costing", "costing.batch.read",
+          [("batch_no", "Batch"), ("status", "Status"), ("material_cost", "Material"), ("labour_cost", "Labour"), ("machine_cost", "Machine"), ("overhead_cost", "Overhead"), ("total_cost", "Total"), ("output_qty", "Output qty"),
+           ("unit_cost", "Unit cost"), ("standard_unit_cost", "Standard unit cost"), ("variance", "Variance"), ("variance_pct", "Variance %"), ("currency", "Currency")],
+          [STATUS(["DRAFT", "APPROVED"])])
+def batch_cost_report(s: Session, p: dict):
+    q = select(BatchCost, ManufacturingBatch.batch_no).join(ManufacturingBatch, ManufacturingBatch.id == BatchCost.batch_id)
+    if p.get("status"):
+        q = q.where(BatchCost.status == p["status"])
+    return [{"batch_no": no, **{c: getattr(b, c) for c in ("status", "material_cost", "labour_cost", "machine_cost", "overhead_cost", "total_cost", "output_qty", "unit_cost", "standard_unit_cost", "variance",
+                                                           "variance_pct", "currency")}} for b, no in s.execute(q.order_by(BatchCost.id.desc()).limit(20000)).all()]
+
+
+@register("inventory-valuation", "Inventory valuation by lot", "Costing", "costing.valuation.read",
+          [("lot_no", "Lot"), ("material", "Material"), ("disposition", "Disposition"), ("qty_on_hand", "Qty on hand"), ("unit_cost", "Unit cost"), ("basis", "Cost basis"), ("value", "Value")])
+def valuation_report(s: Session, p: dict):
+    names = {}
+    out = []
+    for i in _costing.valuation(s)["items"]:
+        if i["material_id"] not in names:
+            names[i["material_id"]] = s.get(Material, i["material_id"]).name
+        out.append({"lot_no": i["lot_no"], "material": names[i["material_id"]], "disposition": i["disposition"], "qty_on_hand": i["qty_on_hand"], "unit_cost": i["unit_cost"] or "NO COST", "basis": i["basis"], "value": i["value"]})
+    return out

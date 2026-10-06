@@ -8,7 +8,7 @@
 * Access expiry (`access_expiry`) and role validity (`valid_to`) end access automatically.
 
 ## Roles & permissions
-Permissions are `module.resource.action`. Edit a role's permission set (reason required, audited). Administrator roles cannot be given approve/release/reject/sign permissions.
+Permissions are `module.resource.action`. Edit a role's permission set (reason required, audited). Administrator roles cannot be given approve/release/reject/sign permissions. Phase 11 added the roles **Costing Analyst** and **Finance Head**; environmental monitoring and stability permissions sit on the QC and QA roles, and administrators hold no costing, EM or stability rights.
 
 ## Company
 Company name/logo/licences/header/footer/date-time formats; every change needs a reason and is audited. The logo and name appear on the login page, dashboard and (later phases) all GMP documents.
@@ -30,7 +30,7 @@ Create a workflow version (steps with role, min approvals, e-signature meaning, 
 5. After any real restore, run **Audit Trail → Verify integrity**; re-enable the daily jobs; the audit HMAC key must be the one that was in force when the rows were written.
 
 ## Daily jobs
-Vendor-qualification expiry and alerts, lot expiry/retest alerts, overdue CAPA and SOP-review alerts, run as the audited user `SYSTEM`. Enable the in-process scheduler (`MERP_SCHEDULER_ENABLED=true`) on **one** instance, or schedule `python scripts/run_jobs.py` daily (Task Scheduler/cron). Jobs are idempotent. Manual run: *System → Run jobs* (`config.job.run`).
+Vendor-qualification expiry and alerts, lot expiry/retest alerts, overdue CAPA and SOP-review alerts, overdue environmental-monitoring points, stability pull due alerts and closing of missed stability pulls (with a deviation), run as the audited user `SYSTEM`. Enable the in-process scheduler (`MERP_SCHEDULER_ENABLED=true`) on **one** instance, or schedule `python scripts/run_jobs.py` daily (Task Scheduler/cron). Jobs are idempotent. Manual run: *System → Run jobs* (`config.job.run`).
 
 ## Retention and archive (Retention & Backup → *Retention & archive*)
 * Ten record types have a retention period (years) and a regulatory basis shown on the page. Periods can only be **extended** here; shortening needs a change control and DBA action.

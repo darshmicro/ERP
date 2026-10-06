@@ -12,7 +12,7 @@ Assessment of the principal data flows against ALCOA+ and the technical control 
 | **Complete** | Mandatory fields, FK integrity, no orphan genealogy (issues must reference lot and batch), audit rows for every create/update/delete attempt, status history | `test_crit_14`, trace tests |
 | **Consistent** | One source of truth per fact (ledger for stock; versioned masters for specs/BOMs); consistent UTC time; consistent numbering | numbering tests |
 | **Enduring** | Retention policies (extend-only), legal hold, hashed archive packages, backup evidence and restore tests, DB triggers on append-only tables | retention + backup tests, restore qualification |
-| **Available** | Search, trace, reports (37), exports with copy control, auditor role with read-only access | report/search tests |
+| **Available** | Search, trace, reports (43), exports with copy control, auditor role with read-only access | report/search tests |
 
 ## Data-flow assessment
 | Data flow | Risk to integrity | Control | Residual |

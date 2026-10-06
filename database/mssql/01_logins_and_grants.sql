@@ -36,6 +36,9 @@ DENY UPDATE, DELETE ON dbo.sop_acknowledgement      TO merp_app;
 DENY UPDATE, DELETE ON dbo.report_run               TO merp_app;
 DENY UPDATE, DELETE ON dbo.archive_batch            TO merp_app;
 DENY UPDATE, DELETE ON dbo.backup_record            TO merp_app;
+DENY UPDATE, DELETE ON dbo.em_result_amendment      TO merp_app;
+DENY UPDATE, DELETE ON dbo.stability_result         TO merp_app;
+DENY UPDATE, DELETE ON dbo.lot_cost                 TO merp_app;
 DENY ALTER ANY SCHEMA TO merp_app; DENY CREATE TABLE TO merp_app;
 -- audit_chain_head must stay updatable (hash-chain head); it is intentionally NOT denied.
 -- Reporting account: read-only

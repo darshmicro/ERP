@@ -1,6 +1,6 @@
 # Data Dictionary
 
-Generated from the SQLAlchemy metadata on 2026-10-05 — **109 tables**. Append-only tables are protected by database triggers (`app/audit/immutability.py`).
+Generated from the SQLAlchemy metadata on 2026-10-06 — **126 tables**. Append-only tables are protected by database triggers (`app/audit/immutability.py`).
 
 ## Module `audit`
 
@@ -109,6 +109,102 @@ Generated from the SQLAlchemy metadata on 2026-10-05 — **109 tables**. Append-
 | correlation_id | VARCHAR(40) | yes |  |  |
 | id | BIGINT | no | PK |  |
 
+## Module `costing`
+
+### `batch_cost`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| batch_id | BIGINT | no | FK → manufacturing_batch.id |  |
+| rate_card_id | BIGINT | no | FK → cost_rate_card.id |  |
+| labour_hours | NUMERIC(10, 2) | no | default 0 |  |
+| machine_hours | NUMERIC(10, 2) | no | default 0 |  |
+| material_cost | NUMERIC(18, 4) | no | default 0 |  |
+| labour_cost | NUMERIC(18, 4) | no | default 0 |  |
+| machine_cost | NUMERIC(18, 4) | no | default 0 |  |
+| overhead_cost | NUMERIC(18, 4) | no | default 0 |  |
+| total_cost | NUMERIC(18, 4) | no | default 0 |  |
+| output_qty | NUMERIC(18, 6) | no | default 0 |  |
+| unit_cost | NUMERIC(18, 6) | no | default 0 |  |
+| standard_unit_cost | NUMERIC(18, 6) | yes |  |  |
+| variance | NUMERIC(18, 4) | yes |  |  |
+| variance_pct | NUMERIC(9, 2) | yes |  |  |
+| currency | VARCHAR(3) | no | default INR |  |
+| lines_snapshot | TEXT | yes |  |  |
+| status | VARCHAR(10) | no | default DRAFT |  |
+| calculated_by_id | BIGINT | no |  |  |
+| approved_by_id | BIGINT | yes |  |  |
+| approved_at | DATETIME (UTC) | yes |  |  |
+| approved_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_batch_cost_batch_id`; `CheckConstraint: ck_batch_cost_hours labour_hours >= 0 AND machine_hours >= 0`; `CheckConstraint: ck_batch_cost_status status IN ('DRAFT','APPROVED')`
+
+### `cost_rate_card`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| card_no | VARCHAR(40) | no |  |  |
+| version_no | INTEGER | no | default 1 |  |
+| title | VARCHAR(200) | no |  |  |
+| currency | VARCHAR(3) | no | default INR |  |
+| labour_rate_per_hour | NUMERIC(18, 4) | no | default 0 |  |
+| machine_rate_per_hour | NUMERIC(18, 4) | no | default 0 |  |
+| overhead_pct | NUMERIC(7, 2) | no | default 0 |  |
+| status | VARCHAR(15) | no | default DRAFT |  |
+| supersedes_id | BIGINT | yes | FK → cost_rate_card.id |  |
+| effective_from | DATETIME (UTC) | yes |  |  |
+| effective_to | DATETIME (UTC) | yes |  |  |
+| change_reason | VARCHAR(1000) | yes |  |  |
+| approved_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_cost_rate_card_card_no`; `CheckConstraint: ck_cost_rate_card_rates labour_rate_per_hour >= 0 AND machine_rate_per_hour >= 0 AND overhead_pct >= 0`; `CheckConstraint: ck_cost_rate_card_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`
+
+### `lot_cost` — **append-only**
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| material_batch_id | BIGINT | no | FK → material_batch.id |  |
+| unit_cost | NUMERIC(18, 6) | no |  |  |
+| currency | VARCHAR(3) | no | default INR |  |
+| basis | VARCHAR(12) | no |  |  |
+| po_line_id | BIGINT | yes |  |  |
+| batch_cost_id | BIGINT | yes |  |  |
+| reason | VARCHAR(500) | yes |  |  |
+| recorded_by_id | BIGINT | yes |  |  |
+| recorded_at | DATETIME (UTC) | no |  |  |
+| id | BIGINT | no | PK |  |
+
+Constraints: `CheckConstraint: ck_lot_cost_unit_cost unit_cost >= 0`; `CheckConstraint: ck_lot_cost_basis basis IN ('PO_RATE', 'BATCH_COST', 'MANUAL')`
+
+### `standard_cost`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| material_id | BIGINT | no | FK → material.id |  |
+| std_unit_cost | NUMERIC(18, 6) | no |  |  |
+| currency | VARCHAR(3) | no | default INR |  |
+| remarks | VARCHAR(300) | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `CheckConstraint: ck_standard_cost_std std_unit_cost >= 0`; `UniqueConstraint: uq_standard_cost_material_id`
+
 ## Module `dispatch`
 
 ### `dispatch`
@@ -164,7 +260,168 @@ Constraints: `UniqueConstraint: uq_dispatch_dispatch_no`; `CheckConstraint: ck_d
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_dispatch_line_dispatch_id`; `CheckConstraint: ck_dispatch_line_qty quantity > 0`
+Constraints: `CheckConstraint: ck_dispatch_line_qty quantity > 0`; `UniqueConstraint: uq_dispatch_line_dispatch_id`
+
+## Module `em`
+
+### `em_isolate`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| sample_id | BIGINT | no | FK → em_sample.id |  |
+| organism | VARCHAR(150) | no |  |  |
+| gram_stain | VARCHAR(20) | yes |  |  |
+| cfu_count | INTEGER | no | default 1 |  |
+| identification_method | VARCHAR(100) | yes |  |  |
+| identified_by_id | BIGINT | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `CheckConstraint: ck_em_isolate_cfu cfu_count >= 0`
+
+### `em_limit`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| limit_set_id | BIGINT | no | FK → em_limit_set.id |  |
+| seq | INTEGER | no |  |  |
+| grade | VARCHAR(2) | no |  |  |
+| sample_type | VARCHAR(15) | no |  |  |
+| state | VARCHAR(12) | no | default OPERATIONAL |  |
+| alert_high | NUMERIC(18, 4) | yes |  |  |
+| action_high | NUMERIC(18, 4) | yes |  |  |
+| alert_low | NUMERIC(18, 4) | yes |  |  |
+| action_low | NUMERIC(18, 4) | yes |  |  |
+| unit | VARCHAR(20) | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_em_limit_seq`; `CheckConstraint: ck_em_limit_grade grade IN ('A', 'B', 'C', 'D', 'NC')`; `UniqueConstraint: uq_em_limit_key`; `CheckConstraint: ck_em_limit_state state IN ('AT_REST', 'OPERATIONAL')`
+
+### `em_limit_set`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| limitset_no | VARCHAR(40) | no |  |  |
+| version_no | INTEGER | no | default 1 |  |
+| title | VARCHAR(200) | no |  |  |
+| basis | VARCHAR(300) | yes |  |  |
+| status | VARCHAR(15) | no | default DRAFT |  |
+| supersedes_id | BIGINT | yes | FK → em_limit_set.id |  |
+| effective_from | DATETIME (UTC) | yes |  |  |
+| effective_to | DATETIME (UTC) | yes |  |  |
+| change_reason | VARCHAR(1000) | yes |  |  |
+| approved_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `CheckConstraint: ck_em_limit_set_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`; `UniqueConstraint: uq_em_limit_set_limitset_no`
+
+### `em_location`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| code | VARCHAR(30) | no |  |  |
+| name | VARCHAR(150) | no |  |  |
+| grade | VARCHAR(2) | no |  |  |
+| location_id | BIGINT | yes | FK → location.id |  |
+| description | VARCHAR(300) | yes |  |  |
+| is_active | BOOLEAN | no | default True |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_em_location_code`; `CheckConstraint: ck_em_location_grade grade IN ('A', 'B', 'C', 'D', 'NC')`
+
+### `em_plan`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| em_location_id | BIGINT | no | FK → em_location.id |  |
+| sample_type | VARCHAR(15) | no |  |  |
+| state | VARCHAR(12) | no | default OPERATIONAL |  |
+| frequency_days | INTEGER | no |  |  |
+| start_date | DATE | no |  |  |
+| is_active | BOOLEAN | no | default True |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `CheckConstraint: ck_em_plan_freq frequency_days > 0`; `UniqueConstraint: uq_em_plan_em_location_id`
+
+### `em_result_amendment` — **append-only**
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| sample_id | BIGINT | no | FK → em_sample.id |  |
+| old_value | NUMERIC(18, 4) | yes |  |  |
+| new_value | NUMERIC(18, 4) | yes |  |  |
+| old_outcome | VARCHAR(8) | yes |  |  |
+| new_outcome | VARCHAR(8) | yes |  |  |
+| reason | VARCHAR(500) | no |  |  |
+| user_id | BIGINT | no |  |  |
+| amended_at | DATETIME (UTC) | no |  |  |
+| id | BIGINT | no | PK |  |
+
+### `em_sample`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| sample_no | VARCHAR(30) | no |  |  |
+| em_location_id | BIGINT | no | FK → em_location.id |  |
+| plan_id | BIGINT | yes | FK → em_plan.id |  |
+| sample_type | VARCHAR(15) | no |  |  |
+| state | VARCHAR(12) | no | default OPERATIONAL |  |
+| sample_point | VARCHAR(100) | yes |  |  |
+| manufacturing_batch_id | BIGINT | yes | FK → manufacturing_batch.id |  |
+| equipment_id | BIGINT | yes | FK → equipment.id |  |
+| sampled_at | DATETIME (UTC) | no |  |  |
+| sampled_by_id | BIGINT | no |  |  |
+| status | VARCHAR(15) | no | default SAMPLED |  |
+| grade | VARCHAR(2) | yes |  |  |
+| limit_set_id | BIGINT | yes | FK → em_limit_set.id |  |
+| alert_high | NUMERIC(18, 4) | yes |  |  |
+| action_high | NUMERIC(18, 4) | yes |  |  |
+| alert_low | NUMERIC(18, 4) | yes |  |  |
+| action_low | NUMERIC(18, 4) | yes |  |  |
+| result_value | NUMERIC(18, 4) | yes |  |  |
+| result_unit | VARCHAR(20) | yes |  |  |
+| outcome | VARCHAR(8) | yes |  |  |
+| entered_by_id | BIGINT | yes |  |  |
+| entered_at | DATETIME (UTC) | yes |  |  |
+| reviewed_by_id | BIGINT | yes |  |  |
+| reviewed_at | DATETIME (UTC) | yes |  |  |
+| review_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| review_comment | VARCHAR(500) | yes |  |  |
+| deviation_id | BIGINT | yes |  |  |
+| remarks | VARCHAR(500) | yes |  |  |
+| cancel_reason | VARCHAR(300) | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `CheckConstraint: ck_em_sample_status status IN ('SAMPLED', 'RESULT_ENTERED', 'REVIEWED', 'CANCELLED')`; `UniqueConstraint: uq_em_sample_sample_no`; `CheckConstraint: ck_em_sample_outcome outcome IS NULL OR outcome IN ('WITHIN','ALERT','ACTION')`; `CheckConstraint: ck_em_sample_sample_type sample_type IN ('VIABLE_AIR', 'SETTLE_PLATE', 'CONTACT_PLATE', 'GLOVE_PRINT', 'NONVIABLE_05', 'NONVIABLE_5', 'DIFF_PRESSURE', 'TEMPERATURE', 'HUMIDITY')`
 
 ## Module `iam`
 
@@ -424,7 +681,7 @@ Constraints: `CheckConstraint: ck_animal_status status IN ('ACTIVE','QUARANTINED
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_batch_material_batch_id`; `CheckConstraint: ck_batch_material_required required_qty >= 0`
+Constraints: `CheckConstraint: ck_batch_material_required required_qty >= 0`; `UniqueConstraint: uq_batch_material_batch_id`
 
 ### `batch_reconciliation`
 
@@ -450,7 +707,7 @@ Constraints: `UniqueConstraint: uq_batch_material_batch_id`; `CheckConstraint: c
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_batch_reconciliation_status status IN ('CALCULATED','PRODUCTION_APPROVED','APPROVED')`; `UniqueConstraint: uq_batch_reconciliation_batch_id`
+Constraints: `UniqueConstraint: uq_batch_reconciliation_batch_id`; `CheckConstraint: ck_batch_reconciliation_status status IN ('CALCULATED','PRODUCTION_APPROVED','APPROVED')`
 
 ### `batch_step_execution`
 
@@ -522,7 +779,7 @@ Constraints: `CheckConstraint: ck_bleed_record_vol volume_l > 0`; `UniqueConstra
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_bom_header_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`; `CheckConstraint: ck_bom_header_batch_size batch_size > 0`; `UniqueConstraint: uq_bom_header_bom_no`
+Constraints: `CheckConstraint: ck_bom_header_batch_size batch_size > 0`; `CheckConstraint: ck_bom_header_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`; `UniqueConstraint: uq_bom_header_bom_no`
 
 ### `bom_line`
 
@@ -546,7 +803,7 @@ Constraints: `CheckConstraint: ck_bom_header_status status IN ('DRAFT','UNDER_RE
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_bom_line_bom_id`; `CheckConstraint: ck_bom_line_quantity quantity > 0`; `CheckConstraint: ck_bom_line_pct overage_pct >= 0 AND process_loss_pct >= 0`
+Constraints: `CheckConstraint: ck_bom_line_quantity quantity > 0`; `CheckConstraint: ck_bom_line_pct overage_pct >= 0 AND process_loss_pct >= 0`; `UniqueConstraint: uq_bom_line_bom_id`
 
 ### `immunisation_record` — **append-only**
 
@@ -629,7 +886,7 @@ Constraints: `CheckConstraint: ck_manufacturing_batch_planned planned_qty > 0`; 
 | issued_at | DATETIME (UTC) | no |  |  |
 | id | BIGINT | no | PK |  |
 
-Constraints: `UniqueConstraint: uq_material_issue_issue_no`; `CheckConstraint: ck_material_issue_qty quantity > 0`
+Constraints: `CheckConstraint: ck_material_issue_qty quantity > 0`; `UniqueConstraint: uq_material_issue_issue_no`
 
 ### `material_issue_indent`
 
@@ -645,7 +902,7 @@ Constraints: `UniqueConstraint: uq_material_issue_issue_no`; `CheckConstraint: c
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_material_issue_indent_batch_id`; `UniqueConstraint: uq_material_issue_indent_indent_no`
+Constraints: `UniqueConstraint: uq_material_issue_indent_indent_no`; `UniqueConstraint: uq_material_issue_indent_batch_id`
 
 ### `material_return`
 
@@ -675,7 +932,7 @@ Constraints: `UniqueConstraint: uq_material_issue_indent_batch_id`; `UniqueConst
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_material_return_status status IN ('REQUESTED','ACCEPTED','REJECTED')`; `UniqueConstraint: uq_material_return_return_no`; `CheckConstraint: ck_material_return_qty returned_qty > 0`
+Constraints: `CheckConstraint: ck_material_return_status status IN ('REQUESTED','ACCEPTED','REJECTED')`; `CheckConstraint: ck_material_return_qty returned_qty > 0`; `UniqueConstraint: uq_material_return_return_no`
 
 ### `mbr_step`
 
@@ -734,7 +991,7 @@ Constraints: `UniqueConstraint: uq_plasma_pool_pool_no`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_calibration_result result IN ('PASS','FAIL')`; `CheckConstraint: ck_calibration_due_after_performed due_on > performed_on`
+Constraints: `CheckConstraint: ck_calibration_due_after_performed due_on > performed_on`; `CheckConstraint: ck_calibration_result result IN ('PASS','FAIL')`
 
 ### `category`
 
@@ -802,7 +1059,7 @@ Constraints: `UniqueConstraint: uq_customer_customer_code`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_equipment_equipment_code`; `CheckConstraint: ck_equipment_qualification_status qualification_status IN ('NOT_QUALIFIED','QUALIFIED','REQUALIFICATION_DUE','DISQUALIFIED')`; `CheckConstraint: ck_equipment_status status IN ('ACTIVE','UNDER_MAINTENANCE','OUT_OF_SERVICE','RETIRED')`
+Constraints: `CheckConstraint: ck_equipment_status status IN ('ACTIVE','UNDER_MAINTENANCE','OUT_OF_SERVICE','RETIRED')`; `UniqueConstraint: uq_equipment_equipment_code`; `CheckConstraint: ck_equipment_qualification_status qualification_status IN ('NOT_QUALIFIED','QUALIFIED','REQUALIFICATION_DUE','DISQUALIFIED')`
 
 ### `location`
 
@@ -831,7 +1088,7 @@ Constraints: `UniqueConstraint: uq_equipment_equipment_code`; `CheckConstraint: 
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_location_location_code`; `CheckConstraint: ck_location_capacity capacity IS NULL OR capacity >= 0`; `CheckConstraint: ck_location_temp_range temp_max IS NULL OR temp_min IS NULL OR temp_max >= temp_min`; `CheckConstraint: ck_location_location_type location_type IN ('ZONE','ROOM','RACK','SHELF','BIN')`
+Constraints: `UniqueConstraint: uq_location_location_code`; `CheckConstraint: ck_location_temp_range temp_max IS NULL OR temp_min IS NULL OR temp_max >= temp_min`; `CheckConstraint: ck_location_location_type location_type IN ('ZONE','ROOM','RACK','SHELF','BIN')`; `CheckConstraint: ck_location_capacity capacity IS NULL OR capacity >= 0`
 
 ### `location_category`
 
@@ -903,7 +1160,7 @@ Constraints: `UniqueConstraint: uq_location_compat_rule_category_a_id`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_material_fefo_mode fefo_mode IN ('FEFO','FIFO')`; `CheckConstraint: ck_material_temp_range temp_max IS NULL OR temp_min IS NULL OR temp_max >= temp_min`; `CheckConstraint: ck_material_shelf_life shelf_life_days IS NULL OR shelf_life_days > 0`; `CheckConstraint: ck_material_master_status master_status IN ('DRAFT','APPROVED','ACTIVE','OBSOLETE')`; `UniqueConstraint: uq_material_material_code`
+Constraints: `CheckConstraint: ck_material_fefo_mode fefo_mode IN ('FEFO','FIFO')`; `UniqueConstraint: uq_material_material_code`; `CheckConstraint: ck_material_shelf_life shelf_life_days IS NULL OR shelf_life_days > 0`; `CheckConstraint: ck_material_master_status master_status IN ('DRAFT','APPROVED','ACTIVE','OBSOLETE')`; `CheckConstraint: ck_material_temp_range temp_max IS NULL OR temp_min IS NULL OR temp_max >= temp_min`
 
 ### `material_type`
 
@@ -1246,7 +1503,7 @@ Constraints: `CheckConstraint: ck_workflow_instance_status status IN ('IN_PROGRE
 | escalate_role_id | BIGINT | yes | FK → role.id |  |
 | reject_to_seq | INTEGER | yes |  |  |
 
-Constraints: `CheckConstraint: ck_workflow_step_min_approvals min_approvals >= 1`; `UniqueConstraint: uq_workflow_step_definition_id`
+Constraints: `UniqueConstraint: uq_workflow_step_definition_id`; `CheckConstraint: ck_workflow_step_min_approvals min_approvals >= 1`
 
 ### `workflow_transaction` — **append-only**
 
@@ -1314,7 +1571,7 @@ Constraints: `CheckConstraint: ck_purchase_order_status status IN ('DRAFT','PEND
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_purchase_order_line_rate rate >= 0`; `UniqueConstraint: uq_purchase_order_line_po_id`; `CheckConstraint: ck_purchase_order_line_tax tax_pct >= 0 AND tax_pct <= 100`; `CheckConstraint: ck_purchase_order_line_quantity quantity > 0`
+Constraints: `CheckConstraint: ck_purchase_order_line_tax tax_pct >= 0 AND tax_pct <= 100`; `UniqueConstraint: uq_purchase_order_line_po_id`; `CheckConstraint: ck_purchase_order_line_quantity quantity > 0`; `CheckConstraint: ck_purchase_order_line_rate rate >= 0`
 
 ### `purchase_request`
 
@@ -1336,7 +1593,7 @@ Constraints: `CheckConstraint: ck_purchase_order_line_rate rate >= 0`; `UniqueCo
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_purchase_request_status status IN ('DRAFT','SUBMITTED','DEPARTMENT_APPROVED','APPROVED','CONVERTED','REJECTED','CANCELLED')`; `UniqueConstraint: uq_purchase_request_pr_no`; `CheckConstraint: ck_purchase_request_priority priority IN ('LOW','NORMAL','HIGH','URGENT')`
+Constraints: `CheckConstraint: ck_purchase_request_priority priority IN ('LOW','NORMAL','HIGH','URGENT')`; `CheckConstraint: ck_purchase_request_status status IN ('DRAFT','SUBMITTED','DEPARTMENT_APPROVED','APPROVED','CONVERTED','REJECTED','CANCELLED')`; `UniqueConstraint: uq_purchase_request_pr_no`
 
 ### `purchase_request_line`
 
@@ -1413,7 +1670,7 @@ Constraints: `CheckConstraint: ck_vendor_material_status status IN ('DRAFT','UND
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_vendor_qualification_vendor_id`; `CheckConstraint: ck_vendor_qualification_risk_class risk_class IN ('CRITICAL','HIGH','MEDIUM','LOW')`; `CheckConstraint: ck_vendor_qualification_status status IN ('DRAFT', 'UNDER_REVIEW', 'APPROVED', 'CONDITIONAL', 'SUSPENDED', 'EXPIRED', 'DISQUALIFIED', 'SUPERSEDED')`
+Constraints: `CheckConstraint: ck_vendor_qualification_status status IN ('DRAFT', 'UNDER_REVIEW', 'APPROVED', 'CONDITIONAL', 'SUSPENDED', 'EXPIRED', 'DISQUALIFIED', 'SUPERSEDED')`; `CheckConstraint: ck_vendor_qualification_risk_class risk_class IN ('CRITICAL','HIGH','MEDIUM','LOW')`; `UniqueConstraint: uq_vendor_qualification_vendor_id`
 
 ## Module `qc`
 
@@ -1463,7 +1720,7 @@ Constraints: `UniqueConstraint: uq_coa_coa_no`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_conditional_release_status status IN ('REQUESTED','APPROVED','REJECTED','CLOSED','EXPIRED')`; `CheckConstraint: ck_conditional_release_qty quantity_authorised > 0`; `UniqueConstraint: uq_conditional_release_cr_no`
+Constraints: `CheckConstraint: ck_conditional_release_qty quantity_authorised > 0`; `UniqueConstraint: uq_conditional_release_cr_no`; `CheckConstraint: ck_conditional_release_status status IN ('REQUESTED','APPROVED','REJECTED','CLOSED','EXPIRED')`
 
 ### `oos_investigation`
 
@@ -1494,7 +1751,7 @@ Constraints: `CheckConstraint: ck_conditional_release_status status IN ('REQUEST
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_oos_investigation_status status IN ('RAISED','PHASE1','PHASE2','DECIDED','CLOSED')`; `UniqueConstraint: uq_oos_investigation_oos_no`
+Constraints: `UniqueConstraint: uq_oos_investigation_oos_no`; `CheckConstraint: ck_oos_investigation_status status IN ('RAISED','PHASE1','PHASE2','DECIDED','CLOSED')`
 
 ### `oot_event`
 
@@ -1627,7 +1884,7 @@ Constraints: `CheckConstraint: ck_qc_test_status status IN ('ASSIGNED','STARTED'
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_sample_qty quantity_sampled > 0`; `UniqueConstraint: uq_sample_sample_no`; `CheckConstraint: ck_sample_status status IN ('CREATED','TESTING','COMPLETED','RETAINED','DISPOSED')`; `CheckConstraint: ck_sample_sample_type sample_type IN ('RM_SAMPLE', 'PM_SAMPLE', 'IN_PROCESS', 'SFG', 'FG', 'STABILITY', 'RETENTION', 'VENDOR', 'INVESTIGATION')`
+Constraints: `CheckConstraint: ck_sample_sample_type sample_type IN ('RM_SAMPLE', 'PM_SAMPLE', 'IN_PROCESS', 'SFG', 'FG', 'STABILITY', 'RETENTION', 'VENDOR', 'INVESTIGATION')`; `UniqueConstraint: uq_sample_sample_no`; `CheckConstraint: ck_sample_qty quantity_sampled > 0`; `CheckConstraint: ck_sample_status status IN ('CREATED','TESTING','COMPLETED','RETAINED','DISPOSED')`
 
 ## Module `quality`
 
@@ -1709,7 +1966,7 @@ Constraints: `UniqueConstraint: uq_capa_capa_no`; `CheckConstraint: ck_capa_stat
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_change_control_cc_no`; `CheckConstraint: ck_change_control_status status IN ('DRAFT', 'ASSESSMENT', 'APPROVAL', 'IMPLEMENTATION', 'EFFECTIVENESS', 'CLOSED', 'REJECTED', 'CANCELLED')`
+Constraints: `CheckConstraint: ck_change_control_status status IN ('DRAFT', 'ASSESSMENT', 'APPROVAL', 'IMPLEMENTATION', 'EFFECTIVENESS', 'CLOSED', 'REJECTED', 'CANCELLED')`; `UniqueConstraint: uq_change_control_cc_no`
 
 ### `change_control_link`
 
@@ -1755,7 +2012,7 @@ Constraints: `UniqueConstraint: uq_change_control_link_cc_id`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_complaint_complaint_no`; `CheckConstraint: ck_complaint_severity severity IN ('MINOR','MAJOR','CRITICAL')`; `CheckConstraint: ck_complaint_status status IN ('RECEIVED','INVESTIGATION','CLOSED','CANCELLED')`
+Constraints: `CheckConstraint: ck_complaint_status status IN ('RECEIVED','INVESTIGATION','CLOSED','CANCELLED')`; `CheckConstraint: ck_complaint_severity severity IN ('MINOR','MAJOR','CRITICAL')`; `UniqueConstraint: uq_complaint_complaint_no`
 
 ### `deviation`
 
@@ -1815,7 +2072,7 @@ Constraints: `CheckConstraint: ck_deviation_severity severity IN ('MINOR','MAJOR
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_recall_recall_no`; `CheckConstraint: ck_recall_status status IN ('INITIATED','IN_PROGRESS','CLOSED')`; `CheckConstraint: ck_recall_class recall_class IN ('I','II','III')`
+Constraints: `CheckConstraint: ck_recall_class recall_class IN ('I','II','III')`; `CheckConstraint: ck_recall_status status IN ('INITIATED','IN_PROGRESS','CLOSED')`; `UniqueConstraint: uq_recall_recall_no`
 
 ### `recall_line`
 
@@ -1890,7 +2147,7 @@ Constraints: `CheckConstraint: ck_risk_assessment_status status IN ('DRAFT','APP
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_risk_item_scores severity BETWEEN 1 AND 10 AND occurrence BETWEEN 1 AND 10 AND detection BETWEEN 1 AND 10`; `UniqueConstraint: uq_risk_item_ra_id`
+Constraints: `UniqueConstraint: uq_risk_item_ra_id`; `CheckConstraint: ck_risk_item_scores severity BETWEEN 1 AND 10 AND occurrence BETWEEN 1 AND 10 AND detection BETWEEN 1 AND 10`
 
 ### `sop`
 
@@ -2037,7 +2294,7 @@ Constraints: `UniqueConstraint: uq_retention_policy_record_type`; `CheckConstrai
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_sampling_plan_plan_no`; `CheckConstraint: ck_sampling_plan_sampling_rule sampling_rule IN ('FIXED','SQRT_N_PLUS_1','PERCENT','ALL')`; `CheckConstraint: ck_sampling_plan_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`
+Constraints: `CheckConstraint: ck_sampling_plan_sampling_rule sampling_rule IN ('FIXED','SQRT_N_PLUS_1','PERCENT','ALL')`; `UniqueConstraint: uq_sampling_plan_plan_no`; `CheckConstraint: ck_sampling_plan_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`
 
 ### `specification`
 
@@ -2093,7 +2350,7 @@ Constraints: `CheckConstraint: ck_specification_status status IN ('DRAFT','UNDER
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_specification_parameter_criticality criticality IN ('CRITICAL','MAJOR','MINOR')`; `CheckConstraint: ck_specification_parameter_spec_type spec_type IN ('NUMERIC','RANGE','TEXT','PASS_FAIL')`; `UniqueConstraint: uq_specification_parameter_specification_id`; `CheckConstraint: ck_specification_parameter_usl_ge_lsl usl IS NULL OR lsl IS NULL OR usl >= lsl`
+Constraints: `CheckConstraint: ck_specification_parameter_spec_type spec_type IN ('NUMERIC','RANGE','TEXT','PASS_FAIL')`; `UniqueConstraint: uq_specification_parameter_specification_id`; `CheckConstraint: ck_specification_parameter_usl_ge_lsl usl IS NULL OR lsl IS NULL OR usl >= lsl`; `CheckConstraint: ck_specification_parameter_criticality criticality IN ('CRITICAL','MAJOR','MINOR')`
 
 ### `stp`
 
@@ -2124,6 +2381,160 @@ Constraints: `CheckConstraint: ck_specification_parameter_criticality criticalit
 | row_version | INTEGER | no | default 1 |  |
 
 Constraints: `CheckConstraint: ck_stp_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`; `UniqueConstraint: uq_stp_stp_no`
+
+## Module `stability`
+
+### `stability_condition`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| protocol_id | BIGINT | no | FK → stability_protocol.id |  |
+| seq | INTEGER | no |  |  |
+| label | VARCHAR(80) | no |  |  |
+| condition_type | VARCHAR(15) | no |  |  |
+| temperature_c | NUMERIC(6, 2) | no |  |  |
+| temperature_tol_c | NUMERIC(6, 2) | yes |  |  |
+| rh_pct | NUMERIC(5, 1) | yes |  |  |
+| rh_tol_pct | NUMERIC(5, 1) | yes |  |  |
+| chamber_location_id | BIGINT | yes | FK → location.id |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_stability_condition_protocol_id`; `CheckConstraint: ck_stability_condition_ctype condition_type IN ('LONG_TERM', 'INTERMEDIATE', 'ACCELERATED', 'STRESS', 'REFRIGERATED', 'FROZEN')`
+
+### `stability_protocol`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| protocol_no | VARCHAR(40) | no |  |  |
+| version_no | INTEGER | no | default 1 |  |
+| title | VARCHAR(200) | no |  |  |
+| material_id | BIGINT | no | FK → material.id |  |
+| specification_id | BIGINT | no | FK → specification.id |  |
+| container_closure | VARCHAR(200) | yes |  |  |
+| proposed_shelf_life_months | INTEGER | yes |  |  |
+| pull_window_days | INTEGER | no | default 14 |  |
+| objective | TEXT | yes |  |  |
+| status | VARCHAR(15) | no | default DRAFT |  |
+| supersedes_id | BIGINT | yes | FK → stability_protocol.id |  |
+| effective_from | DATETIME (UTC) | yes |  |  |
+| effective_to | DATETIME (UTC) | yes |  |  |
+| change_reason | VARCHAR(1000) | yes |  |  |
+| approved_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_stability_protocol_protocol_no`; `CheckConstraint: ck_stability_protocol_status status IN ('DRAFT','UNDER_REVIEW','APPROVED','SUPERSEDED')`
+
+### `stability_pull`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| study_id | BIGINT | no | FK → stability_study.id |  |
+| condition_id | BIGINT | no | FK → stability_condition.id |  |
+| timepoint_id | BIGINT | no | FK → stability_timepoint.id |  |
+| month | INTEGER | no |  |  |
+| due_date | DATE | no |  |  |
+| window_days | INTEGER | no |  |  |
+| status | VARCHAR(10) | no | default SCHEDULED |  |
+| pulled_at | DATETIME (UTC) | yes |  |  |
+| pulled_by_id | BIGINT | yes |  |  |
+| actual_qty | NUMERIC(18, 6) | yes |  |  |
+| tested_at | DATETIME (UTC) | yes |  |  |
+| reviewed_by_id | BIGINT | yes |  |  |
+| reviewed_at | DATETIME (UTC) | yes |  |  |
+| review_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| deviation_id | BIGINT | yes |  |  |
+| oos_deviation_id | BIGINT | yes |  |  |
+| skip_reason | VARCHAR(500) | yes |  |  |
+| remarks | VARCHAR(500) | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_stability_pull_study_id`; `CheckConstraint: ck_stability_pull_status status IN ('SCHEDULED', 'PULLED', 'TESTED', 'REVIEWED', 'MISSED', 'SKIPPED')`
+
+### `stability_result` — **append-only**
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| pull_id | BIGINT | no | FK → stability_pull.id |  |
+| parameter_id | BIGINT | no | FK → specification_parameter.id |  |
+| value_numeric | NUMERIC(18, 6) | yes |  |  |
+| rounded_value | NUMERIC(18, 6) | yes |  |  |
+| value_text | VARCHAR(300) | yes |  |  |
+| unit | VARCHAR(20) | yes |  |  |
+| lsl | NUMERIC(18, 6) | yes |  |  |
+| usl | NUMERIC(18, 6) | yes |  |  |
+| pass_fail | VARCHAR(4) | no |  |  |
+| equipment_id | BIGINT | yes | FK → equipment.id |  |
+| supersedes_id | BIGINT | yes | FK → stability_result.id |  |
+| correction_reason | VARCHAR(500) | yes |  |  |
+| deviation_id | BIGINT | yes |  |  |
+| entered_by_id | BIGINT | no |  |  |
+| entered_at | DATETIME (UTC) | no |  |  |
+| id | BIGINT | no | PK |  |
+
+Constraints: `CheckConstraint: ck_stability_result_pf pass_fail IN ('PASS','FAIL')`
+
+### `stability_study`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| study_no | VARCHAR(30) | no |  |  |
+| protocol_id | BIGINT | no | FK → stability_protocol.id |  |
+| material_batch_id | BIGINT | no | FK → material_batch.id |  |
+| start_date | DATE | no |  |  |
+| units_per_pull | NUMERIC(18, 6) | no |  |  |
+| source_location_id | BIGINT | yes | FK → location.id |  |
+| status | VARCHAR(15) | no | default PLANNED |  |
+| created_by_user_id | BIGINT | no |  |  |
+| started_at | DATETIME (UTC) | yes |  |  |
+| placed_qty | NUMERIC(18, 6) | yes |  |  |
+| ledger_txn_id | BIGINT | yes |  |  |
+| completed_at | DATETIME (UTC) | yes |  |  |
+| shelf_life_months | INTEGER | yes |  |  |
+| conclusion | TEXT | yes |  |  |
+| concluded_by_id | BIGINT | yes |  |  |
+| concluded_at | DATETIME (UTC) | yes |  |  |
+| conclusion_signature_id | BIGINT | yes | FK → e_signature.id |  |
+| terminate_reason | VARCHAR(500) | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `CheckConstraint: ck_stability_study_units units_per_pull > 0`; `CheckConstraint: ck_stability_study_status status IN ('PLANNED', 'ACTIVE', 'COMPLETED', 'CONCLUDED', 'TERMINATED')`; `UniqueConstraint: uq_stability_study_study_no`
+
+### `stability_timepoint`
+
+| Column | Type | Null | Key / default | Notes |
+|---|---|---|---|---|
+| protocol_id | BIGINT | no | FK → stability_protocol.id |  |
+| seq | INTEGER | no |  |  |
+| month | INTEGER | no |  |  |
+| label | VARCHAR(40) | yes |  |  |
+| id | BIGINT | no | PK |  |
+| created_at | DATETIME (UTC) | no |  |  |
+| created_by_id | BIGINT | yes |  |  |
+| updated_at | DATETIME (UTC) | yes |  |  |
+| updated_by_id | BIGINT | yes |  |  |
+| row_version | INTEGER | no | default 1 |  |
+
+Constraints: `UniqueConstraint: uq_stability_timepoint_month`; `UniqueConstraint: uq_stability_timepoint_seq`; `CheckConstraint: ck_stability_timepoint_month month >= 0`
 
 ## Module `warehouse`
 
@@ -2168,7 +2579,7 @@ Constraints: `UniqueConstraint: uq_checklist_item_code`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_destruction_record_qty quantity > 0`; `UniqueConstraint: uq_destruction_record_destruction_no`; `CheckConstraint: ck_destruction_record_status status IN ('REQUESTED','APPROVED','REJECTED','EXECUTED')`
+Constraints: `CheckConstraint: ck_destruction_record_status status IN ('REQUESTED','APPROVED','REJECTED','EXECUTED')`; `CheckConstraint: ck_destruction_record_qty quantity > 0`; `UniqueConstraint: uq_destruction_record_destruction_no`
 
 ### `grn`
 
@@ -2197,7 +2608,7 @@ Constraints: `CheckConstraint: ck_destruction_record_qty quantity > 0`; `UniqueC
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_grn_grn_no`; `CheckConstraint: ck_grn_status status IN ('DRAFT','SUBMITTED','VERIFIED','QUARANTINE','REJECTED','CANCELLED')`
+Constraints: `CheckConstraint: ck_grn_status status IN ('DRAFT','SUBMITTED','VERIFIED','QUARANTINE','REJECTED','CANCELLED')`; `UniqueConstraint: uq_grn_grn_no`
 
 ### `grn_checklist`
 
@@ -2247,7 +2658,7 @@ Constraints: `UniqueConstraint: uq_grn_checklist_grn_id`; `CheckConstraint: ck_g
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `UniqueConstraint: uq_grn_line_grn_id`; `CheckConstraint: ck_grn_line_qty quantity_received > 0`; `CheckConstraint: ck_grn_line_dates expiry_date IS NULL OR mfg_date IS NULL OR expiry_date >= mfg_date`
+Constraints: `CheckConstraint: ck_grn_line_dates expiry_date IS NULL OR mfg_date IS NULL OR expiry_date >= mfg_date`; `UniqueConstraint: uq_grn_line_grn_id`; `CheckConstraint: ck_grn_line_qty quantity_received > 0`
 
 ### `inventory_balance`
 
@@ -2259,7 +2670,7 @@ Constraints: `UniqueConstraint: uq_grn_line_grn_id`; `CheckConstraint: ck_grn_li
 | qty_on_hand | NUMERIC(18, 6) | no | default 0 |  |
 | qty_reserved | NUMERIC(18, 6) | no | default 0 |  |
 
-Constraints: `UniqueConstraint: uq_inventory_balance_material_batch_id`; `CheckConstraint: ck_inventory_balance_reserved qty_reserved >= 0`; `CheckConstraint: ck_inventory_balance_reserved_le_on_hand qty_reserved <= qty_on_hand`; `CheckConstraint: ck_inventory_balance_on_hand qty_on_hand >= 0`
+Constraints: `CheckConstraint: ck_inventory_balance_reserved qty_reserved >= 0`; `CheckConstraint: ck_inventory_balance_reserved_le_on_hand qty_reserved <= qty_on_hand`; `CheckConstraint: ck_inventory_balance_on_hand qty_on_hand >= 0`; `UniqueConstraint: uq_inventory_balance_material_batch_id`
 
 ### `inventory_transaction` — **append-only**
 
@@ -2280,7 +2691,7 @@ Constraints: `UniqueConstraint: uq_inventory_balance_material_batch_id`; `CheckC
 | txn_ts | DATETIME (UTC) | no |  |  |
 | id | BIGINT | no | PK |  |
 
-Constraints: `CheckConstraint: ck_inventory_transaction_txn_type txn_type IN ('RECEIPT','TRANSFER','SAMPLE','ISSUE','RETURN','REJECT_MOVE','DESTROY','ADJUST_IN','ADJUST_OUT','DISPATCH','OUTPUT')`; `CheckConstraint: ck_inventory_transaction_qty_positive quantity > 0`
+Constraints: `CheckConstraint: ck_inventory_transaction_qty_positive quantity > 0`; `CheckConstraint: ck_inventory_transaction_txn_type txn_type IN ('RECEIPT','TRANSFER','SAMPLE','ISSUE','RETURN','REJECT_MOVE','DESTROY','ADJUST_IN','ADJUST_OUT','DISPATCH','OUTPUT')`
 
 ### `material_batch`
 
@@ -2312,7 +2723,7 @@ Constraints: `CheckConstraint: ck_inventory_transaction_txn_type txn_type IN ('R
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_material_batch_disposition disposition IN ('QUARANTINE', 'QC_TESTING', 'QC_APPROVED', 'QA_REVIEW', 'APPROVED', 'REJECTED', 'EXPIRED', 'RETURNED', 'DESTROYED')`; `UniqueConstraint: uq_material_batch_lot_no`
+Constraints: `UniqueConstraint: uq_material_batch_lot_no`; `CheckConstraint: ck_material_batch_disposition disposition IN ('QUARANTINE', 'QC_TESTING', 'QC_APPROVED', 'QA_REVIEW', 'APPROVED', 'REJECTED', 'EXPIRED', 'RETURNED', 'DESTROYED')`
 
 ### `material_container`
 
@@ -2372,7 +2783,7 @@ Constraints: `UniqueConstraint: uq_material_label_label_no`
 | updated_by_id | BIGINT | yes |  |  |
 | row_version | INTEGER | no | default 1 |  |
 
-Constraints: `CheckConstraint: ck_quality_hold_entity_type entity_type IN ('MATERIAL_BATCH','MFG_BATCH')`; `CheckConstraint: ck_quality_hold_status status IN ('OPEN','RELEASED')`
+Constraints: `CheckConstraint: ck_quality_hold_status status IN ('OPEN','RELEASED')`; `CheckConstraint: ck_quality_hold_entity_type entity_type IN ('MATERIAL_BATCH','MFG_BATCH')`
 
 ### `storage_temperature_log` — **append-only**
 
