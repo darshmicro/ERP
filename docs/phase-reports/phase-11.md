@@ -50,7 +50,9 @@ EM Overview, EM Samples, EM Locations, EM Limits; Stability Protocols, Studies (
 | 5 | Review of design | A sample taken before limit approval would have been judged against "limits at sampling time" | Judged against the limits in force at result entry, snapshotted |
 
 ## Tests and evidence
-See the *Evidence* section below (filled from the JUnit files).
+* **SQLite:** 258 tests collected (+26 new in 5 files incl. gates/jobs); full run 255 passed, 1 skipped (server-database-only test), 1 failed — an old dashboard-list assertion that did not expect the new `monitoring` dashboard for the QA Head; the assertion was updated and re-run (pass). Targeted re-runs are in `evidence/junit-sqlite-phase11-*.xml`.
+* **SQL Server 2022:** four parallel partitions, 254 passed, 2 deselected (SQLite-subprocess migration tests), the same single dashboard assertion failed and passed on re-run (`junit-sqlserver-5.xml`). Migrations `0001→0010` up/down/up on SQL Server: 127 tables, 20 `INSTEAD OF` triggers (the three new ones verified present).
+* Not repeated for Phase 11: restore and load tests (evidence predates it), UI smoke of the 11 new pages, least-privilege grants run for the 3 new DENY lines.
 
 ## Known limitations
 KD-16…KD-19 in `docs/known-defects.md`: EM has no BMS/continuous-monitoring interface or incubation workflow; stability evaluation has no ICH Q1E pooling tests, chamber mapping or per-container tracking, and OOS is handled as a deviation, not the QC OOS form; costing is standard/actual only (no GL, multi-currency, landed cost, WIP).

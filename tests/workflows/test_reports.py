@@ -129,7 +129,7 @@ def test_dashboards_are_role_gated_and_populated(w):
     assert w["pr"].get(f"{API}/dashboards/management").status_code == 403
     assert w["wh1"].get(f"{API}/dashboards/qa").status_code == 403
     assert w["qa"].get(f"{API}/dashboards/nope").status_code == 404
-    assert set(w["qa"].get(f"{API}/dashboards").json()) == {"management", "qc", "qa", "warehouse"}
+    assert set(w["qa"].get(f"{API}/dashboards").json()) == {"management", "qc", "qa", "warehouse", "monitoring"}
 
 
 def test_retention_policies_archive_and_legal_hold(w):

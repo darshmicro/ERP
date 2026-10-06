@@ -1,6 +1,6 @@
 # Validation Summary Report (VSR) — DRAFT
 
-> **Status:** supplier-side draft for release **1.0.0-rc1**. The site completes the sections marked **[SITE]**, executes IQ/OQ/PQ, signs and approves. This draft contains supplier development evidence only; it contains **no statement that the system is compliant, certified or validated** for the site's intended use.
+> **Status:** supplier-side draft for release **1.1.0-rc1**. The site completes the sections marked **[SITE]**, executes IQ/OQ/PQ, signs and approves. This draft contains supplier development evidence only; it contains **no statement that the system is compliant, certified or validated** for the site's intended use.
 
 | Field | Entry |
 |---|---|
@@ -13,7 +13,7 @@
 ## 1. Summary of activities
 | Activity | Document | Status |
 |---|---|---|
-| User requirements | `urs.md` — 59 requirements (critical/major/minor) | Drafted by supplier; **[SITE] review/approval** |
+| User requirements | `urs.md` — 71 requirements (critical/major/minor) | Drafted by supplier; **[SITE] review/approval** |
 | Risk assessment | `risk-assessment.md` — 25 risks; all inherent HIGH risks reduced below RPN 100 by implemented controls | Drafted; **[SITE] adoption** |
 | Specifications | `functional-specification.md`, `design-specification.md`, `configuration-specification.md` (generated), `docs/architecture/` | Delivered |
 | Data integrity | `data-integrity-assessment.md` (ALCOA+) | Drafted; **[SITE] open points 1–5** |
@@ -31,7 +31,7 @@
 |---|---|
 | **SQLite** (development) — full suite, `evidence/junit.xml` (+ `junit-sqlite-extra.xml`) | **232 collected: 231 passed**, 1 skipped (the same-account concurrent-login test needs a multi-writer database); 0 failed |
 | **SQL Server 2022** (Linux container, ODBC Driver 18) — full suite in four parallel partitions, `evidence/junit-sqlserver-1…4.xml` | **230 passed**, 0 failed, 2 deselected (the two Alembic tests that spawn SQLite subprocesses; migrations are verified separately below). Includes the same-account concurrent-login regression test |
-| Migrations `0001 → 0009` up / down / up on a clean SQL Server database | Pass — 110 tables, 17 `INSTEAD OF` append-only triggers, final `alembic current` = `0009` |
+| Migrations `0001 → 0010` up / down / up on SQL Server | Pass — 127 tables, 20 `INSTEAD OF` append-only triggers, final `alembic current` = `0010` |
 | Least-privilege grants script (`database/mssql/01_logins_and_grants.sql`) executed as `sa`; then as `merp_app` | `UPDATE`/`DELETE` on **all 17** append-only tables → *permission denied*; `CREATE TABLE` → *permission denied*; `SELECT` works |
 | Backup / restore (`scripts/restore_test.py`, `evidence/restore-test-sqlserver.json`) | SUCCESS — backup with CHECKSUM, `RESTORE VERIFYONLY` OK, restore to scratch DB in 0.7 s (2.7 s end-to-end), 110 tables / 5 010 rows identical, **audit hash chain verified on the restored copy (1 898 rows)** |
 | Load (`scripts/load_test.py`, `evidence/load-test-sqlserver.txt`) | 50 virtual users, 120 s, 4 786 requests, 39.6 req/s, **0 errors**, p95 < 2.3 s (single shared host) |

@@ -1,6 +1,6 @@
 # Requirements Traceability Matrix (RTM)
 
-Generated 2026-10-06 02:46 UTC from `scripts/validation_requirements.py` and the automated test inventory. Result columns = outcome in `docs/validation/evidence/junit.xml` (SQLite development database) and `junit-sqlserver-*.xml` (SQL Server 2022).
+Generated 2026-10-06 03:20 UTC from `scripts/validation_requirements.py` and the automated test inventory. Result columns = outcome in `docs/validation/evidence/junit.xml` (SQLite development database) and `junit-sqlserver-*.xml` (SQL Server 2022).
 
 URS → business rule → automated test (OQ evidence) → result. Every referenced test was verified to exist by collection; the generator aborts otherwise.
 
@@ -260,7 +260,7 @@ URS → business rule → automated test (OQ evidence) → result. Every referen
 | URS-RPT-03 | Minor |  | `tests/workflows/test_reports.py::test_dashboards_are_role_gated_and_populated` | PASS | PASS |
 |  |  |  | `tests/workflows/test_reports.py::test_report_performance_with_large_ledger` | PASS | PASS |
 |  |  |  | `tests/integration/test_company_documents.py::test_dashboard_cards` | PASS | PASS |
-| URS-RPT-04 | Minor |  | `tests/workflows/test_phase11_reports.py::test_reports_and_dashboards_for_new_modules` | n/a | not run |
+| URS-RPT-04 | Minor |  | `tests/workflows/test_phase11_reports.py::test_reports_and_dashboards_for_new_modules` | PASS | PASS |
 
 ## Data integrity
 
@@ -274,47 +274,50 @@ URS → business rule → automated test (OQ evidence) → result. Every referen
 
 | URS | Impact | Rules | Test (path::function) | SQLite | SQL Server |
 |---|---|---|---|---|---|
-| URS-EM-01 | Critical | BR-EM-001, BR-HIS-001 | `tests/workflows/test_phase11_em.py::test_limit_set_is_a_controlled_version` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_em.py::test_reference_limits_load_as_draft_requiring_approval` | n/a | not run |
-| URS-EM-02 | Critical | BR-EM-002, BR-DEV-001 | `tests/workflows/test_phase11_em.py::test_result_is_judged_against_the_limit_set_and_action_raises_deviation` | n/a | not run |
-| URS-EM-03 | Critical | BR-EM-002, SOD-37 | `tests/workflows/test_phase11_em.py::test_amendment_keeps_original_and_review_locks_the_result` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_em.py::test_entering_person_cannot_review_own_result` | n/a | not run |
-| URS-EM-04 | Major |  | `tests/workflows/test_phase11_em.py::test_schedule_flags_due_and_overdue_points` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_em.py::test_trend_and_excursion_listing` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_em.py::test_non_qc_roles_cannot_enter_or_approve` | n/a | not run |
+| URS-EM-01 | Critical | BR-EM-001, BR-HIS-001 | `tests/workflows/test_phase11_em.py::test_limit_set_is_a_controlled_version` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_em.py::test_reference_limits_load_as_draft_requiring_approval` | PASS | PASS |
+| URS-EM-02 | Critical | BR-EM-002, BR-DEV-001 | `tests/workflows/test_phase11_em.py::test_result_is_judged_against_the_limit_set_and_action_raises_deviation` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_gates.py::test_em_sampling_refuses_an_unqualified_or_uncalibrated_instrument` | PASS | PASS |
+| URS-EM-03 | Critical | BR-EM-002, SOD-37 | `tests/workflows/test_phase11_em.py::test_amendment_keeps_original_and_review_locks_the_result` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_em.py::test_entering_person_cannot_review_own_result` | PASS | PASS |
+| URS-EM-04 | Major |  | `tests/workflows/test_phase11_em.py::test_schedule_flags_due_and_overdue_points` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_em.py::test_trend_and_excursion_listing` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_em.py::test_non_qc_roles_cannot_enter_or_approve` | PASS | PASS |
 
 ## Stability
 
 | URS | Impact | Rules | Test (path::function) | SQLite | SQL Server |
 |---|---|---|---|---|---|
-| URS-STB-01 | Critical | BR-STB-001, BR-HIS-001, SOD-38 | `tests/workflows/test_phase11_stability.py::test_protocol_is_a_controlled_version_and_needs_approval_for_a_study` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_incomplete_protocol_cannot_be_submitted` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_role_boundaries` | n/a | not run |
-| URS-STB-02 | Critical | BR-STB-002/003 | `tests/workflows/test_phase11_stability.py::test_starting_a_study_books_stock_and_schedules_every_pull` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_out_of_window_pull_needs_remarks_and_raises_minor_deviation` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_missed_pulls_are_marked_with_deviation_and_study_cannot_complete_early` | n/a | not run |
-| URS-STB-03 | Critical | BR-STB-004..007, SOD-39 | `tests/workflows/test_phase11_stability.py::test_pull_test_review_chain_and_sod` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_correction_supersedes_and_keeps_the_original` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_oos_raises_deviation_linked_to_lot_and_blocks_review_until_it_exists` | n/a | not run |
-| URS-STB-04 | Major | BR-STB-008/009, SOD-40 | `tests/workflows/test_phase11_stability.py::test_evaluation_and_conclusion_with_signature` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_stability.py::test_regression_helper_is_conservative` | n/a | not run |
+| URS-STB-01 | Critical | BR-STB-001, BR-HIS-001, SOD-38 | `tests/workflows/test_phase11_stability.py::test_protocol_is_a_controlled_version_and_needs_approval_for_a_study` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_incomplete_protocol_cannot_be_submitted` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_role_boundaries` | PASS | PASS |
+| URS-STB-02 | Critical | BR-STB-002/003 | `tests/workflows/test_phase11_stability.py::test_starting_a_study_books_stock_and_schedules_every_pull` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_out_of_window_pull_needs_remarks_and_raises_minor_deviation` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_missed_pulls_are_marked_with_deviation_and_study_cannot_complete_early` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_scheduled_job_marks_missed_pulls_and_is_idempotent` | PASS | PASS |
+| URS-STB-03 | Critical | BR-STB-004..007, SOD-39 | `tests/workflows/test_phase11_stability.py::test_pull_test_review_chain_and_sod` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_correction_supersedes_and_keeps_the_original` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_oos_raises_deviation_linked_to_lot_and_blocks_review_until_it_exists` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_gates.py::test_stability_result_refuses_an_unqualified_instrument` | PASS | PASS |
+| URS-STB-04 | Major | BR-STB-008/009, SOD-40 | `tests/workflows/test_phase11_stability.py::test_evaluation_and_conclusion_with_signature` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_stability.py::test_regression_helper_is_conservative` | PASS | PASS |
 
 ## Costing
 
 | URS | Impact | Rules | Test (path::function) | SQLite | SQL Server |
 |---|---|---|---|---|---|
-| URS-COST-01 | Major | BR-COST-003, SOD-41 | `tests/workflows/test_phase11_costing.py::test_rate_card_is_controlled_and_needed_for_costing` | n/a | not run |
-|  |  |  | `tests/workflows/test_phase11_costing.py::test_cost_data_is_restricted` | n/a | not run |
-| URS-COST-02 | Major | BR-COST-001..005, SOD-42 | `tests/workflows/test_phase11_costing.py::test_batch_cost_is_derived_from_issues_and_rolls_into_the_output_lot` | n/a | not run |
-| URS-COST-03 | Major | BR-COST-001 | `tests/workflows/test_phase11_costing.py::test_uncosted_lot_blocks_instead_of_being_valued_at_zero` | n/a | not run |
+| URS-COST-01 | Major | BR-COST-003, SOD-41 | `tests/workflows/test_phase11_costing.py::test_rate_card_is_controlled_and_needed_for_costing` | PASS | PASS |
+|  |  |  | `tests/workflows/test_phase11_costing.py::test_cost_data_is_restricted` | PASS | PASS |
+| URS-COST-02 | Major | BR-COST-001..005, SOD-42 | `tests/workflows/test_phase11_costing.py::test_batch_cost_is_derived_from_issues_and_rolls_into_the_output_lot` | PASS | PASS |
+| URS-COST-03 | Major | BR-COST-001 | `tests/workflows/test_phase11_costing.py::test_uncosted_lot_blocks_instead_of_being_valued_at_zero` | PASS | PASS |
 
 ## Summary
 
 * Requirements: **71**; all have at least one automated test: **True**
-* Mapped test references: **214** (distinct tests: **212**)
-* Results of mapped tests (SQLite): PASS: 190, n/a: 24; SQL Server: {'PASS': 188, 'not run': 26}
+* Mapped test references: **217** (distinct tests: **215**)
+* Results of mapped tests (SQLite): PASS: 217; SQL Server: {'PASS': 215, 'not run': 2}
 * SQL Server column: the two `tests/integration/test_migrations.py` tests spawn SQLite subprocesses and are deselected there; the migration chain is verified on SQL Server separately (`docs/validation/sqlserver-verification.md`: 0001→0009 up/down/up, 110 tables, 17 triggers).
-* Collected automated tests in total: **256**; not referenced by a requirement (supporting/unit tests): **44**
+* Collected automated tests in total: **259**; not referenced by a requirement (supporting/unit tests): **44**
 
 ### The 15 mandatory critical tests (prompt §77)
 
