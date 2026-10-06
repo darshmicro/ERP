@@ -27,6 +27,7 @@ USERS = {  # username: (role, full name)
     "demo_qao": ("QA_OFFICER", "Olivia QA-Officer"), "demo_qahead": ("QA_HEAD", "Harsh QA-Head"), "demo_qahead2": ("QA_HEAD", "Hema QA-Head 2"), "demo_prod": ("PRODUCTION_USER", "Pooja Production"),
     "demo_prodmgr": ("PRODUCTION_MANAGER", "Manoj Production-Manager"), "demo_dispatch": ("DISPATCH_USER", "Dinesh Dispatch"), "demo_mgmt": ("MANAGEMENT", "Meera Management"),
     "demo_auditor": ("AUDITOR", "Arun Auditor"), "demo_dept": ("DEPARTMENT_HEAD", "Deepa Department-Head"),
+    "demo_costing": ("COSTING_ANALYST", "Chandra Costing-Analyst"), "demo_finance": ("FINANCE_HEAD", "Farah Finance-Head"),
 }
 
 

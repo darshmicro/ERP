@@ -4,7 +4,7 @@
 
 ## 1. Purpose and scope
 Validate GMP-MERP (material, manufacturing, quality and dispatch ERP for antisera/biologicals manufacture) for its intended use: Vendor → Qualification → Material → PR → PO → GRN → Quarantine → Sampling → QC → QA release → Inventory → Issue → SFG → FG → QC/QA → Dispatch → Traceability → Reports, including the quality system (deviation, CAPA, change control, risk, SOP, complaints, recall).
-Out of scope (v1): environmental monitoring, utilities, stability studies, LIMS instrument integration, payroll/finance (see *Known limitations* in each phase report).
+Out of scope (v1): utilities, LIMS instrument integration, payroll / general-ledger finance (environmental monitoring, stability studies and costing were added in Phase 11) (see *Known limitations* in each phase report).
 
 ## 2. System classification
 GAMP 5 category 4/5 hybrid (configurable, custom-developed). GxP impact: **high** (release, issue, dispatch, audit trail, e-signature, calculations). Open/closed system: intended as a **closed** system behind TLS.
@@ -12,7 +12,7 @@ GAMP 5 category 4/5 hybrid (configurable, custom-developed). GxP impact: **high*
 ## 3. Lifecycle and responsibilities
 | Activity | Supplier (this project) | Site |
 |---|---|---|
-| URS | Draft derived from the master requirements (`urs.md`, 59 requirements with GMP impact) | Review, adapt, approve |
+| URS | Draft derived from the master requirements (`urs.md`, 71 requirements with GMP impact) | Review, adapt, approve |
 | Risk assessment | FMEA draft (`risk-assessment.md`) | Adopt / extend with site processes |
 | Design/FS/CS | `docs/architecture/`, `functional-specification.md`, `design-specification.md`, `configuration-specification.md` (generated) | Review, record site configuration |
 | Code review / unit & integration tests | Automated suite (~250 tests) run per release; static analysis; dependency inventory (SBOM) | Review evidence; optional code audit |

@@ -9,7 +9,8 @@ from sqlalchemy.engine import Connection, Engine
 APPEND_ONLY_TABLES = ("audit_trail", "e_signature", "security_event", "gmp_status_history",
                       "record_action", "workflow_transaction", "inventory_transaction", "material_label",
                       "storage_temperature_log", "coa", "material_issue", "ipc_result", "immunisation_record", "sop_acknowledgement",
-                      "report_run", "archive_batch", "backup_record")
+                      "report_run", "archive_batch", "backup_record",
+                      "em_result_amendment", "stability_result", "lot_cost")
 MSG = "Append-only GMP record: UPDATE/DELETE is not permitted"
 
 

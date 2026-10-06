@@ -23,6 +23,8 @@ DEFAULTS = {
     "risk.rpn_medium": ("100", "FMEA RPN at or above which a risk is MEDIUM"),
     "backup.max_age_hours": ("26", "Alert when the newest successful backup record is older than this (hours)"),
     "backup.restore_test_days": ("180", "Alert when the last restore test is older than this (days)"),
+    "costing.include_tax": ("false", "Include PO tax in purchased-lot unit cost"),
+    "em.alert_notify_roles": ("QA_OFFICER,QA_HEAD", "Roles notified of EM alert-limit results"),
     "recon.tolerance_pct": ("0.5", "Batch reconciliation tolerance % (unaccounted / issued)"),
     "po.required_docs.LOW": ("", "Required vendor documents (low risk)"),
 }

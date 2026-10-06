@@ -21,12 +21,12 @@ Approved VP and URS; infrastructure change approved; installation SOP available;
 | IQ-03 | SQL Server version | SQL Server 2019/2022, collation `SQL_Latin1_General_CP1_CI_AS` or site standard; PostgreSQL only if approved | | | |
 | IQ-04 | ODBC driver | Microsoft ODBC Driver 18 for SQL Server installed | | | |
 | IQ-05 | Database accounts | `merp_migrator` (DDL, deployment only), `merp_app` (runtime DML), `merp_report_ro` per `database/mssql/01_logins_and_grants.sql`; **no application account is `db_owner`** | | | |
-| IQ-06 | Least privilege | As `merp_app`: `INSERT INTO audit_trail` succeeds; `UPDATE/DELETE audit_trail`, `CREATE TABLE` fail with *permission denied* (repeat for all 17 append-only tables) | | | |
+| IQ-06 | Least privilege | As `merp_app`: `INSERT INTO audit_trail` succeeds; `UPDATE/DELETE audit_trail`, `CREATE TABLE` fail with *permission denied* (repeat for all 20 append-only tables) | | | |
 | IQ-07 | Software package integrity | Release package SHA-256 equals the value in the release notes; `pip freeze`/`npm ls` match `sbom.md` | | | |
 | IQ-08 | Python / Node runtime | Python 3.11+, backend dependencies installed from the pinned list; frontend built (`npm run build`) | | | |
 | IQ-09 | Configuration | `.env` created from `.env.example`; `MERP_ENVIRONMENT=production`; strong `MERP_SECRET_KEY` and `MERP_AUDIT_HMAC_KEY` (≥ 32 random chars, stored in the secret store, backed up); cookie secure; debug off. The application refuses to start with weak/missing production settings | | | |
 | IQ-10 | TLS | Reverse proxy (Caddy/IIS/nginx) serves HTTPS with a valid certificate; HTTP redirects; TLS ≥ 1.2; HSTS header present | | | |
-| IQ-11 | Database migration | `alembic upgrade head` completes as `merp_migrator`; `alembic current` = release head (0009); 110 tables; 17 `INSTEAD OF` triggers present (`SELECT name FROM sys.triggers`) | | | |
+| IQ-11 | Database migration | `alembic upgrade head` completes as `merp_migrator`; `alembic current` = release head (0010); 127 tables; 20 `INSTEAD OF` triggers present (`SELECT name FROM sys.triggers`) | | | |
 | IQ-12 | Baseline seed | `scripts/bootstrap_admin.py` creates the first administrator; roles, permissions, SoD rules, workflows, numbering and retention defaults exist (compare with `configuration-specification.md`) | | | |
 | IQ-13 | Services | Application service starts automatically, runs under a non-privileged account; `/api/v1/health/ready` returns `ready` | | | |
 | IQ-14 | Scheduler | Exactly one of: in-process scheduler enabled on one instance **or** `scripts/run_jobs.py` scheduled (Task Scheduler/cron) daily | | | |

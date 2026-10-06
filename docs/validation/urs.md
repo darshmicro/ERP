@@ -3,7 +3,7 @@
 > Derived from the master requirements (prompt §1–§100) and the architecture pack (`docs/architecture/`). GMP impact: **Critical** = direct effect on product quality, patient safety or data integrity; **Major**; **Minor**.
 > Generated from `scripts/validation_requirements.py` — edit that file, not this one.
 
-Total requirements: **59** (41 critical, 17 major, 1 minor).
+Total requirements: **71** (47 critical, 22 major, 2 minor).
 
 ## Security
 
@@ -131,6 +131,7 @@ Total requirements: **59** (41 critical, 17 major, 1 minor).
 | URS-RPT-01 | Permissioned reports (37) in JSON/XLSX/CSV/PDF with parameter validation and no field leakage. | Major | — |
 | URS-RPT-02 | Controlled copies: numbered, hash-logged (append-only), verifiable printouts; controlled business PDFs. | Critical | BR-DOC-001 |
 | URS-RPT-03 | Role dashboards and report performance on large ledgers. | Minor | — |
+| URS-RPT-04 | Reports, exports and dashboards for environmental monitoring, stability and costing, permission-gated. | Minor | — |
 
 ## Data integrity
 
@@ -138,3 +139,29 @@ Total requirements: **59** (41 critical, 17 major, 1 minor).
 |---|---|---|---|
 | URS-DI-01 | Retention policies (extend-only), legal hold, non-destructive hashed archive packages; records never deleted by the application. | Critical | BR-RET-001/002 |
 | URS-DI-02 | Backup and restore evidence with alerts for stale backups / missing restore tests. | Major | — |
+
+## Environmental monitoring
+
+| ID | Requirement | GMP impact | Business rules |
+|---|---|---|---|
+| URS-EM-01 | Alert/action limits are a controlled, versioned, e-signed master (author cannot approve); reference Annex 1 style values load only as an unapproved draft; no result is judged without an approved limit set. | Critical | BR-EM-001, BR-HIS-001 |
+| URS-EM-02 | Each result is judged against the limits in force and the limits are snapshotted on the sample; an action-limit result automatically raises a deviation (critical for grades A/B); alert results notify QA. | Critical | BR-EM-002, BR-DEV-001 |
+| URS-EM-03 | Corrections keep the original value (append-only amendment); QA review is e-signed, locks the result and cannot be done by the person who entered it. | Critical | BR-EM-002, SOD-37 |
+| URS-EM-04 | Monitoring programme with due/overdue schedule, trending with Nelson-rule signals, excursion listing; only authorised roles can enter results or manage limits. | Major | — |
+
+## Stability
+
+| ID | Requirement | GMP impact | Business rules |
+|---|---|---|---|
+| URS-STB-01 | Stability protocols (conditions, time points, approved specification) are versioned, e-signed masters; a study can only start from an approved protocol and incomplete protocols cannot be submitted. | Critical | BR-STB-001, BR-HIS-001, SOD-38 |
+| URS-STB-02 | Starting a study books the stability sample quantity out of the lot through the inventory ledger and schedules every pull; pulls outside the window need remarks and raise a deviation; missed pulls are marked with a deviation. | Critical | BR-STB-002/003 |
+| URS-STB-03 | Results are append-only with superseding corrections; a failing result raises a deviation linked to the lot and blocks the lot like any open deviation; results are reviewed with e-signature by someone other than the analyst. | Critical | BR-STB-004..007, SOD-39 |
+| URS-STB-04 | ICH Q1E-style trend evaluation (one-sided 95 % bound, capped extrapolation) supports the QA conclusion; the shelf-life conclusion is e-signed by someone other than the study creator after all pulls close. | Major | BR-STB-008/009, SOD-40 |
+
+## Costing
+
+| ID | Requirement | GMP impact | Business rules |
+|---|---|---|---|
+| URS-COST-01 | Conversion rates are a controlled, versioned, e-signed rate card; no batch can be costed without an approved card; cost data is visible only to costing/finance, management and audit roles. | Major | BR-COST-003, SOD-41 |
+| URS-COST-02 | Actual batch cost is derived from immutable issue/return records at the lot cost (PO rate or approved batch cost), plus labour, machine and overhead; variance to standard is reported; approval is e-signed by someone other than the calculator and locks the cost; the output lot takes the batch cost. | Major | BR-COST-001..005, SOD-42 |
+| URS-COST-03 | Lots without a cost basis block costing and are reported (never valued at zero); lot cost history is append-only. | Major | BR-COST-001 |

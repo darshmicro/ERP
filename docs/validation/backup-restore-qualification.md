@@ -24,4 +24,4 @@
 | BR-08 | Point-in-time recovery drill (full + log restore to a given time) per DR plan | Data as of the time; hash chain valid up to that time | | |
 
 ## Supplier development evidence (SQL Server 2022 in Docker, 2026-10-05)
-See `evidence/restore-test-sqlserver.json` (produced by the script against a database loaded with the demo data, migrations 0001–0009): backup with CHECKSUM, VERIFYONLY OK, restore to a scratch database, all table counts equal, audit chain verified on the restored copy. This is developer evidence, not a substitute for the site's qualification on its own infrastructure.
+See `evidence/restore-test-sqlserver.json` (produced by the script against a database loaded with the demo data, migrations 0001–0009 (restore evidence predates Phase 11; repeat it on the Phase 11 schema at IQ)): backup with CHECKSUM, VERIFYONLY OK, restore to a scratch database, all table counts equal, audit chain verified on the restored copy. This is developer evidence, not a substitute for the site's qualification on its own infrastructure.

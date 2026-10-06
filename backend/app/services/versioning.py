@@ -89,6 +89,9 @@ def validate_for_submission(session: Session, obj) -> None:
             raise ValidationFailed("PERCENT sampling plan needs percent")
     if isinstance(obj, STP) and not (obj.procedure or "").strip():
         raise ValidationFailed("An STP needs a procedure before submission")
+    v = KINDS[type(obj)].get("validate")
+    if v:
+        v(session, obj)
 
 
 def submit(session: Session, obj) -> None:
@@ -174,5 +177,18 @@ def register_sop() -> None:
     KINDS[SOP] = {"key": "sop_no", "doc_type": "SOP", "prefix": "sop", "machine": _machine("sop", "quality.sop.approve"), "children": []}
 
 
+def register_phase11() -> None:
+    from app.models.costing import CostRateCard
+    from app.models.em import EMLimit, EMLimitSet
+    from app.models.stability import StabilityCondition, StabilityProtocol, StabilityTimepoint
+    from app.services import em, stability
+    KINDS[EMLimitSet] = {"key": "limitset_no", "doc_type": "EMLIM", "prefix": "em_limit_set", "machine": _machine("em_limit_set", "em.limit.approve"),
+                         "children": [(EMLimit, "limit_set_id")], "validate": em.validate_limit_set}
+    KINDS[StabilityProtocol] = {"key": "protocol_no", "doc_type": "STABPROT", "prefix": "stability_protocol", "machine": _machine("stability_protocol", "stability.protocol.approve"),
+                                "children": [(StabilityCondition, "protocol_id"), (StabilityTimepoint, "protocol_id")], "validate": stability.validate_protocol}
+    KINDS[CostRateCard] = {"key": "card_no", "doc_type": "COSTCARD", "prefix": "cost_rate_card", "machine": _machine("cost_rate_card", "costing.rate.approve"), "children": []}
+
+
 register_bom()
 register_sop()
+register_phase11()

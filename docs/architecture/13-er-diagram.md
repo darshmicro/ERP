@@ -15,6 +15,19 @@ erDiagram
   security_event { int id }
 ```
 
+## costing
+
+```mermaid
+erDiagram
+  manufacturing_batch ||--o{ batch_cost : "batch_id"
+  cost_rate_card ||--o{ batch_cost : "rate_card_id"
+  e_signature ||--o{ batch_cost : "approved_signature_id"
+  cost_rate_card ||--o{ cost_rate_card : "supersedes_id"
+  e_signature ||--o{ cost_rate_card : "approved_signature_id"
+  material_batch ||--o{ lot_cost : "material_batch_id"
+  material ||--o{ standard_cost : "material_id"
+```
+
 ## dispatch
 
 ```mermaid
@@ -25,6 +38,25 @@ erDiagram
   material_batch ||--o{ dispatch_line : "material_batch_id"
   location ||--o{ dispatch_line : "location_id"
   unit ||--o{ dispatch_line : "unit_id"
+```
+
+## em
+
+```mermaid
+erDiagram
+  em_sample ||--o{ em_isolate : "sample_id"
+  em_limit_set ||--o{ em_limit : "limit_set_id"
+  em_limit_set ||--o{ em_limit_set : "supersedes_id"
+  e_signature ||--o{ em_limit_set : "approved_signature_id"
+  location ||--o{ em_location : "location_id"
+  em_location ||--o{ em_plan : "em_location_id"
+  em_sample ||--o{ em_result_amendment : "sample_id"
+  em_location ||--o{ em_sample : "em_location_id"
+  em_plan ||--o{ em_sample : "plan_id"
+  manufacturing_batch ||--o{ em_sample : "manufacturing_batch_id"
+  equipment ||--o{ em_sample : "equipment_id"
+  em_limit_set ||--o{ em_sample : "limit_set_id"
+  e_signature ||--o{ em_sample : "review_signature_id"
 ```
 
 ## iam
@@ -266,6 +298,31 @@ erDiagram
   stp ||--o{ specification_parameter : "stp_id"
   stp ||--o{ stp : "supersedes_id"
   e_signature ||--o{ stp : "approved_signature_id"
+```
+
+## stability
+
+```mermaid
+erDiagram
+  stability_protocol ||--o{ stability_condition : "protocol_id"
+  location ||--o{ stability_condition : "chamber_location_id"
+  material ||--o{ stability_protocol : "material_id"
+  specification ||--o{ stability_protocol : "specification_id"
+  stability_protocol ||--o{ stability_protocol : "supersedes_id"
+  e_signature ||--o{ stability_protocol : "approved_signature_id"
+  stability_study ||--o{ stability_pull : "study_id"
+  stability_condition ||--o{ stability_pull : "condition_id"
+  stability_timepoint ||--o{ stability_pull : "timepoint_id"
+  e_signature ||--o{ stability_pull : "review_signature_id"
+  stability_pull ||--o{ stability_result : "pull_id"
+  specification_parameter ||--o{ stability_result : "parameter_id"
+  equipment ||--o{ stability_result : "equipment_id"
+  stability_result ||--o{ stability_result : "supersedes_id"
+  stability_protocol ||--o{ stability_study : "protocol_id"
+  material_batch ||--o{ stability_study : "material_batch_id"
+  location ||--o{ stability_study : "source_location_id"
+  e_signature ||--o{ stability_study : "conclusion_signature_id"
+  stability_protocol ||--o{ stability_timepoint : "protocol_id"
 ```
 
 ## warehouse

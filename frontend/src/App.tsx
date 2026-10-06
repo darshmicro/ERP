@@ -22,6 +22,9 @@ import { GRNs, Inventory } from "./pages/Warehouse";
 import { BOMs, Batches, Returns, Antisera } from "./pages/Manufacturing";
 import { Dispatches, Trace } from "./pages/Dispatch";
 import { Reports, Dashboards, Compliance } from "./pages/Reports";
+import { EMSamples, EMLocations, EMLimitSets, EMOverview } from "./pages/Monitoring";
+import { StabilityProtocols, StabilityStudies, StabilityDue } from "./pages/Stability";
+import { RateCards, BatchCosts, StandardCosts, Valuation } from "./pages/Costing";
 import { Deviations, CAPAs, ChangeControls, Risks, SOPs, Complaints, Recalls } from "./pages/Quality";
 import VendorQualification from "./pages/VendorQualification";
 import VendorMaterials from "./pages/VendorMaterials";
@@ -79,6 +82,17 @@ export default function App() {
         <Route path="batches" element={<Batches />} />
         <Route path="returns" element={<Returns />} />
         <Route path="antisera" element={<Antisera />} />
+        <Route path="em" element={<EMOverview />} />
+        <Route path="em-samples" element={<EMSamples />} />
+        <Route path="em-locations" element={<EMLocations />} />
+        <Route path="em-limits" element={<EMLimitSets />} />
+        <Route path="stability-protocols" element={<StabilityProtocols />} />
+        <Route path="stability-studies" element={<StabilityStudies />} />
+        <Route path="stability-due" element={<StabilityDue />} />
+        <Route path="cost-rates" element={<RateCards />} />
+        <Route path="batch-costs" element={<BatchCosts />} />
+        <Route path="cost-standards" element={<StandardCosts />} />
+        <Route path="valuation" element={<Valuation />} />
         <Route path="password" element={<ChangePassword />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Route>

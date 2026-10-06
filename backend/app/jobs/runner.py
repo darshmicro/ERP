@@ -8,7 +8,7 @@ import threading
 from app.audit.context import AuditContext, audit_context
 from app.core import db
 from app.core.logging import app_log
-from app.services import lots, quality_system, vendor_qualification as vqs
+from app.services import em, lots, quality_system, stability, vendor_qualification as vqs
 
 
 def run_daily_jobs() -> dict:
@@ -20,6 +20,8 @@ def run_daily_jobs() -> dict:
             lots_expired = lots.expire_lots(s)
             alerts += lots.alert_expiry(s)
             alerts += quality_system.daily_alerts(s)
+            alerts += em.daily_alerts(s)
+            alerts += stability.daily_alerts(s)
             s.commit()
         app_log.info("daily jobs: %d vendor qualifications expired, %d alerts", len(expired), alerts)
         return {"vendor_qualifications_expired": expired, "lots_expired": lots_expired, "alerts": alerts}
